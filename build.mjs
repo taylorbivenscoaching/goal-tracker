@@ -99,6 +99,8 @@ const shellVersion = createHash("sha256")
   .update(styles)
   .update(script)
   .update(manifestSource)
+  .update(icon192)
+  .update(icon512)
   .digest("hex")
   .slice(0, 16);
 const serviceWorker = serviceWorkerSource.replace(

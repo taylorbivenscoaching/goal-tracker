@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "goal-tracker-shell-7758e64f384ae333";
+const CACHE_NAME = "goal-tracker-shell-a1d29bb242159e3a";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -23,7 +23,11 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
+      .then((keys) => Promise.all(
+        keys
+          .filter((key) => key.startsWith("goal-tracker-shell-") && key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
+      ))
       .then(() => self.clients.claim())
   );
 });
