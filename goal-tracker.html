@@ -1,0 +1,4515 @@
+<!doctype html>
+<html lang="en" data-single-file="true">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1B2A4A">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-AmzIKdJXpVwLEZzU68lfQ1mdBtEyoO5dFPT7alHxhcQ='; style-src 'sha256-Ge08pgRv8mC3d4FVAQtG/hg/NUlKx7yEkmeWaC9Co2U='; img-src data: blob:; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+  <meta name="description" content="A private, offline-first personal goal tracker.">
+  <title>Goal Tracker</title>
+  <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAADT0lEQVR42u3dy3HiUBRFUfJQAFQ5FMJ0No4KTxlTIL379hrsebd0FuYjxO34eTylajcHQQBIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgATOvv9/52jh8AiaGDAYDBAwGA0cMAgOGDAIDRwwCA4YMAgPFDAIDhgwCA4YMAgPFDAIDhgwCA8UMAgPFDAIDxQwCA4YMAgPFDAIDxQxAGYKwQZAEYKQQA6OPjBsD4PaK/HGcAjN9TGQCM3/gBMH7jBwAA4wfA+I0fAOM3fgAAMH4AjN/4AQDA+AEwfuMHwPgj458EEADjB8D4jf8b5woAAJLP+QEAIP2CFwDjB2AIAgCMHwDjN/5vni8AAMh80AUAAOlPeQEwfuMf9O8GwPhPOVcAAJAdPwAApMcPgPGnx7/y/wUA4wcAAOM/4/wAcAGAidB2/WwGgBMBTP2rs/MHkwAMeJQBYK0HpSSAqw+w8V/3lBSAhV5gGf/njwMAw95eM/47ACsf9OlvydY+iQdg6Mfrxg9A/voS4wcgf3Wh8QOQv7zW+AHIX19u/ADkv2DhEgcA8t8wMn4A8qMyfgDyj6rGD0D+aYUXvQDkn1cbPwDp+8x42uP7AN5dMX4AADB+AMI3XDJ+AAAwfgBcZmD8AEBg/O4N2rz1nvED4JJjAACo34Kvfk9VACAwfgB8/bA2fgDcjzI9fgAgMH4A3IqkOH4AIDB+ANY64cYPQBrAdAR+5ywKAALjByB6ko6Bv5oJAATGDwAExg/AiFEAAAAExp97YwGAwTfdBSAMYGcExg9AFoHxA7DMYIwfAAiMf+trq7YAMB2B8QOQRWD8AGQRGD8A40ZVHz8AEBg/ABC8M4bJw9/1e9XbAjgW+AnQ6YMv3FljawC7jdD4AQDB8AGAwPgBgMD4AYDA+AEAwfABgMD4AQDB8AEAwfABgMD4AQDB8AHwZXUB4IcpBMDWGJwPAFIgHG8AEjAcPwAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAEgIMgACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkAKRJ/QNwzzy5V3Bf0gAAAABJRU5ErkJggg==">
+  <style>:root {
+  color-scheme: light;
+  --navy: #1B2A4A;
+  --navy-2: #29426f;
+  --gold: #C9A227;
+  --gold-text: #8F7119;
+  --ink: #172033;
+  --muted: #5f6878;
+  --paper: #ffffff;
+  --canvas: #f5f6f8;
+  --line: #d9dee7;
+  --soft-navy: #eef2f8;
+  --soft-gold: #fbf6e5;
+  --success: #2f765a;
+  --danger: #a44343;
+  --warning: #8F7119;
+  --stuck: #76548f;
+  --shadow: 0 12px 32px rgba(27, 42, 74, 0.08);
+  --radius: 18px;
+  --radius-small: 12px;
+  --content: 760px;
+  font-family: system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--canvas);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(201, 162, 39, 0.08), transparent 22rem),
+    var(--canvas);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+button,
+label,
+input,
+textarea {
+  max-width: 100%;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(201, 162, 39, 0.72);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--navy);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  margin-bottom: 0.45rem;
+  font-size: clamp(2rem, 8vw, 3.2rem);
+  font-weight: 760;
+}
+
+h2 {
+  margin-bottom: 0.7rem;
+  font-size: clamp(1.3rem, 4vw, 1.65rem);
+}
+
+h3 {
+  margin-bottom: 0.55rem;
+  font-size: 1.06rem;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 1000;
+  top: 0.5rem;
+  left: 0.5rem;
+  padding: 0.7rem 1rem;
+  transform: translateY(-160%);
+  border-radius: 8px;
+  color: white;
+  background: var(--navy);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.backup-banner {
+  position: relative;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.75rem max(1rem, env(safe-area-inset-right)) 0.75rem max(1rem, env(safe-area-inset-left));
+  color: #fff;
+  background: var(--gold-text);
+}
+
+.backup-banner > div:first-child {
+  display: grid;
+  gap: 0.05rem;
+}
+
+.banner-actions,
+.form-actions,
+.segmented-actions,
+.data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.app-header {
+  position: sticky;
+  z-index: 50;
+  top: 0;
+  border-bottom: 1px solid rgba(217, 222, 231, 0.88);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+}
+
+.header-inner {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0.55rem 1rem;
+}
+
+.brand {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--navy);
+  font-size: 1.05rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+.brand-mark {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--navy);
+  background: var(--gold);
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.privacy-strip {
+  margin: 0;
+  padding: 0.45rem 1rem;
+  color: #fff;
+  background: var(--navy);
+  text-align: center;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.desktop-nav {
+  display: none;
+}
+
+.main-content {
+  width: 100%;
+  min-width: 0;
+  padding: 1.5rem max(1rem, env(safe-area-inset-right)) calc(6rem + env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+}
+
+.view {
+  width: min(100%, var(--content));
+  margin: 0 auto;
+  animation: view-in 180ms ease-out;
+}
+
+@keyframes view-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.25rem 0 1.5rem;
+}
+
+.page-heading-split {
+  align-items: center;
+}
+
+.intro {
+  max-width: 62ch;
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+
+.eyebrow,
+.card-kicker {
+  margin-bottom: 0.3rem;
+  color: var(--gold-text);
+  font-size: 0.76rem;
+  font-weight: 780;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.greeting-card {
+  position: relative;
+  margin-bottom: 2rem;
+  padding: clamp(1.25rem, 5vw, 2rem);
+  border-color: rgba(201, 162, 39, 0.4);
+  background:
+    linear-gradient(135deg, rgba(201, 162, 39, 0.11), transparent 55%),
+    var(--paper);
+}
+
+.greeting-card::after {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(201, 162, 39, 0.36);
+  border-radius: 50%;
+  content: "";
+}
+
+.greeting-text {
+  position: relative;
+  z-index: 1;
+  max-width: 31ch;
+  margin-bottom: 0.35rem;
+  color: var(--navy);
+  font-size: clamp(1.35rem, 6vw, 2.1rem);
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+}
+
+.milestone-arrival {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  padding: 1.2rem;
+  border-left: 5px solid var(--gold);
+}
+
+.milestone-arrival p:last-child {
+  margin-bottom: 0;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.5rem 0 0.9rem;
+}
+
+.section-heading h2,
+.section-heading p {
+  margin-bottom: 0;
+}
+
+.stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-stack {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.form-card,
+.settings-card,
+.week-card,
+.chart-card,
+.privacy-card {
+  padding: clamp(1rem, 4vw, 1.4rem);
+}
+
+.form-card {
+  display: grid;
+  gap: 1.15rem;
+}
+
+.form-card h2 {
+  margin-bottom: 0;
+}
+
+label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--navy);
+  font-weight: 650;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid #b9c2d0;
+  border-radius: 10px;
+  color: var(--ink);
+  background: #fff;
+  font-weight: 430;
+}
+
+textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: #8d99ab;
+}
+
+.field-help {
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 450;
+}
+
+.button,
+.icon-button {
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  cursor: pointer;
+  font-weight: 720;
+  line-height: 1.2;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 44px;
+  padding: 0.7rem 1rem;
+}
+
+.icon-button {
+  display: inline-grid;
+  width: 44px;
+  min-width: 44px;
+  padding: 0;
+  place-items: center;
+  color: var(--navy);
+  background: var(--soft-navy);
+  font-size: 1.35rem;
+}
+
+.button-primary {
+  color: #fff;
+  background: var(--navy);
+}
+
+.button-primary:hover {
+  background: var(--navy-2);
+}
+
+.button-secondary {
+  border-color: #b9c2d0;
+  color: var(--navy);
+  background: #fff;
+}
+
+.button-secondary:hover,
+.icon-button:hover {
+  border-color: #8d99ab;
+  background: var(--soft-navy);
+}
+
+.button-quiet {
+  color: var(--navy);
+  background: transparent;
+}
+
+.button-quiet:hover {
+  background: var(--soft-navy);
+}
+
+.button-light {
+  border-color: rgba(255, 255, 255, 0.7);
+  color: var(--navy);
+  background: #fff;
+}
+
+.button-danger {
+  border-color: rgba(164, 67, 67, 0.28);
+  color: var(--danger);
+  background: #fff;
+}
+
+.button[disabled],
+.icon-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.sticky-action {
+  position: sticky;
+  z-index: 10;
+  bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.65rem;
+  border: 1px solid rgba(217, 222, 231, 0.9);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.value-number,
+.tension-number {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  margin-right: 0.35rem;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--navy);
+  background: var(--soft-gold);
+  font-size: 0.88rem;
+}
+
+.tension-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.commitment-card,
+.today-commitment {
+  padding: 1.1rem;
+}
+
+.commitment-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.commitment-head,
+.today-commitment-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.commitment-head h2,
+.today-commitment h3 {
+  overflow-wrap: anywhere;
+}
+
+.schedule-picker {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(44px, 1fr));
+  gap: 0.35rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.schedule-picker legend {
+  grid-column: 1 / -1;
+  margin-bottom: 0.55rem;
+  color: var(--navy);
+  font-weight: 650;
+}
+
+@media (min-width: 500px) {
+  .schedule-picker {
+    grid-template-columns: repeat(7, minmax(44px, 1fr));
+  }
+}
+
+.day-check {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+
+.day-check input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.day-check span {
+  display: grid;
+  min-width: 0;
+  min-height: 44px;
+  place-items: center;
+  border: 1px solid #b9c2d0;
+  border-radius: 10px;
+  color: var(--muted);
+  background: #fff;
+  font-size: 0.76rem;
+  font-weight: 720;
+}
+
+.day-check input:checked + span {
+  border-color: var(--navy);
+  color: #fff;
+  background: var(--navy);
+}
+
+.day-check input:focus-visible + span {
+  outline: 3px solid rgba(201, 162, 39, 0.72);
+  outline-offset: 2px;
+}
+
+.commitment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.count-badge,
+.status-badge {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 720;
+}
+
+.count-badge {
+  color: var(--navy);
+  background: var(--soft-gold);
+}
+
+.status-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+}
+
+.status-button {
+  min-height: 48px;
+  justify-content: flex-start;
+  border-color: var(--line);
+  color: var(--navy);
+  background: #fff;
+  font-size: 0.9rem;
+}
+
+.status-button::before {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--line);
+  content: "";
+}
+
+.status-button[data-status="Completed"]::before,
+.status-completed {
+  background: var(--success);
+}
+
+.status-button[data-status="Missed"]::before,
+.status-missed {
+  background: var(--danger);
+}
+
+.status-button[data-status="Renegotiated"]::before,
+.status-renegotiated {
+  background: var(--warning);
+}
+
+.status-button[data-status="Stuck"]::before,
+.status-stuck {
+  background: var(--stuck);
+}
+
+.status-not-scheduled {
+  background: #aeb6c2;
+}
+
+.status-button.is-selected {
+  border-color: var(--navy);
+  box-shadow: inset 0 0 0 1px var(--navy);
+  background: var(--soft-navy);
+}
+
+.current-status {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.renegotiated-detail {
+  margin: 0.7rem 0 0;
+  padding: 0.7rem;
+  border-radius: 10px;
+  color: #65510f;
+  background: var(--soft-gold);
+  font-size: 0.9rem;
+}
+
+.empty-state {
+  padding: 1.5rem;
+  border: 1px dashed #b9c2d0;
+  border-radius: var(--radius);
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.65);
+  text-align: center;
+}
+
+.empty-state p:last-child {
+  margin-bottom: 0;
+}
+
+.support-note {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border-left: 5px solid var(--stuck);
+  border-radius: 12px;
+  color: #463154;
+  background: #f5eff8;
+}
+
+.support-note p {
+  margin: 0.25rem 0 0;
+}
+
+.week-card {
+  margin-top: 1.5rem;
+}
+
+.week-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.week-row {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.week-row-title {
+  overflow-wrap: anywhere;
+  color: var(--navy);
+  font-size: 0.9rem;
+  font-weight: 720;
+}
+
+.week-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+.week-day {
+  display: grid;
+  min-width: 0;
+  min-height: 58px;
+  place-items: center;
+  gap: 0.15rem;
+  padding: 0.25rem 0.05rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--muted);
+  background: #fff;
+  text-align: center;
+  font-size: 0.66rem;
+}
+
+.week-day strong {
+  color: var(--navy);
+  font-size: 0.72rem;
+}
+
+.week-day .status-dot {
+  width: 10px;
+  height: 10px;
+}
+
+.week-status-code {
+  color: var(--navy);
+  font-size: 0.63rem;
+  font-weight: 800;
+}
+
+.week-day.is-today {
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 1px var(--gold);
+}
+
+.status-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.8rem;
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.status-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.status-dot,
+.line-key {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.rating-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.rating-grid label {
+  position: relative;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--soft-navy);
+}
+
+.rating-output {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.8rem;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--navy);
+  background: #fff;
+  font-size: 1.15rem;
+  font-weight: 780;
+}
+
+input[type="range"] {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--navy);
+}
+
+.range-ends {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.chart-card {
+  margin-top: 1.5rem;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: 230px;
+  margin-top: 0.75rem;
+  border-radius: 12px;
+  background: linear-gradient(to bottom, #fff, #f9fafc);
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.line-key {
+  width: 18px;
+  height: 3px;
+  border-radius: 3px;
+}
+
+.line-progress {
+  background: var(--navy);
+}
+
+.line-confidence {
+  background: var(--gold-text);
+}
+
+.history-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.history-item {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.history-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.history-item p {
+  margin-bottom: 0;
+  overflow-wrap: anywhere;
+}
+
+.history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.history-actions .button {
+  min-height: 44px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.8rem;
+}
+
+.prompt-box {
+  padding: 1rem;
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  border-radius: 12px;
+  background: var(--soft-gold);
+}
+
+.prompt-box p:last-child {
+  margin-bottom: 0;
+  color: var(--navy);
+  font-weight: 650;
+}
+
+.who-item {
+  padding: 1rem;
+}
+
+.who-item h2 {
+  font-size: 1.12rem;
+}
+
+.response-options {
+  display: grid;
+  gap: 0.45rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.response-options legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.response-option {
+  position: relative;
+  display: block;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.response-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.response-option span {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.response-option b {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--navy);
+  background: var(--soft-navy);
+  font-size: 0.82rem;
+}
+
+.response-option input:checked + span {
+  border-color: var(--navy);
+  box-shadow: inset 0 0 0 1px var(--navy);
+  background: var(--soft-navy);
+}
+
+.response-option input:focus-visible + span {
+  outline: 3px solid rgba(201, 162, 39, 0.72);
+  outline-offset: 2px;
+}
+
+.attribution {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.83rem;
+}
+
+.attribution p:last-child {
+  margin-bottom: 0;
+  color: var(--ink);
+  font-weight: 620;
+}
+
+.milestone-grid {
+  display: grid;
+  gap: 0.8rem;
+  margin: 1.25rem 0;
+}
+
+.milestone-card {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem;
+}
+
+.milestone-card.is-due {
+  border-color: rgba(201, 162, 39, 0.6);
+  background: var(--soft-gold);
+}
+
+.milestone-card.is-complete {
+  border-color: rgba(47, 118, 90, 0.35);
+}
+
+.milestone-status {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.settings-card + .settings-card,
+.settings-card + .privacy-card {
+  margin-top: 1rem;
+}
+
+.settings-card > p:last-child {
+  margin-bottom: 0;
+}
+
+.settings-card label {
+  margin: 0.8rem 0;
+}
+
+.storage-status {
+  padding: 0.8rem;
+  border-radius: 10px;
+  color: var(--navy);
+  background: var(--soft-navy);
+}
+
+.file-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.file-button input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.privacy-card {
+  border-color: rgba(201, 162, 39, 0.42);
+  background: linear-gradient(135deg, var(--soft-gold), #fff 75%);
+}
+
+.privacy-card p:last-child {
+  margin-bottom: 0;
+}
+
+.nav-dialog,
+.form-dialog {
+  width: min(calc(100% - 2rem), 520px);
+  max-height: calc(100vh - 2rem);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(11, 20, 39, 0.3);
+}
+
+.nav-dialog::backdrop,
+.form-dialog::backdrop {
+  background: rgba(15, 24, 42, 0.58);
+}
+
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem 0.5rem;
+}
+
+.dialog-header h2 {
+  margin-bottom: 0;
+}
+
+.mobile-nav {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem 1rem;
+}
+
+.nav-button {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.85rem;
+  border: 0;
+  border-radius: 10px;
+  color: var(--navy);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-weight: 680;
+}
+
+.nav-button:hover,
+.nav-button.is-active {
+  background: var(--soft-navy);
+}
+
+.nav-button.is-active {
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+
+.form-dialog form {
+  display: grid;
+  gap: 1rem;
+  padding: 0 1rem 1rem;
+}
+
+.form-dialog .dialog-header {
+  padding: 0;
+}
+
+.form-error {
+  margin: 0;
+  color: var(--danger);
+  font-weight: 650;
+}
+
+.toast {
+  position: fixed;
+  z-index: 120;
+  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  width: min(calc(100% - 2rem), 360px);
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--navy);
+  box-shadow: 0 16px 42px rgba(11, 20, 39, 0.3);
+  font-weight: 650;
+}
+
+.print-summary {
+  display: none;
+}
+
+@media (min-width: 620px) {
+  .main-content {
+    padding-top: 2.25rem;
+  }
+
+  .rating-grid,
+  .tension-grid,
+  .milestone-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tension-grid h3,
+  .tension-grid label:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .status-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .response-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .menu-button {
+    display: none;
+  }
+
+  .header-settings {
+    visibility: hidden;
+  }
+
+  .layout {
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 2rem;
+    padding: 0 1.25rem;
+  }
+
+  .desktop-nav {
+    position: sticky;
+    top: 126px;
+    display: grid;
+    align-self: start;
+    gap: 0.3rem;
+    padding: 2rem 0;
+  }
+
+  .main-content {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .view {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 500px) {
+  .backup-banner {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .banner-actions {
+    justify-content: space-between;
+  }
+
+  .page-heading-split {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .page-heading-split > .button {
+    align-self: flex-start;
+  }
+
+  .milestone-arrival {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .milestone-arrival .button {
+    width: 100%;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+  }
+
+  .data-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .data-actions .button {
+    width: 100%;
+  }
+
+  .segmented-actions {
+    gap: 0.25rem;
+  }
+
+  .segmented-actions .button {
+    padding-right: 0.55rem;
+    padding-left: 0.55rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 370px) {
+  .header-settings {
+    display: none;
+  }
+
+  .header-inner {
+    padding-right: 0.65rem;
+    padding-left: 0.65rem;
+  }
+
+  .main-content {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+  }
+
+  .form-card,
+  .settings-card,
+  .week-card,
+  .chart-card,
+  .privacy-card {
+    padding: 0.85rem;
+  }
+
+  .status-button {
+    padding-right: 0.6rem;
+    padding-left: 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .day-check span {
+    font-size: 0.68rem;
+  }
+}
+
+@media print {
+  @page {
+    margin: 16mm;
+  }
+
+  body {
+    color: #111;
+    background: #fff;
+    font-size: 10.5pt;
+  }
+
+  .backup-banner,
+  .app-header,
+  .layout,
+  .toast,
+  dialog {
+    display: none !important;
+  }
+
+  .print-summary {
+    display: block;
+  }
+
+  .print-summary h1 {
+    margin-bottom: 3mm;
+    color: #111;
+    font-size: 22pt;
+  }
+
+  .print-summary h2 {
+    margin: 8mm 0 3mm;
+    padding-bottom: 1.5mm;
+    border-bottom: 1px solid #999;
+    color: #111;
+    font-size: 15pt;
+  }
+
+  .print-summary h3 {
+    margin: 5mm 0 1.5mm;
+    color: #111;
+    font-size: 11.5pt;
+  }
+
+  .print-summary p,
+  .print-summary li {
+    margin: 0 0 2mm;
+    overflow-wrap: anywhere;
+  }
+
+  .print-summary table {
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: avoid;
+  }
+
+  .print-summary th,
+  .print-summary td {
+    padding: 2mm;
+    border: 1px solid #aaa;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .print-summary section {
+    break-inside: avoid;
+  }
+
+  .print-summary .print-records {
+    break-inside: auto;
+  }
+
+  .print-summary .print-record {
+    break-inside: avoid;
+    padding: 2mm 0;
+    border-bottom: 1px solid #ccc;
+  }
+}
+</style>
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Skip to content</a>
+
+  <div id="backupBanner" class="backup-banner" hidden>
+    <div>
+      <strong>Your local backup is due.</strong>
+      <span>Export a copy so your entries are safe if this device is lost or cleared.</span>
+    </div>
+    <div class="banner-actions">
+      <button id="bannerExportButton" class="button button-light" type="button">Export now</button>
+      <button id="dismissBackupButton" class="icon-button button-light" type="button" aria-label="Dismiss backup reminder">Close</button>
+    </div>
+  </div>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <button id="openNavButton" class="icon-button menu-button" type="button" aria-label="Open navigation" aria-controls="navDialog">
+        <span aria-hidden="true">☰</span>
+      </button>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">✓</span>
+        <span>Goal Tracker</span>
+      </div>
+      <button class="button button-quiet header-settings" type="button" data-view-target="settings">Settings</button>
+    </div>
+    <p class="privacy-strip">Everything you write stays on this device. Nothing is sent anywhere. Use Export to back up.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <button type="button" class="nav-button is-active" data-view-target="today">
+        <span aria-hidden="true">●</span><span>Today</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="charter">
+        <span aria-hidden="true">◇</span><span>Charter</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="commitments">
+        <span aria-hidden="true">✓</span><span>Commitments</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="review">
+        <span aria-hidden="true">↗</span><span>Weekly review</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="journal">
+        <span aria-hidden="true">✎</span><span>Journal</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="wellbeing">
+        <span aria-hidden="true">○</span><span>Wellbeing</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="maintenance">
+        <span aria-hidden="true">＋</span><span>Maintenance</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="settings">
+        <span aria-hidden="true">⚙</span><span>Settings</span>
+      </button>
+    </nav>
+
+    <main id="mainContent" class="main-content" tabindex="-1">
+      <section id="view-today" class="view" data-view="today" aria-labelledby="todayHeading">
+        <div class="page-heading">
+          <div>
+            <p id="todayDate" class="eyebrow"></p>
+            <h1 id="todayHeading">Today</h1>
+          </div>
+        </div>
+
+        <article class="card greeting-card">
+          <p class="card-kicker">From your charter</p>
+          <p id="dailyGreeting" class="greeting-text"></p>
+          <button id="greetingCharterButton" class="button button-secondary" type="button" data-view-target="charter" hidden>Add your charter</button>
+        </article>
+
+        <article id="maintenanceArrival" class="card milestone-arrival" hidden>
+          <div>
+            <p class="card-kicker">Maintenance check-in</p>
+            <h2 id="maintenanceArrivalTitle"></h2>
+            <p id="maintenanceArrivalText"></p>
+          </div>
+          <button class="button button-primary" type="button" data-view-target="maintenance">Reflect now</button>
+        </article>
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Daily practice</p>
+            <h2>Today's commitments</h2>
+          </div>
+          <button class="button button-quiet" type="button" data-view-target="commitments">Manage</button>
+        </div>
+        <div id="todayCommitments" class="stack"></div>
+
+        <aside id="stuckSupport" class="support-note" hidden>
+          <strong>When you feel stuck</strong>
+          <p>Stuck means you need a human, not more willpower. Bring this to your next session or your accountability partner.</p>
+        </aside>
+      </section>
+
+      <section id="view-charter" class="view" data-view="charter" aria-labelledby="charterHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Your compass</p>
+            <h1 id="charterHeading">Charter</h1>
+            <p class="intro">Build this with your group and coach on paper first, then copy it here so the app can hand it back to you.</p>
+          </div>
+        </div>
+
+        <form id="charterForm" class="form-stack">
+          <div id="guideValuesContainer" class="stack"></div>
+
+          <article class="card form-card">
+            <h2>North star and direction</h2>
+            <label>
+              <span>North star</span>
+              <span class="field-help">One or two sentences</span>
+              <textarea id="northStar" name="northStar" rows="3"></textarea>
+            </label>
+            <label>
+              <span>The direction I choose</span>
+              <textarea id="direction" name="direction" rows="3"></textarea>
+            </label>
+          </article>
+
+          <article class="card form-card">
+            <h2>Named tensions</h2>
+            <p class="field-help">Add up to two tensions you are actively holding this season.</p>
+            <div id="tensionsContainer" class="stack"></div>
+          </article>
+
+          <article class="card form-card">
+            <h2>Patterns and support</h2>
+            <label>
+              <span>My key pattern, in one line</span>
+              <input id="keyPattern" name="keyPattern" type="text">
+            </label>
+            <label>
+              <span>My first early-warning sign</span>
+              <textarea id="earlyWarning" name="earlyWarning" rows="2"></textarea>
+            </label>
+            <label>
+              <span>My support need</span>
+              <textarea id="supportNeed" name="supportNeed" rows="2"></textarea>
+            </label>
+          </article>
+
+          <div class="sticky-action">
+            <button class="button button-primary" type="submit">Save charter</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="view-commitments" class="view" data-view="commitments" aria-labelledby="commitmentsHeading" hidden>
+        <div class="page-heading page-heading-split">
+          <div>
+            <p class="eyebrow">Up to three</p>
+            <h1 id="commitmentsHeading">Commitments</h1>
+            <p class="intro">Choose small actions you can recognize and mark on their scheduled days.</p>
+          </div>
+          <button id="addCommitmentButton" class="button button-primary" type="button">Add commitment</button>
+        </div>
+
+        <div id="commitmentEditor" class="stack"></div>
+
+        <section class="card week-card" aria-labelledby="weekViewHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Status pattern</p>
+              <h2 id="weekViewHeading">Week view</h2>
+              <p id="weekRangeLabel" class="field-help"></p>
+            </div>
+            <div class="segmented-actions">
+              <button id="previousWeekButton" class="icon-button" type="button" aria-label="Show previous week">‹</button>
+              <button id="currentWeekButton" class="button button-quiet" type="button">This week</button>
+              <button id="nextWeekButton" class="icon-button" type="button" aria-label="Show next week">›</button>
+            </div>
+          </div>
+          <div id="weekGrid" class="week-grid"></div>
+          <div class="status-legend" aria-label="Status legend">
+            <span><i class="status-dot status-completed"></i>Completed</span>
+            <span><i class="status-dot status-missed"></i>Missed</span>
+            <span><i class="status-dot status-renegotiated"></i>Renegotiated</span>
+            <span><i class="status-dot status-stuck"></i>Stuck</span>
+            <span><i class="status-dot status-not-scheduled"></i>Not scheduled</span>
+          </div>
+        </section>
+      </section>
+
+      <section id="view-review" class="view" data-view="review" aria-labelledby="reviewHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Once a week</p>
+            <h1 id="reviewHeading">Weekly review</h1>
+            <p class="intro">Capture what shifted, not just what got done.</p>
+          </div>
+        </div>
+
+        <form id="weeklyReviewForm" class="card form-card">
+          <label>
+            <span>Week containing</span>
+            <input id="reviewDate" name="reviewDate" type="date" required>
+            <span id="reviewWeekHelp" class="field-help"></span>
+          </label>
+          <div class="rating-grid">
+            <label>
+              <span>Goal progress</span>
+              <output id="progressOutput" class="rating-output" for="progressRating">5</output>
+              <input id="progressRating" name="progressRating" type="range" min="0" max="10" value="5">
+              <span class="range-ends"><span>0</span><span>10</span></span>
+            </label>
+            <label>
+              <span>Confidence</span>
+              <output id="confidenceOutput" class="rating-output" for="confidenceRating">5</output>
+              <input id="confidenceRating" name="confidenceRating" type="range" min="0" max="10" value="5">
+              <span class="range-ends"><span>0</span><span>10</span></span>
+            </label>
+          </div>
+          <label>
+            <span>Most common obstacle this week</span>
+            <input id="weeklyObstacle" name="weeklyObstacle" type="text" maxlength="240" required>
+          </label>
+          <label>
+            <span>What the week taught</span>
+            <textarea id="weeklyLearning" name="weeklyLearning" rows="3" maxlength="500" required></textarea>
+          </label>
+          <button class="button button-primary" type="submit">Save weekly review</button>
+        </form>
+
+        <section class="card chart-card" aria-labelledby="reviewTrendHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Over time</p>
+              <h2 id="reviewTrendHeading">Ratings trend</h2>
+            </div>
+            <div class="chart-legend">
+              <span><i class="line-key line-progress"></i>Progress</span>
+              <span><i class="line-key line-confidence"></i>Confidence</span>
+            </div>
+          </div>
+          <canvas id="reviewChart" class="chart" role="img" aria-label="No weekly review ratings yet"></canvas>
+          <div id="reviewHistory" class="history-list"></div>
+        </section>
+      </section>
+
+      <section id="view-journal" class="view" data-view="journal" aria-labelledby="journalHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">A private record</p>
+            <h1 id="journalHeading">Journal</h1>
+            <p class="intro">Use the optional prompt, or write what matters today.</p>
+          </div>
+        </div>
+
+        <form id="journalForm" class="card form-card">
+          <input id="journalEntryId" type="hidden">
+          <label>
+            <span>Date</span>
+            <input id="journalDate" name="journalDate" type="date" required>
+          </label>
+          <div class="prompt-box">
+            <span class="card-kicker">Optional prompt</span>
+            <p id="journalPrompt"></p>
+          </div>
+          <label>
+            <span>Entry</span>
+            <textarea id="journalText" name="journalText" rows="8" required></textarea>
+          </label>
+          <div class="form-actions">
+            <button class="button button-primary" type="submit">Save journal entry</button>
+            <button id="clearJournalButton" class="button button-secondary" type="button">New entry</button>
+          </div>
+        </form>
+
+        <section aria-labelledby="journalEntriesHeading">
+          <div class="section-heading">
+            <h2 id="journalEntriesHeading">Past entries</h2>
+          </div>
+          <div id="journalEntries" class="history-list"></div>
+        </section>
+      </section>
+
+      <section id="view-wellbeing" class="view" data-view="wellbeing" aria-labelledby="wellbeingHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Weekly self-check</p>
+            <h1 id="wellbeingHeading">Wellbeing</h1>
+            <p class="intro">Answer each item for how you have felt over the last two weeks.</p>
+          </div>
+        </div>
+
+        <form id="wellbeingForm" class="form-stack">
+          <article class="card form-card">
+            <label>
+              <span>Week containing</span>
+              <input id="wellbeingDate" name="wellbeingDate" type="date" required>
+              <span id="wellbeingWeekHelp" class="field-help"></span>
+            </label>
+          </article>
+          <div id="whoItems" class="stack"></div>
+          <div class="sticky-action">
+            <button class="button button-primary" type="submit">Save wellbeing check</button>
+          </div>
+        </form>
+
+        <section class="card chart-card wellbeing-trend" aria-labelledby="wellbeingTrendHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Score from 0 to 100</p>
+              <h2 id="wellbeingTrendHeading">Wellbeing trend</h2>
+            </div>
+          </div>
+          <canvas id="wellbeingChart" class="chart" role="img" aria-label="No wellbeing scores yet"></canvas>
+          <div id="wellbeingHistory" class="history-list"></div>
+          <div class="attribution">
+            <p>WHO-5 Well-Being Index. © World Health Organization 2024. Licensed under CC BY-NC-SA 3.0 IGO.</p>
+            <p>This is a self-awareness tool, not a diagnostic or screening instrument. If your score concerns you, talk to your coach or a health professional.</p>
+          </div>
+        </section>
+      </section>
+
+      <section id="view-maintenance" class="view" data-view="maintenance" aria-labelledby="maintenanceHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">After the program</p>
+            <h1 id="maintenanceHeading">Maintenance</h1>
+            <p class="intro">Set the end date once. Goal Tracker will surface a reflection at 30, 60, and 90 days.</p>
+          </div>
+        </div>
+
+        <form id="programEndForm" class="card form-card">
+          <label>
+            <span>Program end date</span>
+            <input id="programEndDate" name="programEndDate" type="date">
+          </label>
+          <button class="button button-primary" type="submit">Save end date</button>
+        </form>
+
+        <div id="maintenanceMarks" class="milestone-grid"></div>
+
+        <form id="maintenanceReflectionForm" class="card form-card" hidden>
+          <input id="maintenanceMarkKey" type="hidden">
+          <p class="card-kicker">Maintenance reflection</p>
+          <h2 id="maintenanceReflectionHeading"></h2>
+          <label>
+            <span>What held</span>
+            <textarea id="maintenanceHeld" rows="3" required></textarea>
+          </label>
+          <label>
+            <span>What slipped</span>
+            <textarea id="maintenanceSlipped" rows="3" required></textarea>
+          </label>
+          <label>
+            <span>One adjustment</span>
+            <textarea id="maintenanceAdjustment" rows="3" required></textarea>
+          </label>
+          <button class="button button-primary" type="submit">Save reflection</button>
+        </form>
+      </section>
+
+      <section id="view-settings" class="view" data-view="settings" aria-labelledby="settingsHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Local controls</p>
+            <h1 id="settingsHeading">Settings</h1>
+          </div>
+        </div>
+
+        <section class="card settings-card" aria-labelledby="promptSettingsHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Journal</p>
+              <h2 id="promptSettingsHeading">Writing prompts</h2>
+              <p class="field-help">Replace these with your program's prompts at any time.</p>
+            </div>
+          </div>
+          <form id="promptSettingsForm" class="form-stack">
+            <div id="promptInputs" class="stack"></div>
+            <button class="button button-primary" type="submit">Save prompts</button>
+          </form>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="reminderHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Reminders</p>
+              <h2 id="reminderHeading">Daily reminder</h2>
+            </div>
+          </div>
+          <p>Push notifications are not available because they require a server. Goal Tracker does not use a server.</p>
+          <label>
+            <span>Reminder time</span>
+            <input id="reminderTime" type="time" value="09:00">
+          </label>
+          <div class="form-actions">
+            <button id="downloadCalendarButton" class="button button-primary" type="button">Add a daily reminder to my calendar</button>
+            <button id="openAppReminderButton" class="button button-secondary" type="button">Enable open-app reminder</button>
+          </div>
+          <p id="notificationStatus" class="field-help">Optional notifications work only while this app is open.</p>
+        </section>
+
+        <section id="installCard" class="card settings-card" aria-labelledby="installHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Home screen</p>
+              <h2 id="installHeading">Install Goal Tracker</h2>
+            </div>
+          </div>
+          <p id="installHelp">Your browser may offer installation from its own menu.</p>
+          <button id="installButton" class="button button-primary" type="button" hidden>Install app</button>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="dataHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Backup and restore</p>
+              <h2 id="dataHeading">Your data</h2>
+            </div>
+          </div>
+          <p id="storagePersistenceStatus" class="storage-status" role="status"></p>
+          <div class="data-actions">
+            <button id="exportButton" class="button button-primary" type="button">Export all data</button>
+            <label class="button button-secondary file-button">
+              <span>Import backup</span>
+              <input id="importInput" type="file" accept="application/json,.json">
+            </label>
+            <button id="printButton" class="button button-secondary" type="button">Print summary</button>
+          </div>
+          <p id="lastExportText" class="field-help"></p>
+        </section>
+
+        <section class="card privacy-card" aria-labelledby="privacyHeading">
+          <p class="card-kicker">Privacy</p>
+          <h2 id="privacyHeading">This device only</h2>
+          <p>Everything you write stays on this device. Nothing is sent anywhere. Use Export to back up.</p>
+          <p>There is no account, server, sync, analytics, telemetry, external script, or remote font.</p>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="navDialog" class="nav-dialog" aria-labelledby="navDialogHeading">
+    <div class="dialog-header">
+      <h2 id="navDialogHeading">Go to</h2>
+      <button id="closeNavButton" class="icon-button" type="button" aria-label="Close navigation">×</button>
+    </div>
+    <nav class="mobile-nav" aria-label="Main navigation">
+      <button type="button" class="nav-button is-active" data-view-target="today">Today</button>
+      <button type="button" class="nav-button" data-view-target="charter">Charter</button>
+      <button type="button" class="nav-button" data-view-target="commitments">Commitments</button>
+      <button type="button" class="nav-button" data-view-target="review">Weekly review</button>
+      <button type="button" class="nav-button" data-view-target="journal">Journal</button>
+      <button type="button" class="nav-button" data-view-target="wellbeing">Wellbeing</button>
+      <button type="button" class="nav-button" data-view-target="maintenance">Maintenance</button>
+      <button type="button" class="nav-button" data-view-target="settings">Settings</button>
+    </nav>
+  </dialog>
+
+  <dialog id="renegotiationDialog" class="form-dialog" aria-labelledby="renegotiationHeading">
+    <form id="renegotiationForm" method="dialog">
+      <div class="dialog-header">
+        <div>
+          <p class="card-kicker">Renegotiated</p>
+          <h2 id="renegotiationHeading">Name the new commitment</h2>
+        </div>
+        <button id="cancelRenegotiationButton" class="icon-button" type="button" aria-label="Cancel">×</button>
+      </div>
+      <p>Enter a new action, a new date, or both.</p>
+      <input id="renegotiationCommitmentId" type="hidden">
+      <input id="renegotiationStatusDate" type="hidden">
+      <label>
+        <span>New action</span>
+        <textarea id="renegotiationAction" rows="3"></textarea>
+      </label>
+      <label>
+        <span>New date</span>
+        <input id="renegotiationDate" type="date">
+      </label>
+      <p id="renegotiationError" class="form-error" role="alert" hidden>Add a new action or date.</p>
+      <div class="form-actions">
+        <button class="button button-primary" type="submit">Save renegotiation</button>
+        <button id="closeRenegotiationButton" class="button button-secondary" type="button">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="importConfirmDialog" class="form-dialog" aria-labelledby="importConfirmHeading">
+    <div class="dialog-header">
+      <div>
+        <p class="card-kicker">Restore backup</p>
+        <h2 id="importConfirmHeading">Replace data on this device?</h2>
+      </div>
+    </div>
+    <p>Importing this backup will replace all current Goal Tracker data on this device.</p>
+    <div class="form-actions">
+      <button id="cancelImportButton" class="button button-secondary" type="button">Keep current data</button>
+      <button id="confirmImportButton" class="button button-danger" type="button">Replace with backup</button>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <section id="printSummary" class="print-summary" aria-label="Goal Tracker printable summary"></section>
+  <script>(() => {
+  "use strict";
+
+  const APP_NAME = "Goal Tracker";
+  const STORAGE_KEY = "goalTrackerData";
+  const SCHEMA_VERSION = 1;
+  const IS_SINGLE_FILE = document.documentElement.dataset.singleFile === "true";
+  const MARKED_STATUSES = ["Completed", "Missed", "Renegotiated", "Stuck"];
+  const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const DEFAULT_PROMPTS = [
+    "What did today teach you about your goal?",
+    "What helped you move in your chosen direction today?",
+    "Where did your key pattern show up today?",
+    "What is one small adjustment for tomorrow?",
+    "What support would help you next?"
+  ];
+  const WHO_ITEMS = [
+    "I have felt cheerful and in good spirits",
+    "I have felt calm and relaxed",
+    "I have felt active and vigorous",
+    "I woke up feeling fresh and rested",
+    "My daily life has been filled with things that interest me"
+  ];
+  const WHO_RESPONSES = [
+    { value: 5, label: "All of the time" },
+    { value: 4, label: "Most of the time" },
+    { value: 3, label: "More than half of the time" },
+    { value: 2, label: "Less than half of the time" },
+    { value: 1, label: "Some of the time" },
+    { value: 0, label: "At no time" }
+  ];
+  const MILESTONE_OFFSETS = [30, 60, 90];
+
+  const byId = (id) => document.getElementById(id);
+  const nowIso = () => new Date().toISOString();
+  let bootNotice = "";
+  let corruptStorageDetected = false;
+  let toastTimer = 0;
+  let notificationTimer = 0;
+  let dayRefreshTimer = 0;
+  let deferredInstallPrompt = null;
+  let viewedWeekStart = startOfWeek(new Date());
+  let commitmentDrafts = [];
+
+  function createId(prefix) {
+    if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
+      return `${prefix}-${globalThis.crypto.randomUUID()}`;
+    }
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  }
+
+  function createElement(tagName, className, text) {
+    const element = document.createElement(tagName);
+    if (className) element.className = className;
+    if (text !== undefined && text !== null) element.textContent = String(text);
+    return element;
+  }
+
+  function appendText(parent, tagName, className, text) {
+    const element = createElement(tagName, className, text);
+    parent.append(element);
+    return element;
+  }
+
+  function cleanText(value) {
+    return typeof value === "string" ? value : "";
+  }
+
+  function cleanDate(value) {
+    if (typeof value !== "string") return "";
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match) return "";
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const date = new Date(year, month - 1, day, 12, 0, 0, 0);
+    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
+      ? value
+      : "";
+  }
+
+  function cleanTime(value) {
+    if (typeof value !== "string") return "";
+    const match = /^(\d{2}):(\d{2})$/.exec(value);
+    if (!match) return "";
+    const hour = Number(match[1]);
+    const minute = Number(match[2]);
+    return hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59 ? value : "";
+  }
+
+  function cleanDateTime(value) {
+    if (typeof value !== "string") return "";
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+  }
+
+  function clampInteger(value, minimum, maximum, fallback) {
+    const number = Number(value);
+    if (!Number.isInteger(number)) return fallback;
+    return Math.min(maximum, Math.max(minimum, number));
+  }
+
+  function uniqueDays(value) {
+    if (!Array.isArray(value)) return [];
+    return [...new Set(value.map(Number).filter((day) => Number.isInteger(day) && day >= 1 && day <= 7))].sort();
+  }
+
+  function localDateString(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  function parseLocalDate(value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+    if (!match) return new Date(NaN);
+    const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), 12, 0, 0, 0);
+    if (
+      date.getFullYear() !== Number(match[1]) ||
+      date.getMonth() !== Number(match[2]) - 1 ||
+      date.getDate() !== Number(match[3])
+    ) {
+      return new Date(NaN);
+    }
+    return date;
+  }
+
+  function startOfWeek(date) {
+    const result = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0);
+    const daysSinceMonday = (result.getDay() + 6) % 7;
+    result.setDate(result.getDate() - daysSinceMonday);
+    return result;
+  }
+
+  function weekStartString(value) {
+    const date = typeof value === "string" ? parseLocalDate(value) : value;
+    if (Number.isNaN(date.getTime())) return "";
+    return localDateString(startOfWeek(date));
+  }
+
+  function addLocalDays(value, amount) {
+    const date = typeof value === "string" ? parseLocalDate(value) : new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    date.setDate(date.getDate() + amount);
+    return localDateString(date);
+  }
+
+  function weekdayNumber(date) {
+    return ((date.getDay() + 6) % 7) + 1;
+  }
+
+  function formatDate(value, options = { year: "numeric", month: "short", day: "numeric" }) {
+    const date = typeof value === "string" ? parseLocalDate(value) : value;
+    if (!date || Number.isNaN(date.getTime())) return "Date unavailable";
+    return new Intl.DateTimeFormat(undefined, options).format(date);
+  }
+
+  function formatDateTime(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Not yet";
+    return new Intl.DateTimeFormat(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit"
+    }).format(date);
+  }
+
+  function daysBetween(fromValue, toValue) {
+    const from = parseLocalDate(fromValue);
+    const to = parseLocalDate(toValue);
+    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return 0;
+    return Math.floor((to.getTime() - from.getTime()) / 86400000);
+  }
+
+  function defaultGuideValue() {
+    return {
+      value: "",
+      meaning: "",
+      behavioralSignature: "",
+      betrayalSignature: ""
+    };
+  }
+
+  function defaultTension() {
+    return {
+      onePull: "",
+      otherPull: "",
+      weighting: ""
+    };
+  }
+
+  function createDefaultState() {
+    const createdAt = nowIso();
+    return {
+      schemaVersion: SCHEMA_VERSION,
+      meta: {
+        createdAt,
+        updatedAt: createdAt,
+        firstSavedAt: "",
+        lastExportAt: "",
+        backupDismissedOn: "",
+        persistenceRequested: false,
+        persistenceResult: "not-requested"
+      },
+      charter: {
+        guideValues: [defaultGuideValue(), defaultGuideValue(), defaultGuideValue()],
+        northStar: "",
+        tensions: [defaultTension(), defaultTension()],
+        direction: "",
+        keyPattern: "",
+        earlyWarning: "",
+        supportNeed: ""
+      },
+      greeting: {
+        date: "",
+        candidateKey: "",
+        text: "",
+        lastCandidateKey: ""
+      },
+      commitments: [],
+      weeklyReviews: [],
+      journalEntries: [],
+      wellbeingChecks: [],
+      maintenance: {
+        programEndDate: "",
+        reflections: {}
+      },
+      settings: {
+        prompts: [...DEFAULT_PROMPTS],
+        reminderTime: "09:00",
+        openAppNotificationsEnabled: false
+      }
+    };
+  }
+
+  function normalizeGuideValue(value) {
+    const source = value && typeof value === "object" ? value : {};
+    return {
+      value: cleanText(source.value, 5000),
+      meaning: cleanText(source.meaning, 10000),
+      behavioralSignature: cleanText(source.behavioralSignature, 10000),
+      betrayalSignature: cleanText(source.betrayalSignature, 10000)
+    };
+  }
+
+  function normalizeTension(value) {
+    const source = value && typeof value === "object" ? value : {};
+    return {
+      onePull: cleanText(source.onePull, 5000),
+      otherPull: cleanText(source.otherPull, 5000),
+      weighting: cleanText(source.weighting, 10000)
+    };
+  }
+
+  function normalizeStatusMap(value) {
+    const result = {};
+    if (!value || typeof value !== "object" || Array.isArray(value)) return result;
+    Object.entries(value).forEach(([date, entry]) => {
+      if (!cleanDate(date) || !entry || typeof entry !== "object") return;
+      if (!MARKED_STATUSES.includes(entry.status)) return;
+      const normalized = {
+        status: entry.status,
+        updatedAt: cleanDateTime(entry.updatedAt) || nowIso(),
+        commitmentText: cleanText(entry.commitmentText, 10000)
+      };
+      if (entry.status === "Renegotiated") {
+        normalized.newAction = cleanText(entry.newAction, 10000);
+        normalized.newDate = cleanDate(entry.newDate);
+        if (!normalized.newAction && !normalized.newDate) return;
+      }
+      result[date] = normalized;
+    });
+    return result;
+  }
+
+  function normalizeScheduleHistory(value, fallbackDays, fallbackCreatedAt) {
+    const history = Array.isArray(value) ? value : [];
+    const normalized = history
+      .map((entry) => {
+        if (!entry || typeof entry !== "object") return null;
+        return {
+          effectiveFrom: cleanDate(entry.effectiveFrom),
+          days: uniqueDays(entry.days),
+          recordedAt: cleanDateTime(entry.recordedAt) || fallbackCreatedAt
+        };
+      })
+      .filter((entry) => entry && entry.effectiveFrom)
+      .sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
+    if (!normalized.length && fallbackDays.length) {
+      normalized.push({
+        effectiveFrom: localDateString(parseLocalDate(fallbackCreatedAt.slice(0, 10))) || localDateString(),
+        days: fallbackDays,
+        recordedAt: fallbackCreatedAt
+      });
+    }
+    return normalized;
+  }
+
+  function normalizeCommitment(value) {
+    const source = value && typeof value === "object" ? value : {};
+    const createdAt = cleanDateTime(source.createdAt) || nowIso();
+    const archivedAt = cleanDateTime(source.archivedAt);
+    const days = uniqueDays(source.days);
+    return {
+      id: cleanText(source.id, 200) || createId("commitment"),
+      text: cleanText(source.text, 10000),
+      days,
+      active: source.active !== false,
+      createdAt,
+      createdDate: cleanDate(source.createdDate) || localDateString(new Date(createdAt)),
+      archivedAt,
+      archivedDate: cleanDate(source.archivedDate) || (archivedAt ? localDateString(new Date(archivedAt)) : ""),
+      statuses: normalizeStatusMap(source.statuses),
+      renegotiationCount: Math.max(0, clampInteger(source.renegotiationCount, 0, Number.MAX_SAFE_INTEGER, 0)),
+      scheduleHistory: normalizeScheduleHistory(source.scheduleHistory, days, createdAt)
+    };
+  }
+
+  function normalizeWeeklyReview(value) {
+    if (!value || typeof value !== "object") return null;
+    const weekStart = weekStartString(cleanDate(value.weekStart));
+    if (!weekStart) return null;
+    return {
+      weekStart,
+      progress: clampInteger(value.progress, 0, 10, 0),
+      confidence: clampInteger(value.confidence, 0, 10, 0),
+      obstacle: cleanText(value.obstacle, 2000),
+      learning: cleanText(value.learning, 5000),
+      updatedAt: cleanDateTime(value.updatedAt) || nowIso()
+    };
+  }
+
+  function normalizeJournalEntry(value) {
+    if (!value || typeof value !== "object") return null;
+    const date = cleanDate(value.date);
+    if (!date) return null;
+    return {
+      id: cleanText(value.id, 200) || createId("journal"),
+      date,
+      prompt: cleanText(value.prompt, 5000),
+      text: cleanText(value.text, 100000),
+      updatedAt: cleanDateTime(value.updatedAt) || nowIso()
+    };
+  }
+
+  function normalizeWellbeingCheck(value) {
+    if (!value || typeof value !== "object") return null;
+    const weekStart = weekStartString(cleanDate(value.weekStart));
+    if (!weekStart || !Array.isArray(value.items) || value.items.length !== 5) return null;
+    const items = value.items.map((item) => clampInteger(item, 0, 5, -1));
+    if (items.some((item) => item < 0)) return null;
+    const rawTotal = items.reduce((sum, item) => sum + item, 0);
+    return {
+      weekStart,
+      items,
+      rawTotal,
+      score: rawTotal * 4,
+      updatedAt: cleanDateTime(value.updatedAt) || nowIso()
+    };
+  }
+
+  function normalizeReflections(value) {
+    const result = Object.create(null);
+    if (!value || typeof value !== "object" || Array.isArray(value)) return result;
+    Object.entries(value).forEach(([key, reflection]) => {
+      if (!reflection || typeof reflection !== "object") return;
+      result[cleanText(key, 100)] = {
+        held: cleanText(reflection.held, 10000),
+        slipped: cleanText(reflection.slipped, 10000),
+        adjustment: cleanText(reflection.adjustment, 10000),
+        completedAt: cleanDateTime(reflection.completedAt) || nowIso()
+      };
+    });
+    return result;
+  }
+
+  function normalizeState(input) {
+    const defaults = createDefaultState();
+    const source = input && typeof input === "object" && !Array.isArray(input) ? input : {};
+    const meta = source.meta && typeof source.meta === "object" ? source.meta : {};
+    const charter = source.charter && typeof source.charter === "object" ? source.charter : {};
+    const greeting = source.greeting && typeof source.greeting === "object" ? source.greeting : {};
+    const maintenance = source.maintenance && typeof source.maintenance === "object" ? source.maintenance : {};
+    const settings = source.settings && typeof source.settings === "object" ? source.settings : {};
+
+    const guideValues = Array.isArray(charter.guideValues) ? charter.guideValues.slice(0, 3).map(normalizeGuideValue) : [];
+    while (guideValues.length < 3) guideValues.push(defaultGuideValue());
+    const tensions = Array.isArray(charter.tensions) ? charter.tensions.slice(0, 2).map(normalizeTension) : [];
+    while (tensions.length < 2) tensions.push(defaultTension());
+
+    const prompts = Array.isArray(settings.prompts)
+      ? settings.prompts.slice(0, 5).map((prompt) => cleanText(prompt, 5000))
+      : [...DEFAULT_PROMPTS];
+    while (prompts.length < 5) prompts.push(DEFAULT_PROMPTS[prompts.length]);
+
+    const reviewsByWeek = new Map();
+    (Array.isArray(source.weeklyReviews) ? source.weeklyReviews : []).forEach((entry) => {
+      const normalized = normalizeWeeklyReview(entry);
+      if (normalized) reviewsByWeek.set(normalized.weekStart, normalized);
+    });
+    const journalByDate = new Map();
+    (Array.isArray(source.journalEntries) ? source.journalEntries : []).forEach((entry) => {
+      const normalized = normalizeJournalEntry(entry);
+      if (normalized) journalByDate.set(normalized.date, normalized);
+    });
+    const wellbeingByWeek = new Map();
+    (Array.isArray(source.wellbeingChecks) ? source.wellbeingChecks : []).forEach((entry) => {
+      const normalized = normalizeWellbeingCheck(entry);
+      if (normalized) wellbeingByWeek.set(normalized.weekStart, normalized);
+    });
+
+    const seenCommitmentIds = new Set();
+    let activeCommitmentCount = 0;
+    const commitments = (Array.isArray(source.commitments) ? source.commitments : [])
+      .map(normalizeCommitment)
+      .map((commitment) => {
+        if (seenCommitmentIds.has(commitment.id)) commitment.id = createId("commitment");
+        seenCommitmentIds.add(commitment.id);
+        if (commitment.active) {
+          activeCommitmentCount += 1;
+          if (activeCommitmentCount > 3) commitment.active = false;
+        }
+        return commitment;
+      });
+
+    return {
+      schemaVersion: SCHEMA_VERSION,
+      meta: {
+        createdAt: cleanDateTime(meta.createdAt) || defaults.meta.createdAt,
+        updatedAt: cleanDateTime(meta.updatedAt) || defaults.meta.updatedAt,
+        firstSavedAt: cleanDateTime(meta.firstSavedAt),
+        lastExportAt: cleanDateTime(meta.lastExportAt),
+        backupDismissedOn: cleanDate(meta.backupDismissedOn),
+        persistenceRequested: meta.persistenceRequested === true,
+        persistenceResult: ["not-requested", "granted", "not-granted", "unavailable"].includes(meta.persistenceResult)
+          ? meta.persistenceResult
+          : "not-requested"
+      },
+      charter: {
+        guideValues,
+        northStar: cleanText(charter.northStar, 10000),
+        tensions,
+        direction: cleanText(charter.direction, 10000),
+        keyPattern: cleanText(charter.keyPattern, 10000),
+        earlyWarning: cleanText(charter.earlyWarning, 10000),
+        supportNeed: cleanText(charter.supportNeed, 10000)
+      },
+      greeting: {
+        date: cleanDate(greeting.date),
+        candidateKey: cleanText(greeting.candidateKey, 500),
+        text: cleanText(greeting.text, 10000),
+        lastCandidateKey: cleanText(greeting.lastCandidateKey, 500)
+      },
+      commitments,
+      weeklyReviews: [...reviewsByWeek.values()],
+      journalEntries: [...journalByDate.values()],
+      wellbeingChecks: [...wellbeingByWeek.values()],
+      maintenance: {
+        programEndDate: cleanDate(maintenance.programEndDate),
+        reflections: normalizeReflections(maintenance.reflections)
+      },
+      settings: {
+        prompts,
+        reminderTime: cleanTime(settings.reminderTime) || "09:00",
+        openAppNotificationsEnabled: settings.openAppNotificationsEnabled === true
+      }
+    };
+  }
+
+  function migrateData(input) {
+    if (!input || typeof input !== "object" || Array.isArray(input)) {
+      throw new Error("Backup data must be an object.");
+    }
+    let migrated = input;
+    let version = Number.isInteger(migrated.schemaVersion) ? migrated.schemaVersion : 0;
+    if (version > SCHEMA_VERSION) {
+      throw new Error("This backup was created by a newer version of Goal Tracker.");
+    }
+    while (version < SCHEMA_VERSION) {
+      switch (version) {
+        case 0:
+          migrated = { ...migrated, schemaVersion: 1 };
+          version = 1;
+          break;
+        default:
+          throw new Error("This backup version cannot be migrated.");
+      }
+    }
+    return normalizeState(migrated);
+  }
+
+  function validateImportShape(input) {
+    if (!input || typeof input !== "object" || Array.isArray(input)) {
+      throw new Error("The selected file does not contain Goal Tracker data.");
+    }
+    if (!Number.isInteger(input.schemaVersion)) {
+      throw new Error("The selected file is missing a schema version.");
+    }
+    ["meta", "charter", "greeting", "maintenance", "settings"].forEach((key) => {
+      if (!input[key] || typeof input[key] !== "object" || Array.isArray(input[key])) {
+        throw new Error(`The backup field "${key}" is invalid or missing.`);
+      }
+    });
+    ["commitments", "weeklyReviews", "journalEntries", "wellbeingChecks"].forEach((key) => {
+      if (!Array.isArray(input[key])) {
+        throw new Error(`The backup field "${key}" is invalid.`);
+      }
+    });
+    if (
+      !Array.isArray(input.charter.guideValues) ||
+      input.charter.guideValues.length !== 3 ||
+      !Array.isArray(input.charter.tensions) ||
+      input.charter.tensions.length !== 2
+    ) {
+      throw new Error("The backup charter is incomplete.");
+    }
+    if (!Array.isArray(input.settings.prompts) || input.settings.prompts.length !== 5) {
+      throw new Error("The backup settings are incomplete.");
+    }
+    if (input.commitments.some((commitment) => (
+      !commitment ||
+      typeof commitment !== "object" ||
+      Array.isArray(commitment) ||
+      typeof commitment.id !== "string" ||
+      !commitment.id
+    ))) {
+      throw new Error("The backup contains an invalid commitment.");
+    }
+    const active = input.commitments.filter((commitment) => commitment && commitment.active !== false);
+    if (active.length > 3) {
+      throw new Error("The backup contains more than three active commitments.");
+    }
+    const ids = input.commitments
+      .map((commitment) => commitment && commitment.id)
+      .filter((id) => typeof id === "string" && id);
+    if (new Set(ids).size !== ids.length) {
+      throw new Error("The backup contains duplicate commitment identifiers.");
+    }
+  }
+
+  function sortForComparison(value) {
+    if (Array.isArray(value)) return value.map(sortForComparison);
+    if (!value || typeof value !== "object") return value;
+    return Object.keys(value).sort().reduce((result, key) => {
+      result[key] = sortForComparison(value[key]);
+      return result;
+    }, Object.create(null));
+  }
+
+  function validateNormalizedImport(input, normalized) {
+    if (input.schemaVersion !== SCHEMA_VERSION) return;
+    const source = JSON.stringify(sortForComparison(input));
+    const cleaned = JSON.stringify(sortForComparison(normalized));
+    if (source !== cleaned) {
+      throw new Error("The backup contains damaged or unsupported values and was not imported.");
+    }
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return createDefaultState();
+      return migrateData(JSON.parse(raw));
+    } catch (error) {
+      corruptStorageDetected = true;
+      bootNotice = "Saved data could not be opened. The unreadable local record is still untouched. Import a backup, or confirm replacement when you next save.";
+      return createDefaultState();
+    }
+  }
+
+  let state = loadState();
+
+  function saveState(options = {}) {
+    const { meaningful = false, requestPersistence = true } = options;
+    if (corruptStorageDetected) {
+      const confirmed = window.confirm(
+        "The existing local record cannot be read. Saving now will replace it with the data currently shown. Continue?"
+      );
+      if (!confirmed) {
+        showToast("The unreadable local record was left untouched.");
+        return false;
+      }
+      corruptStorageDetected = false;
+    }
+    const firstPersistenceRequest = requestPersistence && (
+      !state.meta.persistenceRequested || state.meta.persistenceResult === "not-requested"
+    );
+    const timestamp = nowIso();
+    state.meta.updatedAt = timestamp;
+    if (meaningful && !state.meta.firstSavedAt) state.meta.firstSavedAt = timestamp;
+    if (firstPersistenceRequest) state.meta.persistenceRequested = true;
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {
+      if (firstPersistenceRequest) state.meta.persistenceRequested = false;
+      showToast("This browser could not save the change. Export any data you can and check available device storage.");
+      return false;
+    }
+
+    if (firstPersistenceRequest) requestPersistentStorage();
+    renderStorageStatus();
+    renderBackupBanner();
+    return true;
+  }
+
+  async function requestPersistentStorage() {
+    if (!navigator.storage || typeof navigator.storage.persist !== "function") {
+      state.meta.persistenceResult = "unavailable";
+      persistMetadataOnly();
+      renderStorageStatus();
+      return;
+    }
+    try {
+      const granted = await navigator.storage.persist();
+      state.meta.persistenceResult = granted ? "granted" : "not-granted";
+    } catch (error) {
+      state.meta.persistenceResult = "unavailable";
+    }
+    persistMetadataOnly();
+    renderStorageStatus();
+  }
+
+  function persistMetadataOnly() {
+    try {
+      state.meta.updatedAt = nowIso();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {
+      return false;
+    }
+    return true;
+  }
+
+  function showToast(message) {
+    const toast = byId("toast");
+    if (!toast) return;
+    window.clearTimeout(toastTimer);
+    toast.textContent = message;
+    toast.hidden = false;
+    toastTimer = window.setTimeout(() => {
+      toast.hidden = true;
+    }, 4200);
+  }
+
+  function makeTextLabel(labelText, input) {
+    const label = createElement("label");
+    appendText(label, "span", "", labelText);
+    label.append(input);
+    return label;
+  }
+
+  function buildStaticForms() {
+    const valuesContainer = byId("guideValuesContainer");
+    valuesContainer.replaceChildren();
+    for (let index = 0; index < 3; index += 1) {
+      const card = createElement("article", "card form-card");
+      const heading = createElement("h2");
+      const number = appendText(heading, "span", "value-number", index + 1);
+      number.setAttribute("aria-hidden", "true");
+      heading.append(document.createTextNode(`Guide value ${index + 1}`));
+      card.append(heading);
+
+      const valueInput = createElement("input");
+      valueInput.type = "text";
+      valueInput.id = `guideValue-${index}-value`;
+      card.append(makeTextLabel("The value", valueInput));
+
+      const meaningInput = createElement("textarea");
+      meaningInput.id = `guideValue-${index}-meaning`;
+      meaningInput.rows = 3;
+      card.append(makeTextLabel("What it means in my words", meaningInput));
+
+      const behavioralInput = createElement("textarea");
+      behavioralInput.id = `guideValue-${index}-behavioral`;
+      behavioralInput.rows = 3;
+      card.append(makeTextLabel("Behavioral signature", behavioralInput));
+      appendText(card.lastElementChild, "span", "field-help", "What living it looks like in behavior");
+
+      const betrayalInput = createElement("textarea");
+      betrayalInput.id = `guideValue-${index}-betrayal`;
+      betrayalInput.rows = 3;
+      card.append(makeTextLabel("Betrayal signature", betrayalInput));
+      appendText(card.lastElementChild, "span", "field-help", "What moving away from it looks like");
+
+      valuesContainer.append(card);
+    }
+
+    const tensionsContainer = byId("tensionsContainer");
+    tensionsContainer.replaceChildren();
+    for (let index = 0; index < 2; index += 1) {
+      const block = createElement("div", "tension-grid");
+      const title = createElement("h3");
+      const number = appendText(title, "span", "tension-number", index + 1);
+      number.setAttribute("aria-hidden", "true");
+      title.append(document.createTextNode(`Tension ${index + 1}`));
+      block.append(title);
+
+      const onePull = createElement("input");
+      onePull.type = "text";
+      onePull.id = `tension-${index}-one`;
+      block.append(makeTextLabel("One pull", onePull));
+
+      const otherPull = createElement("input");
+      otherPull.type = "text";
+      otherPull.id = `tension-${index}-other`;
+      block.append(makeTextLabel("The other pull", otherPull));
+
+      const weighting = createElement("textarea");
+      weighting.id = `tension-${index}-weighting`;
+      weighting.rows = 2;
+      block.append(makeTextLabel("My default weighting this season", weighting));
+
+      tensionsContainer.append(block);
+    }
+
+    const promptInputs = byId("promptInputs");
+    promptInputs.replaceChildren();
+    for (let index = 0; index < 5; index += 1) {
+      const textarea = createElement("textarea");
+      textarea.id = `prompt-${index}`;
+      textarea.rows = 2;
+      promptInputs.append(makeTextLabel(`Prompt ${index + 1}`, textarea));
+    }
+
+    const whoItems = byId("whoItems");
+    whoItems.replaceChildren();
+    WHO_ITEMS.forEach((item, itemIndex) => {
+      const card = createElement("article", "card who-item");
+      appendText(card, "p", "card-kicker", `Item ${itemIndex + 1} of 5`);
+      appendText(card, "h2", "", item);
+      const fieldset = createElement("fieldset", "response-options");
+      appendText(fieldset, "legend", "", `Rate: ${item}`);
+      WHO_RESPONSES.forEach((response) => {
+        const label = createElement("label", "response-option");
+        const input = createElement("input");
+        input.type = "radio";
+        input.name = `who-${itemIndex}`;
+        input.value = String(response.value);
+        input.required = true;
+        const content = createElement("span");
+        appendText(content, "span", "", response.label);
+        appendText(content, "b", "", response.value);
+        label.append(input, content);
+        fieldset.append(label);
+      });
+      card.append(fieldset);
+      whoItems.append(card);
+    });
+  }
+
+  function wireEvents() {
+    document.querySelectorAll("[data-view-target]").forEach((button) => {
+      button.addEventListener("click", () => showView(button.dataset.viewTarget));
+    });
+
+    byId("openNavButton").addEventListener("click", () => openDialog(byId("navDialog")));
+    byId("closeNavButton").addEventListener("click", () => byId("navDialog").close());
+
+    byId("charterForm").addEventListener("submit", saveCharter);
+    byId("addCommitmentButton").addEventListener("click", addCommitment);
+    byId("commitmentEditor").addEventListener("click", handleCommitmentEditorClick);
+    byId("todayCommitments").addEventListener("click", handleTodayCommitmentClick);
+
+    byId("previousWeekButton").addEventListener("click", () => {
+      viewedWeekStart = parseLocalDate(addLocalDays(viewedWeekStart, -7));
+      renderWeekView();
+    });
+    byId("nextWeekButton").addEventListener("click", () => {
+      viewedWeekStart = parseLocalDate(addLocalDays(viewedWeekStart, 7));
+      renderWeekView();
+    });
+    byId("currentWeekButton").addEventListener("click", () => {
+      viewedWeekStart = startOfWeek(new Date());
+      renderWeekView();
+    });
+
+    byId("progressRating").addEventListener("input", updateRangeOutputs);
+    byId("confidenceRating").addEventListener("input", updateRangeOutputs);
+    byId("reviewDate").addEventListener("change", loadReviewFormForDate);
+    byId("weeklyReviewForm").addEventListener("submit", saveWeeklyReview);
+    byId("reviewHistory").addEventListener("click", handleReviewHistoryClick);
+
+    byId("journalDate").addEventListener("change", () => {
+      updateJournalPrompt();
+      loadJournalFormForDate();
+    });
+    byId("journalForm").addEventListener("submit", saveJournalEntry);
+    byId("clearJournalButton").addEventListener("click", resetJournalForm);
+    byId("journalEntries").addEventListener("click", handleJournalHistoryClick);
+
+    byId("wellbeingDate").addEventListener("change", loadWellbeingFormForDate);
+    byId("wellbeingForm").addEventListener("submit", saveWellbeingCheck);
+    byId("wellbeingHistory").addEventListener("click", handleWellbeingHistoryClick);
+
+    byId("programEndForm").addEventListener("submit", saveProgramEndDate);
+    byId("maintenanceMarks").addEventListener("click", handleMaintenanceMarkClick);
+    byId("maintenanceReflectionForm").addEventListener("submit", saveMaintenanceReflection);
+
+    byId("promptSettingsForm").addEventListener("submit", savePromptSettings);
+    byId("reminderTime").addEventListener("change", saveReminderTime);
+    byId("downloadCalendarButton").addEventListener("click", downloadCalendarReminder);
+    byId("openAppReminderButton").addEventListener("click", enableOpenAppReminder);
+    byId("installButton").addEventListener("click", installApp);
+
+    byId("exportButton").addEventListener("click", exportAllData);
+    byId("bannerExportButton").addEventListener("click", exportAllData);
+    byId("dismissBackupButton").addEventListener("click", dismissBackupBanner);
+    byId("importInput").addEventListener("change", importAllData);
+    byId("printButton").addEventListener("click", printSummary);
+
+    byId("renegotiationForm").addEventListener("submit", saveRenegotiation);
+    byId("cancelRenegotiationButton").addEventListener("click", closeRenegotiationDialog);
+    byId("closeRenegotiationButton").addEventListener("click", closeRenegotiationDialog);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        refreshForCurrentDay();
+      }
+    });
+    window.addEventListener("resize", debounce(() => {
+      const visibleView = document.querySelector(".view:not([hidden])");
+      if (visibleView && visibleView.dataset.view === "review") drawReviewChart();
+      if (visibleView && visibleView.dataset.view === "wellbeing") drawWellbeingChart();
+    }, 120));
+  }
+
+  function setupPrivacyInputDefaults() {
+    document.querySelectorAll("form").forEach((form) => {
+      form.autocomplete = "off";
+    });
+    document.querySelectorAll('input[type="text"], textarea').forEach((input) => {
+      input.spellcheck = false;
+      input.autocapitalize = "sentences";
+    });
+  }
+
+  function openDialog(dialog) {
+    if (typeof dialog.showModal === "function") {
+      if (!dialog.open) dialog.showModal();
+    } else {
+      dialog.setAttribute("open", "");
+    }
+  }
+
+  function closeDialog(dialog) {
+    if (typeof dialog.close === "function" && dialog.open) {
+      dialog.close();
+    } else {
+      dialog.removeAttribute("open");
+    }
+  }
+
+  function confirmImportOverwrite() {
+    return new Promise((resolve) => {
+      const dialog = byId("importConfirmDialog");
+      const confirmButton = byId("confirmImportButton");
+      const cancelButton = byId("cancelImportButton");
+      let handleCancel;
+      const finish = (confirmed) => {
+        confirmButton.onclick = null;
+        cancelButton.onclick = null;
+        dialog.removeEventListener("cancel", handleCancel);
+        closeDialog(dialog);
+        resolve(confirmed);
+      };
+      confirmButton.onclick = () => finish(true);
+      cancelButton.onclick = () => finish(false);
+      handleCancel = (event) => {
+        event.preventDefault();
+        finish(false);
+      };
+      dialog.addEventListener("cancel", handleCancel);
+      openDialog(dialog);
+      cancelButton.focus();
+    });
+  }
+
+  function showView(viewName, focusMain = true) {
+    const target = document.querySelector(`[data-view="${viewName}"]`);
+    if (!target) return;
+    document.querySelectorAll(".view").forEach((view) => {
+      view.hidden = view !== target;
+    });
+    document.querySelectorAll(".nav-button").forEach((button) => {
+      const active = button.dataset.viewTarget === viewName;
+      button.classList.toggle("is-active", active);
+      if (active) button.setAttribute("aria-current", "page");
+      else button.removeAttribute("aria-current");
+    });
+    closeDialog(byId("navDialog"));
+    renderView(viewName);
+    window.scrollTo({ top: 0, behavior: "auto" });
+    if (focusMain) byId("mainContent").focus({ preventScroll: true });
+  }
+
+  function renderView(viewName) {
+    switch (viewName) {
+      case "today":
+        renderToday();
+        break;
+      case "charter":
+        loadCharterForm();
+        break;
+      case "commitments":
+        renderCommitmentEditor();
+        renderWeekView();
+        break;
+      case "review":
+        renderWeeklyReview();
+        break;
+      case "journal":
+        renderJournal();
+        break;
+      case "wellbeing":
+        renderWellbeing();
+        break;
+      case "maintenance":
+        renderMaintenance();
+        break;
+      case "settings":
+        renderSettings();
+        break;
+      default:
+        break;
+    }
+  }
+
+  function renderAll() {
+    renderToday();
+    loadCharterForm();
+    renderCommitmentEditor();
+    renderWeekView();
+    renderWeeklyReview();
+    renderJournal();
+    renderWellbeing();
+    renderMaintenance();
+    renderSettings();
+    renderBackupBanner();
+    renderPrintSummary();
+  }
+
+  function debounce(callback, delay) {
+    let timer = 0;
+    return (...args) => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => callback(...args), delay);
+    };
+  }
+
+  function activeCommitments() {
+    return state.commitments.filter((commitment) => commitment.active !== false);
+  }
+
+  function charterGreetingCandidates() {
+    const candidates = [];
+    state.charter.guideValues.forEach((guide, index) => {
+      if (guide.value.trim()) {
+        candidates.push({ key: `value-${index}`, text: `Your guide value: ${guide.value.trim()}` });
+      }
+      if (guide.behavioralSignature.trim()) {
+        candidates.push({ key: `behavioral-${index}`, text: guide.behavioralSignature.trim() });
+      }
+      if (guide.betrayalSignature.trim()) {
+        candidates.push({ key: `betrayal-${index}`, text: `Watch for: ${guide.betrayalSignature.trim()}` });
+      }
+    });
+    if (state.charter.northStar.trim()) {
+      candidates.push({ key: "north-star", text: state.charter.northStar.trim() });
+    }
+    if (state.charter.direction.trim()) {
+      candidates.push({ key: "direction", text: state.charter.direction.trim() });
+    }
+    const seen = new Set();
+    return candidates.filter((candidate) => {
+      const fingerprint = candidate.text.toLocaleLowerCase();
+      if (seen.has(fingerprint)) return false;
+      seen.add(fingerprint);
+      return true;
+    });
+  }
+
+  function selectDailyGreeting() {
+    const today = localDateString();
+    const candidates = charterGreetingCandidates();
+    if (!candidates.length) {
+      return "";
+    }
+    if (state.greeting.date === today && state.greeting.text) {
+      return state.greeting.text;
+    }
+    let index = candidates.findIndex((candidate) => candidate.key === state.greeting.lastCandidateKey);
+    index = (index + 1 + candidates.length) % candidates.length;
+    const selected = candidates[index];
+    state.greeting = {
+      date: today,
+      candidateKey: selected.key,
+      text: selected.text,
+      lastCandidateKey: selected.key
+    };
+    saveState({ requestPersistence: false });
+    return selected.text;
+  }
+
+  function renderToday() {
+    const today = new Date();
+    byId("todayDate").textContent = formatDate(today, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+    const greeting = selectDailyGreeting();
+    const greetingText = byId("dailyGreeting");
+    const charterButton = byId("greetingCharterButton");
+    if (greeting) {
+      greetingText.textContent = greeting;
+      charterButton.hidden = true;
+    } else {
+      greetingText.textContent = "Add your charter so Goal Tracker can hand your own words back to you.";
+      charterButton.hidden = false;
+    }
+
+    renderTodayCommitments();
+    renderMaintenanceArrival();
+  }
+
+  function renderTodayCommitments() {
+    const container = byId("todayCommitments");
+    container.replaceChildren();
+    const today = new Date();
+    const todayKey = localDateString(today);
+    const day = weekdayNumber(today);
+    const scheduled = activeCommitments().filter((commitment) => commitment.days.includes(day));
+    if (!scheduled.length) {
+      const empty = createElement("div", "empty-state");
+      appendText(empty, "p", "", activeCommitments().length
+        ? "No commitment is scheduled for today."
+        : "Add up to three commitments, then choose the days for each one.");
+      const button = createElement("button", "button button-secondary", activeCommitments().length ? "Review commitments" : "Add a commitment");
+      button.type = "button";
+      button.addEventListener("click", () => showView("commitments"));
+      empty.append(button);
+      container.append(empty);
+      byId("stuckSupport").hidden = true;
+      return;
+    }
+
+    let hasStuck = false;
+    scheduled.forEach((commitment) => {
+      const statusEntry = commitment.statuses[todayKey];
+      if (statusEntry && statusEntry.status === "Stuck") hasStuck = true;
+      const card = createElement("article", "card today-commitment");
+      card.dataset.commitmentId = commitment.id;
+      const head = createElement("div", "today-commitment-head");
+      const headingWrap = createElement("div");
+      appendText(headingWrap, "h3", "", commitment.text || "Untitled commitment");
+      const meta = createElement("div", "commitment-meta");
+      appendText(meta, "span", "count-badge", `${commitment.renegotiationCount} renegotiation${commitment.renegotiationCount === 1 ? "" : "s"}`);
+      headingWrap.append(meta);
+      head.append(headingWrap);
+      card.append(head);
+
+      const actions = createElement("div", "status-actions");
+      MARKED_STATUSES.forEach((status) => {
+        const button = createElement("button", "button status-button", status);
+        button.type = "button";
+        button.dataset.action = "mark-status";
+        button.dataset.status = status;
+        button.dataset.commitmentId = commitment.id;
+        button.dataset.date = todayKey;
+        if (statusEntry && statusEntry.status === status) {
+          button.classList.add("is-selected");
+          button.setAttribute("aria-pressed", "true");
+        } else {
+          button.setAttribute("aria-pressed", "false");
+        }
+        actions.append(button);
+      });
+      card.append(actions);
+
+      appendText(card, "p", "current-status", statusEntry
+        ? `Today's status: ${statusEntry.status}`
+        : "Choose a status when you are ready.");
+      if (statusEntry && statusEntry.status === "Renegotiated") {
+        const details = createElement("p", "renegotiated-detail");
+        const parts = [];
+        if (statusEntry.newAction) parts.push(`New action: ${statusEntry.newAction}`);
+        if (statusEntry.newDate) parts.push(`New date: ${formatDate(statusEntry.newDate)}`);
+        details.textContent = parts.join(" ");
+        card.append(details);
+      }
+      container.append(card);
+    });
+    byId("stuckSupport").hidden = !hasStuck;
+  }
+
+  function handleTodayCommitmentClick(event) {
+    const button = event.target.closest('[data-action="mark-status"]');
+    if (!button) return;
+    const { commitmentId, status, date } = button.dataset;
+    const commitment = state.commitments.find((item) => item.id === commitmentId && item.active !== false);
+    if (!commitment || !MARKED_STATUSES.includes(status)) return;
+    if (status === "Renegotiated") {
+      openRenegotiationDialog(commitmentId, date);
+      return;
+    }
+    commitment.statuses[date] = {
+      status,
+      updatedAt: nowIso(),
+      commitmentText: commitment.text
+    };
+    if (saveState({ meaningful: true })) {
+      renderTodayCommitments();
+      renderWeekView();
+      renderPrintSummary();
+      showToast(`Marked ${status.toLocaleLowerCase()}.`);
+    }
+  }
+
+  function loadCharterForm() {
+    state.charter.guideValues.forEach((guide, index) => {
+      byId(`guideValue-${index}-value`).value = guide.value;
+      byId(`guideValue-${index}-meaning`).value = guide.meaning;
+      byId(`guideValue-${index}-behavioral`).value = guide.behavioralSignature;
+      byId(`guideValue-${index}-betrayal`).value = guide.betrayalSignature;
+    });
+    byId("northStar").value = state.charter.northStar;
+    state.charter.tensions.forEach((tension, index) => {
+      byId(`tension-${index}-one`).value = tension.onePull;
+      byId(`tension-${index}-other`).value = tension.otherPull;
+      byId(`tension-${index}-weighting`).value = tension.weighting;
+    });
+    byId("direction").value = state.charter.direction;
+    byId("keyPattern").value = state.charter.keyPattern;
+    byId("earlyWarning").value = state.charter.earlyWarning;
+    byId("supportNeed").value = state.charter.supportNeed;
+  }
+
+  function saveCharter(event) {
+    event.preventDefault();
+    const hadTodaysGreeting = state.greeting.date === localDateString() && Boolean(state.greeting.text);
+    state.charter.guideValues = state.charter.guideValues.map((guide, index) => ({
+      value: byId(`guideValue-${index}-value`).value.trim(),
+      meaning: byId(`guideValue-${index}-meaning`).value.trim(),
+      behavioralSignature: byId(`guideValue-${index}-behavioral`).value.trim(),
+      betrayalSignature: byId(`guideValue-${index}-betrayal`).value.trim()
+    }));
+    state.charter.northStar = byId("northStar").value.trim();
+    state.charter.tensions = state.charter.tensions.map((tension, index) => ({
+      onePull: byId(`tension-${index}-one`).value.trim(),
+      otherPull: byId(`tension-${index}-other`).value.trim(),
+      weighting: byId(`tension-${index}-weighting`).value.trim()
+    }));
+    state.charter.direction = byId("direction").value.trim();
+    state.charter.keyPattern = byId("keyPattern").value.trim();
+    state.charter.earlyWarning = byId("earlyWarning").value.trim();
+    state.charter.supportNeed = byId("supportNeed").value.trim();
+    if (!hadTodaysGreeting || !charterGreetingCandidates().length) {
+      state.greeting.date = "";
+      state.greeting.text = "";
+    }
+    if (saveState({ meaningful: true })) {
+      renderToday();
+      renderPrintSummary();
+      showToast("Charter saved on this device.");
+    }
+  }
+
+  function addCommitment() {
+    if (activeCommitments().length + commitmentDrafts.length >= 3) {
+      showToast("You can have up to three active commitments.");
+      return;
+    }
+    const createdAt = nowIso();
+    commitmentDrafts.push({
+      id: createId("commitment"),
+      text: "",
+      days: [],
+      active: true,
+      createdAt,
+      createdDate: localDateString(),
+      archivedAt: "",
+      archivedDate: "",
+      statuses: {},
+      renegotiationCount: 0,
+      scheduleHistory: []
+    });
+    renderCommitmentEditor();
+    const cards = byId("commitmentEditor").querySelectorAll(".commitment-card");
+    const card = cards[cards.length - 1];
+    if (card) {
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      const input = card.querySelector(".commitment-text");
+      if (input) input.focus();
+    }
+  }
+
+  function renderCommitmentEditor() {
+    const container = byId("commitmentEditor");
+    container.replaceChildren();
+    const commitments = [...activeCommitments(), ...commitmentDrafts];
+    byId("addCommitmentButton").disabled = commitments.length >= 3;
+    if (!commitments.length) {
+      const empty = createElement("div", "empty-state");
+      appendText(empty, "p", "", "No active commitments yet.");
+      appendText(empty, "p", "field-help", "Use the button above to add your first daily action.");
+      container.append(empty);
+      return;
+    }
+
+    commitments.forEach((commitment, index) => {
+      const card = createElement("article", "card commitment-card");
+      card.dataset.commitmentId = commitment.id;
+      const head = createElement("div", "commitment-head");
+      const titleWrap = createElement("div");
+      appendText(titleWrap, "p", "card-kicker", `Commitment ${index + 1}`);
+      appendText(titleWrap, "h2", "", commitment.text || "New commitment");
+      const remove = createElement("button", "button button-danger", "Remove");
+      remove.type = "button";
+      remove.dataset.action = "archive-commitment";
+      remove.dataset.commitmentId = commitment.id;
+      head.append(titleWrap, remove);
+      card.append(head);
+
+      const textInput = createElement("textarea", "commitment-text");
+      textInput.rows = 3;
+      textInput.value = commitment.text;
+      textInput.spellcheck = false;
+      textInput.autocapitalize = "sentences";
+      textInput.autocomplete = "off";
+      card.append(makeTextLabel("Commitment", textInput));
+
+      const fieldset = createElement("fieldset", "schedule-picker");
+      appendText(fieldset, "legend", "", "Scheduled days");
+      DAY_NAMES.forEach((dayName, dayIndex) => {
+        const label = createElement("label", "day-check");
+        const input = createElement("input");
+        input.type = "checkbox";
+        input.value = String(dayIndex + 1);
+        input.checked = commitment.days.includes(dayIndex + 1);
+        const text = createElement("span", "", dayName);
+        label.append(input, text);
+        fieldset.append(label);
+      });
+      card.append(fieldset);
+
+      const meta = createElement("div", "commitment-meta");
+      appendText(meta, "span", "count-badge", `${commitment.renegotiationCount} renegotiation${commitment.renegotiationCount === 1 ? "" : "s"}`);
+      const markedCount = Object.keys(commitment.statuses).length;
+      appendText(meta, "span", "", `${markedCount} marked day${markedCount === 1 ? "" : "s"}`);
+      card.append(meta);
+
+      const actions = createElement("div", "form-actions");
+      const save = createElement("button", "button button-primary", "Save commitment");
+      save.type = "button";
+      save.dataset.action = "save-commitment";
+      save.dataset.commitmentId = commitment.id;
+      actions.append(save);
+      card.append(actions);
+      container.append(card);
+    });
+  }
+
+  function handleCommitmentEditorClick(event) {
+    const button = event.target.closest("[data-action]");
+    if (!button) return;
+    const storedCommitment = state.commitments.find(
+      (item) => item.id === button.dataset.commitmentId && item.active !== false
+    );
+    const draftCommitment = commitmentDrafts.find((item) => item.id === button.dataset.commitmentId);
+    const commitment = storedCommitment || draftCommitment;
+    if (!commitment) return;
+    const card = button.closest(".commitment-card");
+
+    if (button.dataset.action === "save-commitment") {
+      const text = card.querySelector(".commitment-text").value.trim();
+      const days = [...card.querySelectorAll('.schedule-picker input[type="checkbox"]:checked')].map((input) => Number(input.value));
+      if (!text) {
+        showToast("Enter the commitment before saving.");
+        card.querySelector(".commitment-text").focus();
+        return;
+      }
+      if (!days.length) {
+        showToast("Choose at least one scheduled day.");
+        return;
+      }
+      const scheduleChanged = JSON.stringify(days) !== JSON.stringify(commitment.days);
+      commitment.text = text;
+      commitment.days = days;
+      if (scheduleChanged) {
+        const effectiveFrom = localDateString();
+        const existingToday = commitment.scheduleHistory.find((entry) => entry.effectiveFrom === effectiveFrom);
+        if (existingToday) {
+          existingToday.days = [...days];
+          existingToday.recordedAt = nowIso();
+        } else {
+          commitment.scheduleHistory.push({
+            effectiveFrom,
+            days: [...days],
+            recordedAt: nowIso()
+          });
+          commitment.scheduleHistory.sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
+        }
+      }
+      if (draftCommitment) {
+        state.commitments.push(commitment);
+        commitmentDrafts = commitmentDrafts.filter((item) => item.id !== commitment.id);
+      }
+      if (saveState({ meaningful: true })) {
+        renderCommitmentEditor();
+        renderToday();
+        renderWeekView();
+        renderPrintSummary();
+        showToast("Commitment saved on this device.");
+      } else if (draftCommitment) {
+        state.commitments = state.commitments.filter((item) => item.id !== commitment.id);
+        commitmentDrafts.push(commitment);
+      }
+    }
+
+    if (button.dataset.action === "archive-commitment") {
+      if (draftCommitment) {
+        commitmentDrafts = commitmentDrafts.filter((item) => item.id !== commitment.id);
+        renderCommitmentEditor();
+        showToast("Commitment draft removed.");
+        return;
+      }
+      const label = commitment.text ? `"${commitment.text}"` : "this commitment";
+      if (!window.confirm(`Remove ${label} from active commitments? Its marked-day history will remain in your export and print summary.`)) {
+        return;
+      }
+      commitment.active = false;
+      commitment.archivedAt = nowIso();
+      commitment.archivedDate = localDateString();
+      if (saveState({ meaningful: true })) {
+        renderCommitmentEditor();
+        renderToday();
+        renderWeekView();
+        renderPrintSummary();
+        showToast("Commitment removed. Its history is still kept.");
+      }
+    }
+  }
+
+  function scheduleForDate(commitment, dateString) {
+    const createdDate = commitment.createdDate || commitment.createdAt.slice(0, 10);
+    const archivedDate = commitment.archivedDate || (commitment.archivedAt ? commitment.archivedAt.slice(0, 10) : "");
+    if (createdDate && dateString < createdDate) return false;
+    if (archivedDate && dateString >= archivedDate && !commitment.statuses[dateString]) return false;
+    const revisions = commitment.scheduleHistory
+      .filter((entry) => entry.effectiveFrom <= dateString)
+      .sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
+    const applicableDays = revisions.length
+      ? revisions[revisions.length - 1].days
+      : (commitment.scheduleHistory.length ? [] : commitment.days);
+    const date = parseLocalDate(dateString);
+    return !Number.isNaN(date.getTime()) && applicableDays.includes(weekdayNumber(date));
+  }
+
+  function commitmentsVisibleInWeek(startDate, endDate) {
+    const start = localDateString(startDate);
+    const end = localDateString(endDate);
+    return state.commitments.filter((commitment) => {
+      const created = commitment.createdDate || commitment.createdAt.slice(0, 10);
+      const archived = commitment.archivedDate || (commitment.archivedAt ? commitment.archivedAt.slice(0, 10) : "");
+      return created <= end && (!archived || archived >= start);
+    });
+  }
+
+  function renderWeekView() {
+    const start = startOfWeek(viewedWeekStart);
+    const end = parseLocalDate(addLocalDays(start, 6));
+    byId("weekRangeLabel").textContent = `${formatDate(start, { month: "short", day: "numeric" })} to ${formatDate(end, {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    })}`;
+    const container = byId("weekGrid");
+    container.replaceChildren();
+    const commitments = commitmentsVisibleInWeek(start, end);
+    if (!commitments.length) {
+      const empty = createElement("div", "empty-state");
+      appendText(empty, "p", "", "No commitments were active in this week.");
+      container.append(empty);
+      return;
+    }
+    const statusCodes = {
+      Completed: "C",
+      Missed: "M",
+      Renegotiated: "R",
+      Stuck: "S",
+      "Not scheduled": "NS"
+    };
+    const statusClasses = {
+      Completed: "status-completed",
+      Missed: "status-missed",
+      Renegotiated: "status-renegotiated",
+      Stuck: "status-stuck",
+      "Not scheduled": "status-not-scheduled"
+    };
+    commitments.forEach((commitment) => {
+      const row = createElement("div", "week-row");
+      appendText(row, "div", "week-row-title", commitment.text || "Untitled commitment");
+      const days = createElement("div", "week-days");
+      for (let index = 0; index < 7; index += 1) {
+        const date = parseLocalDate(addLocalDays(start, index));
+        const dateString = localDateString(date);
+        const entry = commitment.statuses[dateString];
+        const isScheduled = scheduleForDate(commitment, dateString);
+        const status = entry ? entry.status : (isScheduled ? "" : "Not scheduled");
+        const cell = createElement("div", "week-day");
+        if (dateString === localDateString()) cell.classList.add("is-today");
+        appendText(cell, "strong", "", DAY_NAMES[index]);
+        appendText(cell, "span", "", date.getDate());
+        if (status) {
+          const marker = createElement("i", `status-dot ${statusClasses[status]}`);
+          marker.setAttribute("aria-hidden", "true");
+          cell.append(marker);
+          appendText(cell, "span", "week-status-code", statusCodes[status]);
+          appendText(cell, "span", "sr-only", status);
+          cell.title = status;
+        } else {
+          appendText(cell, "span", "week-status-code", "○");
+          appendText(cell, "span", "sr-only", "No status yet");
+          cell.title = "No status yet";
+        }
+        days.append(cell);
+      }
+      row.append(days);
+      container.append(row);
+    });
+  }
+
+  function openRenegotiationDialog(commitmentId, date) {
+    const commitment = state.commitments.find((item) => item.id === commitmentId);
+    if (!commitment) return;
+    const existing = commitment.statuses[date];
+    byId("renegotiationCommitmentId").value = commitmentId;
+    byId("renegotiationStatusDate").value = date;
+    byId("renegotiationAction").value = existing && existing.status === "Renegotiated" ? existing.newAction : "";
+    byId("renegotiationDate").value = existing && existing.status === "Renegotiated" ? existing.newDate : "";
+    byId("renegotiationError").hidden = true;
+    openDialog(byId("renegotiationDialog"));
+    window.setTimeout(() => byId("renegotiationAction").focus(), 0);
+  }
+
+  function closeRenegotiationDialog() {
+    closeDialog(byId("renegotiationDialog"));
+  }
+
+  function saveRenegotiation(event) {
+    event.preventDefault();
+    const commitmentId = byId("renegotiationCommitmentId").value;
+    const date = byId("renegotiationStatusDate").value;
+    const newAction = byId("renegotiationAction").value.trim();
+    const newDate = byId("renegotiationDate").value;
+    if (!newAction && !newDate) {
+      byId("renegotiationError").hidden = false;
+      return;
+    }
+    const commitment = state.commitments.find((item) => item.id === commitmentId && item.active !== false);
+    if (!commitment) {
+      closeRenegotiationDialog();
+      return;
+    }
+    const existing = commitment.statuses[date];
+    if (!existing || existing.status !== "Renegotiated") {
+      commitment.renegotiationCount += 1;
+    }
+    commitment.statuses[date] = {
+      status: "Renegotiated",
+      newAction,
+      newDate,
+      updatedAt: nowIso(),
+      commitmentText: commitment.text
+    };
+    if (saveState({ meaningful: true })) {
+      closeRenegotiationDialog();
+      renderTodayCommitments();
+      renderCommitmentEditor();
+      renderWeekView();
+      renderPrintSummary();
+      showToast("Renegotiation saved on this device.");
+    }
+  }
+
+  function updateRangeOutputs() {
+    byId("progressOutput").value = byId("progressRating").value;
+    byId("progressOutput").textContent = byId("progressRating").value;
+    byId("confidenceOutput").value = byId("confidenceRating").value;
+    byId("confidenceOutput").textContent = byId("confidenceRating").value;
+  }
+
+  function renderWeeklyReview() {
+    if (!byId("reviewDate").value) byId("reviewDate").value = localDateString();
+    loadReviewFormForDate();
+    renderReviewHistory();
+    requestAnimationFrame(drawReviewChart);
+  }
+
+  function loadReviewFormForDate() {
+    const dateValue = byId("reviewDate").value || localDateString();
+    const weekStart = weekStartString(dateValue);
+    byId("reviewWeekHelp").textContent = weekStart ? `Week beginning ${formatDate(weekStart)}` : "";
+    const existing = state.weeklyReviews.find((review) => review.weekStart === weekStart);
+    byId("progressRating").value = existing ? String(existing.progress) : "5";
+    byId("confidenceRating").value = existing ? String(existing.confidence) : "5";
+    byId("weeklyObstacle").value = existing ? existing.obstacle : "";
+    byId("weeklyLearning").value = existing ? existing.learning : "";
+    updateRangeOutputs();
+  }
+
+  function saveWeeklyReview(event) {
+    event.preventDefault();
+    const weekStart = weekStartString(byId("reviewDate").value);
+    if (!weekStart) {
+      showToast("Choose a date for this weekly review.");
+      return;
+    }
+    const review = {
+      weekStart,
+      progress: clampInteger(byId("progressRating").valueAsNumber, 0, 10, 0),
+      confidence: clampInteger(byId("confidenceRating").valueAsNumber, 0, 10, 0),
+      obstacle: byId("weeklyObstacle").value.trim(),
+      learning: byId("weeklyLearning").value.trim(),
+      updatedAt: nowIso()
+    };
+    const index = state.weeklyReviews.findIndex((item) => item.weekStart === weekStart);
+    if (index >= 0) state.weeklyReviews[index] = review;
+    else state.weeklyReviews.push(review);
+    state.weeklyReviews.sort((a, b) => a.weekStart.localeCompare(b.weekStart));
+    if (saveState({ meaningful: true })) {
+      renderReviewHistory();
+      drawReviewChart();
+      renderPrintSummary();
+      showToast("Weekly review saved on this device.");
+    }
+  }
+
+  function renderReviewHistory() {
+    const container = byId("reviewHistory");
+    container.replaceChildren();
+    const reviews = [...state.weeklyReviews].sort((a, b) => b.weekStart.localeCompare(a.weekStart));
+    if (!reviews.length) {
+      const empty = createElement("div", "empty-state");
+      appendText(empty, "p", "", "Your saved weekly reviews will appear here.");
+      container.append(empty);
+      return;
+    }
+    reviews.forEach((review) => {
+      const item = createElement("article", "history-item");
+      const head = createElement("div", "history-head");
+      const titleWrap = createElement("div");
+      appendText(titleWrap, "h3", "", `Week of ${formatDate(review.weekStart)}`);
+      const ratings = createElement("div", "commitment-meta");
+      appendText(ratings, "span", "count-badge", `Progress ${review.progress}/10`);
+      appendText(ratings, "span", "count-badge", `Confidence ${review.confidence}/10`);
+      titleWrap.append(ratings);
+      const actions = createElement("div", "history-actions");
+      const edit = createElement("button", "button button-secondary", "Edit");
+      edit.type = "button";
+      edit.dataset.action = "edit-review";
+      edit.dataset.weekStart = review.weekStart;
+      actions.append(edit);
+      head.append(titleWrap, actions);
+      item.append(head);
+      const obstacle = createElement("p");
+      appendText(obstacle, "strong", "", "Obstacle: ");
+      obstacle.append(document.createTextNode(review.obstacle || "Not entered"));
+      item.append(obstacle);
+      const learning = createElement("p");
+      appendText(learning, "strong", "", "What it taught: ");
+      learning.append(document.createTextNode(review.learning || "Not entered"));
+      item.append(learning);
+      container.append(item);
+    });
+  }
+
+  function handleReviewHistoryClick(event) {
+    const button = event.target.closest('[data-action="edit-review"]');
+    if (!button) return;
+    byId("reviewDate").value = button.dataset.weekStart;
+    loadReviewFormForDate();
+    byId("weeklyReviewForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    byId("progressRating").focus();
+  }
+
+  function drawReviewChart() {
+    const reviews = [...state.weeklyReviews].sort((a, b) => a.weekStart.localeCompare(b.weekStart));
+    const canvas = byId("reviewChart");
+    const summary = reviews.length
+      ? reviews.map((review) => `${formatDate(review.weekStart)}: progress ${review.progress}, confidence ${review.confidence}`).join(". ")
+      : "No weekly review ratings yet";
+    canvas.setAttribute("aria-label", summary);
+    drawLineChart(canvas, {
+      maximum: 10,
+      points: reviews.map((review) => review.weekStart),
+      series: [
+        { values: reviews.map((review) => review.progress), color: "#1B2A4A" },
+        { values: reviews.map((review) => review.confidence), color: "#8F7119" }
+      ]
+    });
+  }
+
+  function drawLineChart(canvas, configuration) {
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const rectangle = canvas.getBoundingClientRect();
+    const width = Math.max(280, Math.floor(rectangle.width || 280));
+    const height = Math.max(200, Math.floor(rectangle.height || 230));
+    const ratio = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    canvas.width = Math.round(width * ratio);
+    canvas.height = Math.round(height * ratio);
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    context.clearRect(0, 0, width, height);
+
+    const padding = { top: 18, right: 18, bottom: 40, left: 38 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+    context.font = "11px system-ui, sans-serif";
+    context.textAlign = "right";
+    context.textBaseline = "middle";
+
+    for (let line = 0; line <= 4; line += 1) {
+      const value = configuration.maximum - (configuration.maximum / 4) * line;
+      const y = padding.top + (chartHeight / 4) * line;
+      context.beginPath();
+      context.strokeStyle = "#d9dee7";
+      context.lineWidth = 1;
+      context.moveTo(padding.left, y);
+      context.lineTo(width - padding.right, y);
+      context.stroke();
+      context.fillStyle = "#5f6878";
+      context.fillText(String(Math.round(value)), padding.left - 8, y);
+    }
+
+    if (!configuration.points.length) {
+      context.fillStyle = "#5f6878";
+      context.textAlign = "center";
+      context.font = "14px system-ui, sans-serif";
+      context.fillText("Save a check-in to begin the trend.", width / 2, height / 2);
+      return;
+    }
+
+    const xForIndex = (index) => configuration.points.length === 1
+      ? padding.left + chartWidth / 2
+      : padding.left + (chartWidth * index) / (configuration.points.length - 1);
+    const yForValue = (value) => padding.top + chartHeight - (chartHeight * value) / configuration.maximum;
+
+    configuration.series.forEach((series) => {
+      context.beginPath();
+      context.strokeStyle = series.color;
+      context.lineWidth = 2.5;
+      context.lineJoin = "round";
+      context.lineCap = "round";
+      series.values.forEach((value, index) => {
+        const x = xForIndex(index);
+        const y = yForValue(value);
+        if (index === 0) context.moveTo(x, y);
+        else context.lineTo(x, y);
+      });
+      context.stroke();
+      series.values.forEach((value, index) => {
+        context.beginPath();
+        context.fillStyle = "#ffffff";
+        context.strokeStyle = series.color;
+        context.lineWidth = 2;
+        context.arc(xForIndex(index), yForValue(value), 4, 0, Math.PI * 2);
+        context.fill();
+        context.stroke();
+      });
+    });
+
+    const labelIndexes = configuration.points.length === 1
+      ? [0]
+      : [...new Set([0, Math.floor((configuration.points.length - 1) / 2), configuration.points.length - 1])];
+    context.fillStyle = "#5f6878";
+    context.textBaseline = "top";
+    context.font = "10px system-ui, sans-serif";
+    labelIndexes.forEach((index) => {
+      const x = xForIndex(index);
+      context.textAlign = index === 0 ? "left" : (index === configuration.points.length - 1 ? "right" : "center");
+      context.fillText(formatDate(configuration.points[index], { month: "short", day: "numeric" }), x, height - padding.bottom + 12);
+    });
+  }
+
+  function promptForDate(dateString) {
+    const prompts = state.settings.prompts.filter((prompt) => prompt.trim());
+    if (!prompts.length) return "";
+    const number = dateString.replace(/\D/g, "").split("").reduce((sum, digit) => sum + Number(digit), 0);
+    return prompts[number % prompts.length];
+  }
+
+  function updateJournalPrompt() {
+    const date = byId("journalDate").value || localDateString();
+    const prompt = promptForDate(date);
+    byId("journalPrompt").textContent = prompt || "No prompt is set. Add prompts in Settings if you want one.";
+  }
+
+  function renderJournal() {
+    if (!byId("journalDate").value) byId("journalDate").value = localDateString();
+    loadJournalFormForDate();
+    renderJournalHistory();
+  }
+
+  function loadJournalFormForDate() {
+    const date = byId("journalDate").value || localDateString();
+    const existing = state.journalEntries.find((entry) => entry.date === date);
+    byId("journalEntryId").value = existing ? existing.id : "";
+    byId("journalText").value = existing ? existing.text : "";
+    if (existing && existing.prompt) {
+      byId("journalPrompt").textContent = existing.prompt;
+    } else {
+      updateJournalPrompt();
+    }
+  }
+
+  function resetJournalForm() {
+    byId("journalEntryId").value = "";
+    byId("journalDate").value = localDateString();
+    byId("journalText").value = "";
+    updateJournalPrompt();
+    byId("journalText").focus();
+  }
+
+  function saveJournalEntry(event) {
+    event.preventDefault();
+    const id = byId("journalEntryId").value;
+    const date = cleanDate(byId("journalDate").value);
+    const text = byId("journalText").value.trim();
+    if (!date || !text) {
+      showToast("Choose a date and write an entry before saving.");
+      return;
+    }
+    const existing = state.journalEntries.find((item) => item.id === id || item.date === date);
+    const entry = {
+      id: id || createId("journal"),
+      date,
+      prompt: existing ? existing.prompt : promptForDate(date),
+      text,
+      updatedAt: nowIso()
+    };
+    state.journalEntries = state.journalEntries.filter((item) => item.id !== id && item.date !== date);
+    state.journalEntries.push(entry);
+    state.journalEntries.sort((a, b) => a.date.localeCompare(b.date));
+    byId("journalEntryId").value = entry.id;
+    if (saveState({ meaningful: true })) {
+      renderJournalHistory();
+      showToast("Journal entry saved on this device.");
+    }
+  }
+
+  function renderJournalHistory() {
+    const container = byId("journalEntries");
+    container.replaceChildren();
+    const entries = [...state.journalEntries].sort((a, b) => b.date.localeCompare(a.date));
+    if (!entries.length) {
+      const empty = createElement("div", "empty-state");
+      appendText(empty, "p", "", "Your saved journal entries will appear here.");
+      container.append(empty);
+      return;
+    }
+    entries.forEach((entry) => {
+      const item = createElement("article", "history-item");
+      const head = createElement("div", "history-head");
+      const titleWrap = createElement("div");
+      appendText(titleWrap, "h3", "", formatDate(entry.date, {
+        weekday: "long",
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      }));
+      if (entry.prompt) appendText(titleWrap, "p", "field-help", entry.prompt);
+      const actions = createElement("div", "history-actions");
+      const edit = createElement("button", "button button-secondary", "Edit");
+      edit.type = "button";
+      edit.dataset.action = "edit-journal";
+      edit.dataset.entryId = entry.id;
+      const remove = createElement("button", "button button-danger", "Delete");
+      remove.type = "button";
+      remove.dataset.action = "delete-journal";
+      remove.dataset.entryId = entry.id;
+      actions.append(edit, remove);
+      head.append(titleWrap, actions);
+      item.append(head);
+      appendText(item, "p", "", entry.text);
+      container.append(item);
+    });
+  }
+
+  function handleJournalHistoryClick(event) {
+    const button = event.target.closest("[data-action]");
+    if (!button) return;
+    const entry = state.journalEntries.find((item) => item.id === button.dataset.entryId);
+    if (!entry) return;
+    if (button.dataset.action === "edit-journal") {
+      byId("journalEntryId").value = entry.id;
+      byId("journalDate").value = entry.date;
+      byId("journalText").value = entry.text;
+      byId("journalPrompt").textContent = entry.prompt || promptForDate(entry.date);
+      byId("journalForm").scrollIntoView({ behavior: "smooth", block: "start" });
+      byId("journalText").focus();
+    }
+    if (button.dataset.action === "delete-journal") {
+      if (!window.confirm(`Delete the journal entry from ${formatDate(entry.date)}?`)) return;
+      state.journalEntries = state.journalEntries.filter((item) => item.id !== entry.id);
+      if (saveState({ meaningful: true })) {
+        if (byId("journalEntryId").value === entry.id) resetJournalForm();
+        renderJournalHistory();
+        showToast("Journal entry deleted from this device.");
+      }
+    }
+  }
+
+  function renderWellbeing() {
+    if (!byId("wellbeingDate").value) byId("wellbeingDate").value = localDateString();
+    loadWellbeingFormForDate();
+    renderWellbeingHistory();
+    requestAnimationFrame(drawWellbeingChart);
+  }
+
+  function loadWellbeingFormForDate() {
+    const date = byId("wellbeingDate").value || localDateString();
+    const weekStart = weekStartString(date);
+    byId("wellbeingWeekHelp").textContent = weekStart ? `Week beginning ${formatDate(weekStart)}` : "";
+    const existing = state.wellbeingChecks.find((check) => check.weekStart === weekStart);
+    WHO_ITEMS.forEach((item, itemIndex) => {
+      document.querySelectorAll(`input[name="who-${itemIndex}"]`).forEach((input) => {
+        input.checked = existing ? Number(input.value) === existing.items[itemIndex] : false;
+      });
+    });
+  }
+
+  function saveWellbeingCheck(event) {
+    event.preventDefault();
+    const weekStart = weekStartString(byId("wellbeingDate").value);
+    if (!weekStart) {
+      showToast("Choose a date for this wellbeing check.");
+      return;
+    }
+    const items = [];
+    for (let index = 0; index < WHO_ITEMS.length; index += 1) {
+      const selected = document.querySelector(`input[name="who-${index}"]:checked`);
+      if (!selected) {
+        showToast("Choose a response for all five wellbeing items.");
+        const first = document.querySelector(`input[name="who-${index}"]`);
+        if (first) first.focus();
+        return;
+      }
+      items.push(Number(selected.value));
+    }
+    const rawTotal = items.reduce((sum, item) => sum + item, 0);
+    const check = {
+      weekStart,
+      items,
+      rawTotal,
+      score: rawTotal * 4,
+      updatedAt: nowIso()
+    };
+    const existingIndex = state.wellbeingChecks.findIndex((item) => item.weekStart === weekStart);
+    if (existingIndex >= 0) state.wellbeingChecks[existingIndex] = check;
+    else state.wellbeingChecks.push(check);
+    state.wellbeingChecks.sort((a, b) => a.weekStart.localeCompare(b.weekStart));
+    if (saveState({ meaningful: true })) {
+      renderWellbeingHistory();
+      drawWellbeingChart();
+      renderPrintSummary();
+      showToast(`Wellbeing check saved with a score of ${check.score}.`);
+    }
+  }
+
+  function renderWellbeingHistory() {
+    const container = byId("wellbeingHistory");
+    container.replaceChildren();
+    const checks = [...state.wellbeingChecks].sort((a, b) => b.weekStart.localeCompare(a.weekStart));
+    if (!checks.length) {
+      const empty = createElement("div", "empty-state");
+      appendText(empty, "p", "", "Your saved wellbeing scores will appear here.");
+      container.append(empty);
+      return;
+    }
+    checks.forEach((check) => {
+      const item = createElement("article", "history-item");
+      const head = createElement("div", "history-head");
+      const titleWrap = createElement("div");
+      appendText(titleWrap, "h3", "", `Week of ${formatDate(check.weekStart)}`);
+      const scores = createElement("div", "commitment-meta");
+      appendText(scores, "span", "count-badge", `Score ${check.score}/100`);
+      appendText(scores, "span", "", `Raw total ${check.rawTotal}/25`);
+      titleWrap.append(scores);
+      const actions = createElement("div", "history-actions");
+      const edit = createElement("button", "button button-secondary", "Edit");
+      edit.type = "button";
+      edit.dataset.action = "edit-wellbeing";
+      edit.dataset.weekStart = check.weekStart;
+      actions.append(edit);
+      head.append(titleWrap, actions);
+      item.append(head);
+      container.append(item);
+    });
+  }
+
+  function handleWellbeingHistoryClick(event) {
+    const button = event.target.closest('[data-action="edit-wellbeing"]');
+    if (!button) return;
+    byId("wellbeingDate").value = button.dataset.weekStart;
+    loadWellbeingFormForDate();
+    byId("wellbeingForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    const selected = document.querySelector('input[name="who-0"]:checked');
+    if (selected) selected.focus();
+  }
+
+  function drawWellbeingChart() {
+    const checks = [...state.wellbeingChecks].sort((a, b) => a.weekStart.localeCompare(b.weekStart));
+    const canvas = byId("wellbeingChart");
+    canvas.setAttribute(
+      "aria-label",
+      checks.length
+        ? checks.map((check) => `${formatDate(check.weekStart)}: score ${check.score}`).join(". ")
+        : "No wellbeing scores yet"
+    );
+    drawLineChart(canvas, {
+      maximum: 100,
+      points: checks.map((check) => check.weekStart),
+      series: [{ values: checks.map((check) => check.score), color: "#1B2A4A" }]
+    });
+  }
+
+  function maintenanceMilestones() {
+    const endDate = state.maintenance.programEndDate;
+    if (!endDate) return [];
+    const today = localDateString();
+    return MILESTONE_OFFSETS.map((offset) => {
+      const dueDate = addLocalDays(endDate, offset);
+      const key = `${endDate}:${offset}`;
+      const reflection = state.maintenance.reflections[key] || null;
+      return {
+        offset,
+        dueDate,
+        key,
+        reflection,
+        due: Boolean(dueDate && dueDate <= today),
+        complete: Boolean(reflection && reflection.held && reflection.slipped && reflection.adjustment)
+      };
+    });
+  }
+
+  function renderMaintenanceArrival() {
+    const dueMilestone = maintenanceMilestones().find((milestone) => milestone.due && !milestone.complete);
+    const card = byId("maintenanceArrival");
+    if (!dueMilestone) {
+      card.hidden = true;
+      return;
+    }
+    byId("maintenanceArrivalTitle").textContent = `${dueMilestone.offset}-day reflection is ready`;
+    byId("maintenanceArrivalText").textContent = `This mark fell on ${formatDate(dueMilestone.dueDate)}. Notice what held, what slipped, and one adjustment.`;
+    card.hidden = false;
+  }
+
+  function renderMaintenance() {
+    byId("programEndDate").value = state.maintenance.programEndDate;
+    const container = byId("maintenanceMarks");
+    container.replaceChildren();
+    const milestones = maintenanceMilestones();
+    const reflectionForm = byId("maintenanceReflectionForm");
+    if (!milestones.length) {
+      const empty = createElement("div", "empty-state");
+      appendText(empty, "p", "", "Set your program end date to calculate the 30, 60, and 90 day marks.");
+      container.append(empty);
+      reflectionForm.hidden = true;
+      return;
+    }
+    milestones.forEach((milestone) => {
+      const card = createElement("article", "card milestone-card");
+      if (milestone.due && !milestone.complete) card.classList.add("is-due");
+      if (milestone.complete) card.classList.add("is-complete");
+      appendText(card, "p", "card-kicker", `${milestone.offset}-day mark`);
+      appendText(card, "h2", "", formatDate(milestone.dueDate, {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      }));
+      let statusText = "Upcoming";
+      if (milestone.due && !milestone.complete) statusText = "Reflection ready";
+      if (milestone.complete) statusText = `Reflection saved ${formatDateTime(milestone.reflection.completedAt)}`;
+      appendText(card, "p", "milestone-status", statusText);
+      if (milestone.due || milestone.complete) {
+        const button = createElement(
+          "button",
+          milestone.complete ? "button button-secondary" : "button button-primary",
+          milestone.complete ? "Review reflection" : "Reflect now"
+        );
+        button.type = "button";
+        button.dataset.action = "open-maintenance-reflection";
+        button.dataset.milestoneKey = milestone.key;
+        card.append(button);
+      }
+      container.append(card);
+    });
+
+    const selectedKey = byId("maintenanceMarkKey").value;
+    const selectedMilestone = milestones.find((milestone) => milestone.key === selectedKey);
+    const dueMilestone = milestones.find((milestone) => milestone.due && !milestone.complete);
+    if (selectedMilestone && (selectedMilestone.due || selectedMilestone.complete)) {
+      showMaintenanceReflection(selectedMilestone, false);
+    } else if (dueMilestone) {
+      showMaintenanceReflection(dueMilestone, false);
+    } else {
+      reflectionForm.hidden = true;
+    }
+  }
+
+  function saveProgramEndDate(event) {
+    event.preventDefault();
+    const date = cleanDate(byId("programEndDate").value);
+    state.maintenance.programEndDate = date;
+    byId("maintenanceMarkKey").value = "";
+    if (saveState({ meaningful: true })) {
+      renderMaintenance();
+      renderMaintenanceArrival();
+      showToast(date ? "Program end date saved on this device." : "Program end date cleared.");
+    }
+  }
+
+  function handleMaintenanceMarkClick(event) {
+    const button = event.target.closest('[data-action="open-maintenance-reflection"]');
+    if (!button) return;
+    const milestone = maintenanceMilestones().find((item) => item.key === button.dataset.milestoneKey);
+    if (!milestone) return;
+    showMaintenanceReflection(milestone, true);
+  }
+
+  function showMaintenanceReflection(milestone, shouldScroll) {
+    const form = byId("maintenanceReflectionForm");
+    const reflection = milestone.reflection;
+    byId("maintenanceMarkKey").value = milestone.key;
+    byId("maintenanceReflectionHeading").textContent = `${milestone.offset}-day reflection`;
+    byId("maintenanceHeld").value = reflection ? reflection.held : "";
+    byId("maintenanceSlipped").value = reflection ? reflection.slipped : "";
+    byId("maintenanceAdjustment").value = reflection ? reflection.adjustment : "";
+    form.hidden = false;
+    if (shouldScroll) {
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+      byId("maintenanceHeld").focus();
+    }
+  }
+
+  function saveMaintenanceReflection(event) {
+    event.preventDefault();
+    const key = byId("maintenanceMarkKey").value;
+    const milestone = maintenanceMilestones().find((item) => item.key === key);
+    if (!milestone) {
+      showToast("Set the program end date before saving a reflection.");
+      return;
+    }
+    state.maintenance.reflections[key] = {
+      held: byId("maintenanceHeld").value.trim(),
+      slipped: byId("maintenanceSlipped").value.trim(),
+      adjustment: byId("maintenanceAdjustment").value.trim(),
+      completedAt: nowIso()
+    };
+    if (saveState({ meaningful: true })) {
+      renderMaintenance();
+      renderMaintenanceArrival();
+      showToast(`${milestone.offset}-day reflection saved on this device.`);
+    }
+  }
+
+  function renderSettings() {
+    state.settings.prompts.forEach((prompt, index) => {
+      byId(`prompt-${index}`).value = prompt;
+    });
+    byId("reminderTime").value = state.settings.reminderTime;
+    renderStorageStatus();
+    renderLastExport();
+    renderNotificationStatus();
+    if (IS_SINGLE_FILE) {
+      byId("installCard").hidden = true;
+    } else {
+      byId("installCard").hidden = false;
+    }
+  }
+
+  function savePromptSettings(event) {
+    event.preventDefault();
+    state.settings.prompts = DEFAULT_PROMPTS.map((prompt, index) => byId(`prompt-${index}`).value.trim());
+    if (saveState({ meaningful: true })) {
+      updateJournalPrompt();
+      showToast("Writing prompts saved on this device.");
+    }
+  }
+
+  function renderStorageStatus() {
+    const element = byId("storagePersistenceStatus");
+    if (!element) return;
+    const messages = {
+      "not-requested": "Storage persistence will be requested after your first save. Export remains the safest backup.",
+      granted: "Storage persistence: Granted. The browser agreed not to clear this app automatically. Export still protects against device loss.",
+      "not-granted": "Storage persistence: Not granted. Your data is still local, but the browser may clear it when storage is tight. Export regularly.",
+      unavailable: "Storage persistence: Unavailable in this browser or file mode. Your data is still local. Export regularly."
+    };
+    element.textContent = messages[state.meta.persistenceResult] || messages["not-requested"];
+  }
+
+  function renderLastExport() {
+    const element = byId("lastExportText");
+    if (!element) return;
+    element.textContent = state.meta.lastExportAt
+      ? `Last export: ${formatDateTime(state.meta.lastExportAt)}`
+      : "No backup has been exported yet.";
+  }
+
+  function renderBackupBanner() {
+    const banner = byId("backupBanner");
+    if (!banner) return;
+    const baseline = state.meta.lastExportAt || state.meta.firstSavedAt;
+    if (!baseline || state.meta.backupDismissedOn === localDateString()) {
+      banner.hidden = true;
+      return;
+    }
+    const elapsed = Date.now() - new Date(baseline).getTime();
+    banner.hidden = !Number.isFinite(elapsed) || elapsed < 7 * 86400000;
+  }
+
+  function dismissBackupBanner() {
+    state.meta.backupDismissedOn = localDateString();
+    saveState({ requestPersistence: false });
+    renderBackupBanner();
+  }
+
+  function saveReminderTime() {
+    const value = byId("reminderTime").value;
+    if (!cleanTime(value)) return;
+    state.settings.reminderTime = value;
+    if (saveState({ meaningful: true })) {
+      scheduleSameDayNotification();
+      renderNotificationStatus();
+    }
+  }
+
+  function calendarDateTime(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hour = String(date.getHours()).padStart(2, "0");
+    const minute = String(date.getMinutes()).padStart(2, "0");
+    const second = String(date.getSeconds()).padStart(2, "0");
+    return `${year}${month}${day}T${hour}${minute}${second}`;
+  }
+
+  function utcCalendarDateTime(date) {
+    return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  }
+
+  function escapeCalendarText(value) {
+    return value.replace(/\\/g, "\\\\").replace(/\r?\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+  }
+
+  function downloadCalendarReminder() {
+    const time = byId("reminderTime").value || state.settings.reminderTime;
+    if (!cleanTime(time)) {
+      showToast("Choose a reminder time first.");
+      return;
+    }
+    state.settings.reminderTime = time;
+    saveState({ meaningful: true });
+    const [hour, minute] = time.split(":").map(Number);
+    const start = new Date();
+    start.setHours(hour, minute, 0, 0);
+    if (start.getTime() <= Date.now()) start.setDate(start.getDate() + 1);
+    const end = new Date(start.getTime() + 10 * 60000);
+    const description = escapeCalendarText("Open Goal Tracker and check today's commitments. Everything stays on this device.");
+    const lines = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Goal Tracker//Private Daily Reminder//EN",
+      "CALSCALE:GREGORIAN",
+      "BEGIN:VEVENT",
+      "UID:goal-tracker-daily-reminder@local",
+      `DTSTAMP:${utcCalendarDateTime(new Date())}`,
+      `DTSTART:${calendarDateTime(start)}`,
+      `DTEND:${calendarDateTime(end)}`,
+      "RRULE:FREQ=DAILY",
+      "SUMMARY:Goal Tracker",
+      `DESCRIPTION:${description}`,
+      "BEGIN:VALARM",
+      "ACTION:DISPLAY",
+      "TRIGGER:PT0M",
+      "DESCRIPTION:Goal Tracker daily check-in",
+      "END:VALARM",
+      "END:VEVENT",
+      "END:VCALENDAR",
+      ""
+    ];
+    triggerDownload(new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" }), "goal-tracker-daily-reminder.ics");
+    showToast("Calendar reminder downloaded. Open the file to add it to your calendar.");
+  }
+
+  async function enableOpenAppReminder() {
+    const reminderTime = cleanTime(byId("reminderTime").value || state.settings.reminderTime);
+    if (!reminderTime) {
+      showToast("Choose a valid reminder time first.");
+      return;
+    }
+    state.settings.reminderTime = reminderTime;
+    if (typeof Notification === "undefined") {
+      state.settings.openAppNotificationsEnabled = false;
+      saveState({ meaningful: true });
+      renderNotificationStatus("Notifications are unavailable in this browser. The calendar reminder still works.");
+      return;
+    }
+    let permission = Notification.permission;
+    if (permission === "default") {
+      try {
+        permission = await Notification.requestPermission();
+      } catch (error) {
+        permission = "denied";
+      }
+    }
+    state.settings.openAppNotificationsEnabled = permission === "granted";
+    saveState({ meaningful: true });
+    scheduleSameDayNotification();
+    renderNotificationStatus();
+  }
+
+  function renderNotificationStatus(overrideMessage = "") {
+    const element = byId("notificationStatus");
+    if (!element) return;
+    if (overrideMessage) {
+      element.textContent = `${overrideMessage} Open-app reminders work only while Goal Tracker remains open.`;
+      return;
+    }
+    if (typeof Notification === "undefined") {
+      element.textContent = "Notifications are unavailable here. Open-app reminders work only in a supporting browser while Goal Tracker remains open.";
+      return;
+    }
+    if (Notification.permission === "denied") {
+      element.textContent = "Notification permission is blocked. You can still download the calendar reminder.";
+      return;
+    }
+    if (state.settings.openAppNotificationsEnabled && Notification.permission === "granted") {
+      element.textContent = `Open-app reminder enabled for ${state.settings.reminderTime}. It works only while Goal Tracker remains open.`;
+      byId("openAppReminderButton").textContent = "Open-app reminder enabled";
+      return;
+    }
+    element.textContent = "Optional notifications work only while this app is open.";
+    byId("openAppReminderButton").textContent = "Enable open-app reminder";
+  }
+
+  function scheduleSameDayNotification() {
+    window.clearTimeout(notificationTimer);
+    notificationTimer = 0;
+    if (
+      !state.settings.openAppNotificationsEnabled ||
+      typeof Notification === "undefined" ||
+      Notification.permission !== "granted"
+    ) {
+      return;
+    }
+    const [hour, minute] = state.settings.reminderTime.split(":").map(Number);
+    const target = new Date();
+    target.setHours(hour, minute, 0, 0);
+    const delay = target.getTime() - Date.now();
+    if (delay <= 0 || delay > 86400000) return;
+    notificationTimer = window.setTimeout(() => {
+      if (document.visibilityState === "visible" || document.visibilityState === "hidden") {
+        try {
+          new Notification(APP_NAME, {
+            body: "Take a moment to check today's commitments."
+          });
+        } catch (error) {
+          state.settings.openAppNotificationsEnabled = false;
+          persistMetadataOnly();
+        }
+      }
+    }, delay);
+  }
+
+  function scheduleDayRefresh() {
+    window.clearTimeout(dayRefreshTimer);
+    const nextDay = new Date();
+    nextDay.setHours(24, 0, 1, 0);
+    dayRefreshTimer = window.setTimeout(() => {
+      refreshForCurrentDay();
+      scheduleDayRefresh();
+    }, Math.max(1000, nextDay.getTime() - Date.now()));
+  }
+
+  function refreshForCurrentDay() {
+    if (state.greeting.date !== localDateString()) renderToday();
+    scheduleSameDayNotification();
+    renderBackupBanner();
+  }
+
+  function setupPwaFeatures() {
+    if (IS_SINGLE_FILE) {
+      byId("installCard").hidden = true;
+      return;
+    }
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      byId("installButton").hidden = false;
+      byId("installHelp").textContent = "Install Goal Tracker for quick access and a full-screen offline experience.";
+    });
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      byId("installButton").hidden = true;
+      byId("installHelp").textContent = "Goal Tracker is installed on this device.";
+    });
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+  }
+
+  async function installApp() {
+    if (!deferredInstallPrompt) {
+      showToast("Use your browser's install or add-to-home-screen option.");
+      return;
+    }
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    byId("installButton").hidden = true;
+  }
+
+  function triggerDownload(blob, fileName) {
+    const url = URL.createObjectURL(blob);
+    const anchor = createElement("a");
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.hidden = true;
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function exportAllData() {
+    state.meta.lastExportAt = nowIso();
+    state.meta.backupDismissedOn = "";
+    if (!corruptStorageDetected) saveState();
+    const json = JSON.stringify(state, null, 2);
+    triggerDownload(
+      new Blob([json], { type: "application/json;charset=utf-8" }),
+      `goal-tracker-backup-${localDateString()}.json`
+    );
+    renderLastExport();
+    renderBackupBanner();
+    showToast(
+      corruptStorageDetected
+        ? "The data currently shown was exported. The unreadable local record was left untouched."
+        : "All Goal Tracker data exported as a local backup."
+    );
+  }
+
+  async function importAllData(event) {
+    const input = event.currentTarget;
+    const file = input.files && input.files[0];
+    if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text());
+      validateImportShape(parsed);
+      const imported = migrateData(parsed);
+      validateNormalizedImport(parsed, imported);
+      const confirmed = await confirmImportOverwrite();
+      if (!confirmed) return;
+      imported.meta.persistenceRequested = false;
+      imported.meta.persistenceResult = "not-requested";
+      const previousState = state;
+      const previousCorruptStorageDetected = corruptStorageDetected;
+      state = imported;
+      corruptStorageDetected = false;
+      if (!saveState({ meaningful: true })) {
+        state = previousState;
+        corruptStorageDetected = previousCorruptStorageDetected;
+        renderAll();
+        return;
+      }
+      commitmentDrafts = [];
+      viewedWeekStart = startOfWeek(new Date());
+      renderAll();
+      showView("today");
+      showToast("Backup restored on this device.");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "The selected backup could not be imported.");
+    } finally {
+      input.value = "";
+    }
+  }
+
+  function printText(value) {
+    return value && value.trim() ? value.trim() : "Not entered";
+  }
+
+  function appendPrintField(parent, label, value) {
+    const paragraph = createElement("p");
+    appendText(paragraph, "strong", "", `${label}: `);
+    paragraph.append(document.createTextNode(printText(value)));
+    parent.append(paragraph);
+  }
+
+  function appendTable(parent, headers, rows) {
+    const table = createElement("table");
+    const head = createElement("thead");
+    const headRow = createElement("tr");
+    headers.forEach((header) => appendText(headRow, "th", "", header));
+    head.append(headRow);
+    table.append(head);
+    const body = createElement("tbody");
+    rows.forEach((row) => {
+      const tableRow = createElement("tr");
+      row.forEach((cell) => appendText(tableRow, "td", "", cell));
+      body.append(tableRow);
+    });
+    table.append(body);
+    parent.append(table);
+  }
+
+  function renderPrintSummary() {
+    const root = byId("printSummary");
+    if (!root) return;
+    root.replaceChildren();
+    appendText(root, "h1", "", "Goal Tracker summary");
+    appendText(root, "p", "", `Prepared ${formatDate(new Date(), {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    })}`);
+    appendText(root, "p", "", "Everything you write stays on this device. Nothing is sent anywhere. Use Export to back up.");
+
+    const charterSection = createElement("section");
+    appendText(charterSection, "h2", "", "Charter");
+    state.charter.guideValues.forEach((guide, index) => {
+      appendText(charterSection, "h3", "", `Guide value ${index + 1}: ${printText(guide.value)}`);
+      appendPrintField(charterSection, "What it means in my words", guide.meaning);
+      appendPrintField(charterSection, "Behavioral signature", guide.behavioralSignature);
+      appendPrintField(charterSection, "Betrayal signature", guide.betrayalSignature);
+    });
+    appendPrintField(charterSection, "North star", state.charter.northStar);
+    state.charter.tensions.forEach((tension, index) => {
+      appendText(charterSection, "h3", "", `Named tension ${index + 1}`);
+      appendPrintField(charterSection, "One pull", tension.onePull);
+      appendPrintField(charterSection, "The other pull", tension.otherPull);
+      appendPrintField(charterSection, "Default weighting this season", tension.weighting);
+    });
+    appendPrintField(charterSection, "The direction I choose", state.charter.direction);
+    appendPrintField(charterSection, "My key pattern", state.charter.keyPattern);
+    appendPrintField(charterSection, "My first early-warning sign", state.charter.earlyWarning);
+    appendPrintField(charterSection, "My support need", state.charter.supportNeed);
+    root.append(charterSection);
+
+    const commitmentsSection = createElement("section", "print-records");
+    appendText(commitmentsSection, "h2", "", "Commitment history");
+    if (!state.commitments.length) {
+      appendText(commitmentsSection, "p", "", "No commitments saved.");
+    } else {
+      state.commitments.forEach((commitment) => {
+        const record = createElement("article", "print-record");
+        appendText(record, "h3", "", printText(commitment.text));
+        appendText(record, "p", "", commitment.active !== false ? "Current commitment" : "Past commitment");
+        appendPrintField(record, "Scheduled days", commitment.days.map((day) => DAY_NAMES[day - 1]).join(", "));
+        appendText(
+          record,
+          "p",
+          "",
+          `${commitment.renegotiationCount} renegotiation${commitment.renegotiationCount === 1 ? "" : "s"}`
+        );
+        const entries = Object.entries(commitment.statuses).sort(([a], [b]) => a.localeCompare(b));
+        if (entries.length) {
+          appendTable(
+            record,
+            ["Date", "Commitment at the time", "Status", "Renegotiated detail"],
+            entries.map(([date, entry]) => {
+              const details = entry.status === "Renegotiated"
+                ? [
+                  entry.newAction ? `New action: ${entry.newAction}` : "",
+                  entry.newDate ? `New date: ${formatDate(entry.newDate)}` : ""
+                ].filter(Boolean).join(" ")
+                : "";
+              return [
+                formatDate(date),
+                printText(entry.commitmentText || commitment.text),
+                entry.status,
+                details || "None"
+              ];
+            })
+          );
+        } else {
+          appendText(record, "p", "", "No marked days.");
+        }
+        commitmentsSection.append(record);
+      });
+    }
+    root.append(commitmentsSection);
+
+    const reviewsSection = createElement("section", "print-records");
+    appendText(reviewsSection, "h2", "", "Weekly reviews");
+    const reviews = [...state.weeklyReviews].sort((a, b) => a.weekStart.localeCompare(b.weekStart));
+    if (reviews.length) {
+      appendTable(
+        reviewsSection,
+        ["Week", "Goal progress", "Confidence", "Most common obstacle", "What the week taught"],
+        reviews.map((review) => [
+          formatDate(review.weekStart),
+          `${review.progress}/10`,
+          `${review.confidence}/10`,
+          printText(review.obstacle),
+          printText(review.learning)
+        ])
+      );
+    } else {
+      appendText(reviewsSection, "p", "", "No weekly reviews saved.");
+    }
+    root.append(reviewsSection);
+
+    const wellbeingSection = createElement("section", "print-records");
+    appendText(wellbeingSection, "h2", "", "Wellbeing trend");
+    const checks = [...state.wellbeingChecks].sort((a, b) => a.weekStart.localeCompare(b.weekStart));
+    if (checks.length) {
+      appendTable(
+        wellbeingSection,
+        ["Week", "Raw total", "Score"],
+        checks.map((check) => [formatDate(check.weekStart), `${check.rawTotal}/25`, `${check.score}/100`])
+      );
+    } else {
+      appendText(wellbeingSection, "p", "", "No wellbeing checks saved.");
+    }
+    appendText(
+      wellbeingSection,
+      "p",
+      "",
+      "WHO-5 Well-Being Index. © World Health Organization 2024. Licensed under CC BY-NC-SA 3.0 IGO."
+    );
+    appendText(
+      wellbeingSection,
+      "p",
+      "",
+      "This is a self-awareness tool, not a diagnostic or screening instrument. If your score concerns you, talk to your coach or a health professional."
+    );
+    root.append(wellbeingSection);
+  }
+
+  function printSummary() {
+    renderPrintSummary();
+    window.print();
+  }
+
+  function initialize() {
+    buildStaticForms();
+    setupPrivacyInputDefaults();
+    wireEvents();
+    setupPwaFeatures();
+    renderAll();
+    showView("today", false);
+    scheduleSameDayNotification();
+    scheduleDayRefresh();
+    if (bootNotice) {
+      window.setTimeout(() => showToast(bootNotice), 150);
+    }
+  }
+
+  initialize();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en" data-single-file="false">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1B2A4A">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; base-uri 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; media-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; form-action 'none'"
+  >
+  <meta name="description" content="A private, offline-first personal goal tracker.">
+  <title>Goal Tracker</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Skip to content</a>
+
+  <div id="backupBanner" class="backup-banner" hidden>
+    <div>
+      <strong>Your local backup is due.</strong>
+      <span>Export a copy so your entries are safe if this device is lost or cleared.</span>
+    </div>
+    <div class="banner-actions">
+      <button id="bannerExportButton" class="button button-light" type="button">Export now</button>
+      <button id="dismissBackupButton" class="icon-button button-light" type="button" aria-label="Dismiss backup reminder">Close</button>
+    </div>
+  </div>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <button id="openNavButton" class="icon-button menu-button" type="button" aria-label="Open navigation" aria-controls="navDialog">
+        <span aria-hidden="true">☰</span>
+      </button>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">✓</span>
+        <span>Goal Tracker</span>
+      </div>
+      <button class="button button-quiet header-settings" type="button" data-view-target="settings">Settings</button>
+    </div>
+    <p class="privacy-strip">Everything you write stays on this device. Nothing is sent anywhere. Use Export to back up.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <button type="button" class="nav-button is-active" data-view-target="today">
+        <span aria-hidden="true">●</span><span>Today</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="charter">
+        <span aria-hidden="true">◇</span><span>Charter</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="commitments">
+        <span aria-hidden="true">✓</span><span>Commitments</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="review">
+        <span aria-hidden="true">↗</span><span>Weekly review</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="journal">
+        <span aria-hidden="true">✎</span><span>Journal</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="wellbeing">
+        <span aria-hidden="true">○</span><span>Wellbeing</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="maintenance">
+        <span aria-hidden="true">＋</span><span>Maintenance</span>
+      </button>
+      <button type="button" class="nav-button" data-view-target="settings">
+        <span aria-hidden="true">⚙</span><span>Settings</span>
+      </button>
+    </nav>
+
+    <main id="mainContent" class="main-content" tabindex="-1">
+      <section id="view-today" class="view" data-view="today" aria-labelledby="todayHeading">
+        <div class="page-heading">
+          <div>
+            <p id="todayDate" class="eyebrow"></p>
+            <h1 id="todayHeading">Today</h1>
+          </div>
+        </div>
+
+        <article class="card greeting-card">
+          <p class="card-kicker">From your charter</p>
+          <p id="dailyGreeting" class="greeting-text"></p>
+          <button id="greetingCharterButton" class="button button-secondary" type="button" data-view-target="charter" hidden>Add your charter</button>
+        </article>
+
+        <article id="maintenanceArrival" class="card milestone-arrival" hidden>
+          <div>
+            <p class="card-kicker">Maintenance check-in</p>
+            <h2 id="maintenanceArrivalTitle"></h2>
+            <p id="maintenanceArrivalText"></p>
+          </div>
+          <button class="button button-primary" type="button" data-view-target="maintenance">Reflect now</button>
+        </article>
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Daily practice</p>
+            <h2>Today's commitments</h2>
+          </div>
+          <button class="button button-quiet" type="button" data-view-target="commitments">Manage</button>
+        </div>
+        <div id="todayCommitments" class="stack"></div>
+
+        <aside id="stuckSupport" class="support-note" hidden>
+          <strong>When you feel stuck</strong>
+          <p>Stuck means you need a human, not more willpower. Bring this to your next session or your accountability partner.</p>
+        </aside>
+      </section>
+
+      <section id="view-charter" class="view" data-view="charter" aria-labelledby="charterHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Your compass</p>
+            <h1 id="charterHeading">Charter</h1>
+            <p class="intro">Build this with your group and coach on paper first, then copy it here so the app can hand it back to you.</p>
+          </div>
+        </div>
+
+        <form id="charterForm" class="form-stack">
+          <div id="guideValuesContainer" class="stack"></div>
+
+          <article class="card form-card">
+            <h2>North star and direction</h2>
+            <label>
+              <span>North star</span>
+              <span class="field-help">One or two sentences</span>
+              <textarea id="northStar" name="northStar" rows="3"></textarea>
+            </label>
+            <label>
+              <span>The direction I choose</span>
+              <textarea id="direction" name="direction" rows="3"></textarea>
+            </label>
+          </article>
+
+          <article class="card form-card">
+            <h2>Named tensions</h2>
+            <p class="field-help">Add up to two tensions you are actively holding this season.</p>
+            <div id="tensionsContainer" class="stack"></div>
+          </article>
+
+          <article class="card form-card">
+            <h2>Patterns and support</h2>
+            <label>
+              <span>My key pattern, in one line</span>
+              <input id="keyPattern" name="keyPattern" type="text">
+            </label>
+            <label>
+              <span>My first early-warning sign</span>
+              <textarea id="earlyWarning" name="earlyWarning" rows="2"></textarea>
+            </label>
+            <label>
+              <span>My support need</span>
+              <textarea id="supportNeed" name="supportNeed" rows="2"></textarea>
+            </label>
+          </article>
+
+          <div class="sticky-action">
+            <button class="button button-primary" type="submit">Save charter</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="view-commitments" class="view" data-view="commitments" aria-labelledby="commitmentsHeading" hidden>
+        <div class="page-heading page-heading-split">
+          <div>
+            <p class="eyebrow">Up to three</p>
+            <h1 id="commitmentsHeading">Commitments</h1>
+            <p class="intro">Choose small actions you can recognize and mark on their scheduled days.</p>
+          </div>
+          <button id="addCommitmentButton" class="button button-primary" type="button">Add commitment</button>
+        </div>
+
+        <div id="commitmentEditor" class="stack"></div>
+
+        <section class="card week-card" aria-labelledby="weekViewHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Status pattern</p>
+              <h2 id="weekViewHeading">Week view</h2>
+              <p id="weekRangeLabel" class="field-help"></p>
+            </div>
+            <div class="segmented-actions">
+              <button id="previousWeekButton" class="icon-button" type="button" aria-label="Show previous week">‹</button>
+              <button id="currentWeekButton" class="button button-quiet" type="button">This week</button>
+              <button id="nextWeekButton" class="icon-button" type="button" aria-label="Show next week">›</button>
+            </div>
+          </div>
+          <div id="weekGrid" class="week-grid"></div>
+          <div class="status-legend" aria-label="Status legend">
+            <span><i class="status-dot status-completed"></i>Completed</span>
+            <span><i class="status-dot status-missed"></i>Missed</span>
+            <span><i class="status-dot status-renegotiated"></i>Renegotiated</span>
+            <span><i class="status-dot status-stuck"></i>Stuck</span>
+            <span><i class="status-dot status-not-scheduled"></i>Not scheduled</span>
+          </div>
+        </section>
+      </section>
+
+      <section id="view-review" class="view" data-view="review" aria-labelledby="reviewHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Once a week</p>
+            <h1 id="reviewHeading">Weekly review</h1>
+            <p class="intro">Capture what shifted, not just what got done.</p>
+          </div>
+        </div>
+
+        <form id="weeklyReviewForm" class="card form-card">
+          <label>
+            <span>Week containing</span>
+            <input id="reviewDate" name="reviewDate" type="date" required>
+            <span id="reviewWeekHelp" class="field-help"></span>
+          </label>
+          <div class="rating-grid">
+            <label>
+              <span>Goal progress</span>
+              <output id="progressOutput" class="rating-output" for="progressRating">5</output>
+              <input id="progressRating" name="progressRating" type="range" min="0" max="10" value="5">
+              <span class="range-ends"><span>0</span><span>10</span></span>
+            </label>
+            <label>
+              <span>Confidence</span>
+              <output id="confidenceOutput" class="rating-output" for="confidenceRating">5</output>
+              <input id="confidenceRating" name="confidenceRating" type="range" min="0" max="10" value="5">
+              <span class="range-ends"><span>0</span><span>10</span></span>
+            </label>
+          </div>
+          <label>
+            <span>Most common obstacle this week</span>
+            <input id="weeklyObstacle" name="weeklyObstacle" type="text" maxlength="240" required>
+          </label>
+          <label>
+            <span>What the week taught</span>
+            <textarea id="weeklyLearning" name="weeklyLearning" rows="3" maxlength="500" required></textarea>
+          </label>
+          <button class="button button-primary" type="submit">Save weekly review</button>
+        </form>
+
+        <section class="card chart-card" aria-labelledby="reviewTrendHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Over time</p>
+              <h2 id="reviewTrendHeading">Ratings trend</h2>
+            </div>
+            <div class="chart-legend">
+              <span><i class="line-key line-progress"></i>Progress</span>
+              <span><i class="line-key line-confidence"></i>Confidence</span>
+            </div>
+          </div>
+          <canvas id="reviewChart" class="chart" role="img" aria-label="No weekly review ratings yet"></canvas>
+          <div id="reviewHistory" class="history-list"></div>
+        </section>
+      </section>
+
+      <section id="view-journal" class="view" data-view="journal" aria-labelledby="journalHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">A private record</p>
+            <h1 id="journalHeading">Journal</h1>
+            <p class="intro">Use the optional prompt, or write what matters today.</p>
+          </div>
+        </div>
+
+        <form id="journalForm" class="card form-card">
+          <input id="journalEntryId" type="hidden">
+          <label>
+            <span>Date</span>
+            <input id="journalDate" name="journalDate" type="date" required>
+          </label>
+          <div class="prompt-box">
+            <span class="card-kicker">Optional prompt</span>
+            <p id="journalPrompt"></p>
+          </div>
+          <label>
+            <span>Entry</span>
+            <textarea id="journalText" name="journalText" rows="8" required></textarea>
+          </label>
+          <div class="form-actions">
+            <button class="button button-primary" type="submit">Save journal entry</button>
+            <button id="clearJournalButton" class="button button-secondary" type="button">New entry</button>
+          </div>
+        </form>
+
+        <section aria-labelledby="journalEntriesHeading">
+          <div class="section-heading">
+            <h2 id="journalEntriesHeading">Past entries</h2>
+          </div>
+          <div id="journalEntries" class="history-list"></div>
+        </section>
+      </section>
+
+      <section id="view-wellbeing" class="view" data-view="wellbeing" aria-labelledby="wellbeingHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Weekly self-check</p>
+            <h1 id="wellbeingHeading">Wellbeing</h1>
+            <p class="intro">Answer each item for how you have felt over the last two weeks.</p>
+          </div>
+        </div>
+
+        <form id="wellbeingForm" class="form-stack">
+          <article class="card form-card">
+            <label>
+              <span>Week containing</span>
+              <input id="wellbeingDate" name="wellbeingDate" type="date" required>
+              <span id="wellbeingWeekHelp" class="field-help"></span>
+            </label>
+          </article>
+          <div id="whoItems" class="stack"></div>
+          <div class="sticky-action">
+            <button class="button button-primary" type="submit">Save wellbeing check</button>
+          </div>
+        </form>
+
+        <section class="card chart-card wellbeing-trend" aria-labelledby="wellbeingTrendHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Score from 0 to 100</p>
+              <h2 id="wellbeingTrendHeading">Wellbeing trend</h2>
+            </div>
+          </div>
+          <canvas id="wellbeingChart" class="chart" role="img" aria-label="No wellbeing scores yet"></canvas>
+          <div id="wellbeingHistory" class="history-list"></div>
+          <div class="attribution">
+            <p>WHO-5 Well-Being Index. © World Health Organization 2024. Licensed under CC BY-NC-SA 3.0 IGO.</p>
+            <p>This is a self-awareness tool, not a diagnostic or screening instrument. If your score concerns you, talk to your coach or a health professional.</p>
+          </div>
+        </section>
+      </section>
+
+      <section id="view-maintenance" class="view" data-view="maintenance" aria-labelledby="maintenanceHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">After the program</p>
+            <h1 id="maintenanceHeading">Maintenance</h1>
+            <p class="intro">Set the end date once. Goal Tracker will surface a reflection at 30, 60, and 90 days.</p>
+          </div>
+        </div>
+
+        <form id="programEndForm" class="card form-card">
+          <label>
+            <span>Program end date</span>
+            <input id="programEndDate" name="programEndDate" type="date">
+          </label>
+          <button class="button button-primary" type="submit">Save end date</button>
+        </form>
+
+        <div id="maintenanceMarks" class="milestone-grid"></div>
+
+        <form id="maintenanceReflectionForm" class="card form-card" hidden>
+          <input id="maintenanceMarkKey" type="hidden">
+          <p class="card-kicker">Maintenance reflection</p>
+          <h2 id="maintenanceReflectionHeading"></h2>
+          <label>
+            <span>What held</span>
+            <textarea id="maintenanceHeld" rows="3" required></textarea>
+          </label>
+          <label>
+            <span>What slipped</span>
+            <textarea id="maintenanceSlipped" rows="3" required></textarea>
+          </label>
+          <label>
+            <span>One adjustment</span>
+            <textarea id="maintenanceAdjustment" rows="3" required></textarea>
+          </label>
+          <button class="button button-primary" type="submit">Save reflection</button>
+        </form>
+      </section>
+
+      <section id="view-settings" class="view" data-view="settings" aria-labelledby="settingsHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Local controls</p>
+            <h1 id="settingsHeading">Settings</h1>
+          </div>
+        </div>
+
+        <section class="card settings-card" aria-labelledby="promptSettingsHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Journal</p>
+              <h2 id="promptSettingsHeading">Writing prompts</h2>
+              <p class="field-help">Replace these with your program's prompts at any time.</p>
+            </div>
+          </div>
+          <form id="promptSettingsForm" class="form-stack">
+            <div id="promptInputs" class="stack"></div>
+            <button class="button button-primary" type="submit">Save prompts</button>
+          </form>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="reminderHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Reminders</p>
+              <h2 id="reminderHeading">Daily reminder</h2>
+            </div>
+          </div>
+          <p>Push notifications are not available because they require a server. Goal Tracker does not use a server.</p>
+          <label>
+            <span>Reminder time</span>
+            <input id="reminderTime" type="time" value="09:00">
+          </label>
+          <div class="form-actions">
+            <button id="downloadCalendarButton" class="button button-primary" type="button">Add a daily reminder to my calendar</button>
+            <button id="openAppReminderButton" class="button button-secondary" type="button">Enable open-app reminder</button>
+          </div>
+          <p id="notificationStatus" class="field-help">Optional notifications work only while this app is open.</p>
+        </section>
+
+        <section id="installCard" class="card settings-card" aria-labelledby="installHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Home screen</p>
+              <h2 id="installHeading">Install Goal Tracker</h2>
+            </div>
+          </div>
+          <p id="installHelp">Your browser may offer installation from its own menu.</p>
+          <button id="installButton" class="button button-primary" type="button" hidden>Install app</button>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="dataHeading">
+          <div class="section-heading">
+            <div>
+              <p class="card-kicker">Backup and restore</p>
+              <h2 id="dataHeading">Your data</h2>
+            </div>
+          </div>
+          <p id="storagePersistenceStatus" class="storage-status" role="status"></p>
+          <div class="data-actions">
+            <button id="exportButton" class="button button-primary" type="button">Export all data</button>
+            <label class="button button-secondary file-button">
+              <span>Import backup</span>
+              <input id="importInput" type="file" accept="application/json,.json">
+            </label>
+            <button id="printButton" class="button button-secondary" type="button">Print summary</button>
+          </div>
+          <p id="lastExportText" class="field-help"></p>
+        </section>
+
+        <section class="card privacy-card" aria-labelledby="privacyHeading">
+          <p class="card-kicker">Privacy</p>
+          <h2 id="privacyHeading">This device only</h2>
+          <p>Everything you write stays on this device. Nothing is sent anywhere. Use Export to back up.</p>
+          <p>There is no account, server, sync, analytics, telemetry, external script, or remote font.</p>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="navDialog" class="nav-dialog" aria-labelledby="navDialogHeading">
+    <div class="dialog-header">
+      <h2 id="navDialogHeading">Go to</h2>
+      <button id="closeNavButton" class="icon-button" type="button" aria-label="Close navigation">×</button>
+    </div>
+    <nav class="mobile-nav" aria-label="Main navigation">
+      <button type="button" class="nav-button is-active" data-view-target="today">Today</button>
+      <button type="button" class="nav-button" data-view-target="charter">Charter</button>
+      <button type="button" class="nav-button" data-view-target="commitments">Commitments</button>
+      <button type="button" class="nav-button" data-view-target="review">Weekly review</button>
+      <button type="button" class="nav-button" data-view-target="journal">Journal</button>
+      <button type="button" class="nav-button" data-view-target="wellbeing">Wellbeing</button>
+      <button type="button" class="nav-button" data-view-target="maintenance">Maintenance</button>
+      <button type="button" class="nav-button" data-view-target="settings">Settings</button>
+    </nav>
+  </dialog>
+
+  <dialog id="renegotiationDialog" class="form-dialog" aria-labelledby="renegotiationHeading">
+    <form id="renegotiationForm" method="dialog">
+      <div class="dialog-header">
+        <div>
+          <p class="card-kicker">Renegotiated</p>
+          <h2 id="renegotiationHeading">Name the new commitment</h2>
+        </div>
+        <button id="cancelRenegotiationButton" class="icon-button" type="button" aria-label="Cancel">×</button>
+      </div>
+      <p>Enter a new action, a new date, or both.</p>
+      <input id="renegotiationCommitmentId" type="hidden">
+      <input id="renegotiationStatusDate" type="hidden">
+      <label>
+        <span>New action</span>
+        <textarea id="renegotiationAction" rows="3"></textarea>
+      </label>
+      <label>
+        <span>New date</span>
+        <input id="renegotiationDate" type="date">
+      </label>
+      <p id="renegotiationError" class="form-error" role="alert" hidden>Add a new action or date.</p>
+      <div class="form-actions">
+        <button class="button button-primary" type="submit">Save renegotiation</button>
+        <button id="closeRenegotiationButton" class="button button-secondary" type="button">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="importConfirmDialog" class="form-dialog" aria-labelledby="importConfirmHeading">
+    <div class="dialog-header">
+      <div>
+        <p class="card-kicker">Restore backup</p>
+        <h2 id="importConfirmHeading">Replace data on this device?</h2>
+      </div>
+    </div>
+    <p>Importing this backup will replace all current Goal Tracker data on this device.</p>
+    <div class="form-actions">
+      <button id="cancelImportButton" class="button button-secondary" type="button">Keep current data</button>
+      <button id="confirmImportButton" class="button button-danger" type="button">Replace with backup</button>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <section id="printSummary" class="print-summary" aria-label="Goal Tracker printable summary"></section>
+
+  <script src="app.js"></script>
+</body>
+</html>
