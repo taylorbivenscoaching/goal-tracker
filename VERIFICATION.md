@@ -35,7 +35,7 @@ Verification date: 2026-07-27
 - Pass: the printable summary contained Charter, Commitment history, Weekly reviews, and Wellbeing trend.
 - Pass: the PWA reloaded with its restored data after the temporary server was stopped.
 - Pass: the self-contained file loaded over a fresh local test origin, exposed every screen, hid installation, had no manifest or external app assets, and produced no app console errors.
-- Manual confirmation pending: direct local-file navigation was blocked by the browser automation security policy. Opening the generated file directly, saving one entry, and exporting once must be confirmed manually.
+- Pass: direct local-file use was manually confirmed. The generated file opened, saved an entry, and exported a backup successfully.
 
 ## 360px viewport
 
