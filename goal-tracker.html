@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#1B2A4A">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-AmzIKdJXpVwLEZzU68lfQ1mdBtEyoO5dFPT7alHxhcQ='; style-src 'sha256-Ge08pgRv8mC3d4FVAQtG/hg/NUlKx7yEkmeWaC9Co2U='; img-src data: blob:; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-5l1W7DcezUVRzkjoqw9C39Vfe3CDdzcB4757l1r1Ivs='; style-src 'sha256-Myc7axMKiZly9nGO0iI7EwCnmloKCFNoFUZOdENWtwc='; img-src data: blob:; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
   <meta name="description" content="A private, offline-first personal goal tracker.">
   <title>Goal Tracker</title>
   <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAADT0lEQVR42u3dy3HiUBRFUfJQAFQ5FMJ0No4KTxlTIL379hrsebd0FuYjxO34eTylajcHQQBIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgASABIAEgATOvv9/52jh8AiaGDAYDBAwGA0cMAgOGDAIDRwwCA4YMAgPFDAIDhgwCA4YMAgPFDAIDhgwCA8UMAgPFDAIDxQwCA4YMAgPFDAIDxQxAGYKwQZAEYKQQA6OPjBsD4PaK/HGcAjN9TGQCM3/gBMH7jBwAA4wfA+I0fAOM3fgAAMH4AjN/4AQDA+AEwfuMHwPgj458EEADjB8D4jf8b5woAAJLP+QEAIP2CFwDjB2AIAgCMHwDjN/5vni8AAMh80AUAAOlPeQEwfuMf9O8GwPhPOVcAAJAdPwAApMcPgPGnx7/y/wUA4wcAAOM/4/wAcAGAidB2/WwGgBMBTP2rs/MHkwAMeJQBYK0HpSSAqw+w8V/3lBSAhV5gGf/njwMAw95eM/47ACsf9OlvydY+iQdg6Mfrxg9A/voS4wcgf3Wh8QOQv7zW+AHIX19u/ADkv2DhEgcA8t8wMn4A8qMyfgDyj6rGD0D+aYUXvQDkn1cbPwDp+8x42uP7AN5dMX4AADB+AMI3XDJ+AAAwfgBcZmD8AEBg/O4N2rz1nvED4JJjAACo34Kvfk9VACAwfgB8/bA2fgDcjzI9fgAgMH4A3IqkOH4AIDB+ANY64cYPQBrAdAR+5ywKAALjByB6ko6Bv5oJAATGDwAExg/AiFEAAAAExp97YwGAwTfdBSAMYGcExg9AFoHxA7DMYIwfAAiMf+trq7YAMB2B8QOQRWD8AGQRGD8A40ZVHz8AEBg/ABC8M4bJw9/1e9XbAjgW+AnQ6YMv3FljawC7jdD4AQDB8AGAwPgBgMD4AYDA+AEAwfABgMD4AQDB8AEAwfABgMD4AQDB8AHwZXUB4IcpBMDWGJwPAFIgHG8AEjAcPwAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAEgIMgACQAJAAkACQAJAAkACQAJAAkACQAJAAkACQAJAAkAKRJ/QNwzzy5V3Bf0gAAAABJRU5ErkJggg==">
@@ -12,15 +12,24 @@
   color-scheme: light;
   --navy: #1B2A4A;
   --navy-2: #29426f;
+  --primary: #1B2A4A;
+  --primary-hover: #29426f;
+  --chart-primary: #1B2A4A;
   --gold: #C9A227;
   --gold-text: #8F7119;
   --ink: #172033;
   --muted: #5f6878;
   --paper: #ffffff;
+  --field: #ffffff;
+  --translucent-paper: rgba(255, 255, 255, 0.94);
   --canvas: #f5f6f8;
   --line: #d9dee7;
   --soft-navy: #eef2f8;
   --soft-gold: #fbf6e5;
+  --banner-bg: #8F7119;
+  --banner-fg: #ffffff;
+  --brand-mark-bg: #C9A227;
+  --brand-mark-fg: #1B2A4A;
   --success: #2f765a;
   --danger: #a44343;
   --warning: #8F7119;
@@ -32,6 +41,58 @@
   font-family: system-ui, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --navy: #dce6ff;
+  --navy-2: #233b68;
+  --primary: #3f619b;
+  --primary-hover: #5274ad;
+  --chart-primary: #9fbbf0;
+  --gold: #d8b84b;
+  --gold-text: #e3c969;
+  --ink: #edf1f8;
+  --muted: #b8c2d2;
+  --paper: #182238;
+  --field: #10192b;
+  --translucent-paper: rgba(24, 34, 56, 0.96);
+  --canvas: #0e1626;
+  --line: #3a4760;
+  --soft-navy: #24324c;
+  --soft-gold: #3c3420;
+  --success: #70c49e;
+  --danger: #f19a9a;
+  --warning: #e3c969;
+  --stuck: #c3a0df;
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="device"] {
+    color-scheme: dark;
+    --navy: #dce6ff;
+    --navy-2: #233b68;
+    --primary: #3f619b;
+    --primary-hover: #5274ad;
+    --chart-primary: #9fbbf0;
+    --gold: #d8b84b;
+    --gold-text: #e3c969;
+    --ink: #edf1f8;
+    --muted: #b8c2d2;
+    --paper: #182238;
+    --field: #10192b;
+    --translucent-paper: rgba(24, 34, 56, 0.96);
+    --canvas: #0e1626;
+    --line: #3a4760;
+    --soft-navy: #24324c;
+    --soft-gold: #3c3420;
+    --success: #70c49e;
+    --danger: #f19a9a;
+    --warning: #e3c969;
+    --stuck: #c3a0df;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  }
 }
 
 * {
@@ -139,7 +200,7 @@ h3 {
   transform: translateY(-160%);
   border-radius: 8px;
   color: white;
-  background: var(--navy);
+  background: var(--primary);
 }
 
 .skip-link:focus {
@@ -154,8 +215,8 @@ h3 {
   justify-content: center;
   gap: 1rem;
   padding: 0.75rem max(1rem, env(safe-area-inset-right)) 0.75rem max(1rem, env(safe-area-inset-left));
-  color: #fff;
-  background: var(--gold-text);
+  color: var(--banner-fg);
+  background: var(--banner-bg);
 }
 
 .backup-banner > div:first-child {
@@ -178,7 +239,7 @@ h3 {
   z-index: 50;
   top: 0;
   border-bottom: 1px solid rgba(217, 222, 231, 0.88);
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--translucent-paper);
   backdrop-filter: blur(12px);
 }
 
@@ -209,8 +270,8 @@ h3 {
   height: 34px;
   place-items: center;
   border-radius: 10px;
-  color: var(--navy);
-  background: var(--gold);
+  color: var(--brand-mark-fg);
+  background: var(--brand-mark-bg);
   font-size: 1.15rem;
   font-weight: 900;
 }
@@ -219,7 +280,7 @@ h3 {
   margin: 0;
   padding: 0.45rem 1rem;
   color: #fff;
-  background: var(--navy);
+  background: var(--primary);
   text-align: center;
   font-size: 0.78rem;
   line-height: 1.35;
@@ -402,6 +463,8 @@ label {
 }
 
 input[type="text"],
+input[type="password"],
+input[type="search"],
 input[type="date"],
 input[type="time"],
 textarea,
@@ -409,10 +472,10 @@ select {
   width: 100%;
   min-height: 48px;
   padding: 0.72rem 0.8rem;
-  border: 1px solid #b9c2d0;
+  border: 1px solid var(--line);
   border-radius: 10px;
   color: var(--ink);
-  background: #fff;
+  background: var(--field);
   font-weight: 430;
 }
 
@@ -465,17 +528,17 @@ select:hover {
 
 .button-primary {
   color: #fff;
-  background: var(--navy);
+  background: var(--primary);
 }
 
 .button-primary:hover {
-  background: var(--navy-2);
+  background: var(--primary-hover);
 }
 
 .button-secondary {
-  border-color: #b9c2d0;
+  border-color: var(--line);
   color: var(--navy);
-  background: #fff;
+  background: var(--field);
 }
 
 .button-secondary:hover,
@@ -496,13 +559,13 @@ select:hover {
 .button-light {
   border-color: rgba(255, 255, 255, 0.7);
   color: var(--navy);
-  background: #fff;
+  background: var(--field);
 }
 
 .button-danger {
   border-color: rgba(164, 67, 67, 0.28);
   color: var(--danger);
-  background: #fff;
+  background: var(--field);
 }
 
 .button[disabled],
@@ -520,7 +583,7 @@ select:hover {
   padding: 0.65rem;
   border: 1px solid rgba(217, 222, 231, 0.9);
   border-radius: 15px;
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--translucent-paper);
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
 }
@@ -606,18 +669,18 @@ select:hover {
   min-width: 0;
   min-height: 44px;
   place-items: center;
-  border: 1px solid #b9c2d0;
+  border: 1px solid var(--line);
   border-radius: 10px;
   color: var(--muted);
-  background: #fff;
+  background: var(--field);
   font-size: 0.76rem;
   font-weight: 720;
 }
 
 .day-check input:checked + span {
-  border-color: var(--navy);
+  border-color: var(--primary);
   color: #fff;
-  background: var(--navy);
+  background: var(--primary);
 }
 
 .day-check input:focus-visible + span {
@@ -661,7 +724,7 @@ select:hover {
   justify-content: flex-start;
   border-color: var(--line);
   color: var(--navy);
-  background: #fff;
+  background: var(--field);
   font-size: 0.9rem;
 }
 
@@ -714,17 +777,17 @@ select:hover {
   margin: 0.7rem 0 0;
   padding: 0.7rem;
   border-radius: 10px;
-  color: #65510f;
+  color: var(--gold-text);
   background: var(--soft-gold);
   font-size: 0.9rem;
 }
 
 .empty-state {
   padding: 1.5rem;
-  border: 1px dashed #b9c2d0;
+  border: 1px dashed var(--line);
   border-radius: var(--radius);
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.65);
+  background: var(--paper);
   text-align: center;
 }
 
@@ -737,8 +800,8 @@ select:hover {
   padding: 1rem;
   border-left: 5px solid var(--stuck);
   border-radius: 12px;
-  color: #463154;
-  background: #f5eff8;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--stuck) 14%, var(--paper));
 }
 
 .support-note p {
@@ -782,7 +845,7 @@ select:hover {
   border: 1px solid var(--line);
   border-radius: 9px;
   color: var(--muted);
-  background: #fff;
+  background: var(--field);
   text-align: center;
   font-size: 0.66rem;
 }
@@ -855,7 +918,7 @@ select:hover {
   place-items: center;
   border-radius: 50%;
   color: var(--navy);
-  background: #fff;
+  background: var(--field);
   font-size: 1.15rem;
   font-weight: 780;
 }
@@ -883,7 +946,7 @@ input[type="range"] {
   height: 230px;
   margin-top: 0.75rem;
   border-radius: 12px;
-  background: linear-gradient(to bottom, #fff, #f9fafc);
+  background: linear-gradient(to bottom, var(--field), var(--paper));
 }
 
 .chart-legend {
@@ -907,7 +970,7 @@ input[type="range"] {
 }
 
 .line-progress {
-  background: var(--navy);
+  background: var(--chart-primary);
 }
 
 .line-confidence {
@@ -926,7 +989,7 @@ input[type="range"] {
   padding: 0.9rem;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--field);
 }
 
 .history-head {
@@ -1014,7 +1077,7 @@ input[type="range"] {
   padding: 0.65rem 0.75rem;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: #fff;
+  background: var(--field);
 }
 
 .response-option b {
@@ -1114,7 +1177,7 @@ input[type="range"] {
 
 .privacy-card {
   border-color: rgba(201, 162, 39, 0.42);
-  background: linear-gradient(135deg, var(--soft-gold), #fff 75%);
+  background: linear-gradient(135deg, var(--soft-gold), var(--paper) 75%);
 }
 
 .privacy-card p:last-child {
@@ -1130,7 +1193,7 @@ input[type="range"] {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   color: var(--ink);
-  background: #fff;
+  background: var(--paper);
   box-shadow: 0 24px 70px rgba(11, 20, 39, 0.3);
 }
 
@@ -1192,6 +1255,21 @@ input[type="range"] {
   padding: 0;
 }
 
+.form-dialog > .dialog-header {
+  padding: 1rem 1rem 0.5rem;
+}
+
+.form-dialog > p,
+.form-dialog > label,
+.form-dialog > .form-actions {
+  margin-right: 1rem;
+  margin-left: 1rem;
+}
+
+.form-dialog > .form-actions {
+  margin-bottom: 1rem;
+}
+
 .form-error {
   margin: 0;
   color: var(--danger);
@@ -1207,9 +1285,310 @@ input[type="range"] {
   padding: 0.85rem 1rem;
   border-radius: 12px;
   color: #fff;
-  background: var(--navy);
+  background: var(--primary);
   box-shadow: 0 16px 42px rgba(11, 20, 39, 0.3);
   font-weight: 650;
+}
+
+.lock-screen {
+  position: fixed;
+  z-index: 500;
+  inset: 0;
+  display: grid;
+  min-width: 320px;
+  min-height: 100%;
+  place-items: center;
+  padding: 1rem;
+  background: var(--canvas);
+}
+
+.lock-card {
+  width: min(100%, 420px);
+  padding: clamp(1.25rem, 6vw, 2rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.lock-brand {
+  margin-bottom: 2rem;
+}
+
+.lock-card .button {
+  width: 100%;
+}
+
+.pin-input {
+  letter-spacing: 0.55em;
+  text-align: center;
+  font-size: 1.15rem;
+}
+
+.partner-check-in {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border-left: 5px solid var(--gold);
+}
+
+.partner-check-in h2 {
+  margin-bottom: 0;
+}
+
+.commitment-plans {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+}
+
+.commitment-plans summary {
+  min-height: 44px;
+  padding: 0.55rem 0;
+  color: var(--navy);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.commitment-plans p {
+  margin: 0.4rem 0;
+  overflow-wrap: anywhere;
+}
+
+.plan-fieldset,
+.choice-row {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0;
+  border: 0;
+}
+
+.plan-fieldset legend,
+.choice-row legend,
+.form-card fieldset > legend {
+  margin-bottom: 0.55rem;
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.choice-row label,
+.toggle-label,
+.confirm-label {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.choice-row input,
+.toggle-label input,
+.confirm-label input {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  accent-color: var(--navy);
+}
+
+.compact-stack {
+  gap: 0.65rem;
+}
+
+.high-risk-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.55rem;
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--soft-navy);
+}
+
+.tripwire-row {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.tripwire-row span {
+  color: var(--gold-text);
+  font-weight: 800;
+}
+
+.plan-summary {
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+.plan-summary-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.guided-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.guided-card {
+  padding: 1rem;
+}
+
+.guided-card .history-list {
+  margin-top: 0.8rem;
+}
+
+.compact-history .history-item {
+  padding: 0.7rem;
+}
+
+.guided-dialog {
+  width: min(calc(100% - 2rem), 560px);
+}
+
+.guided-dialog form {
+  min-height: min(480px, calc(100vh - 2rem));
+  grid-template-rows: auto 1fr auto;
+}
+
+.guided-copy {
+  padding: 1rem;
+  border-left: 5px solid var(--gold);
+  border-radius: 12px;
+  background: var(--soft-gold);
+}
+
+.value-choice-grid {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.value-choice {
+  min-height: 52px;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--navy);
+  background: var(--soft-navy);
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.inline-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.evidence-label-card {
+  padding: 1rem;
+}
+
+.evidence-label-card + .evidence-label-card {
+  margin-top: 0.8rem;
+}
+
+.evidence-entry-form {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+}
+
+.search-results {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.search-group h3 {
+  margin-bottom: 0.45rem;
+}
+
+.search-result {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  background: var(--field);
+  cursor: pointer;
+  text-align: left;
+}
+
+.search-result + .search-result {
+  margin-top: 0.4rem;
+}
+
+.copy-fallback {
+  margin-top: 1rem;
+}
+
+.copy-fallback textarea {
+  min-height: 260px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.85rem;
+}
+
+input[type="search"] {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  background: var(--field);
+}
+
+@media (min-width: 620px) {
+  .high-risk-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .guided-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .inline-form {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .inline-form .button {
+    margin-bottom: 0.8rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .partner-check-in {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .partner-check-in .button {
+    width: 100%;
+  }
 }
 
 .print-summary {
@@ -1442,6 +1821,46 @@ input[type="range"] {
 </style>
 </head>
 <body>
+  <section id="lockScreen" class="lock-screen" aria-labelledby="lockHeading" hidden>
+    <div class="lock-card">
+      <div class="brand lock-brand">
+        <span class="brand-mark" aria-hidden="true">✓</span>
+        <span>Goal Tracker</span>
+      </div>
+      <p class="card-kicker">Screen lock</p>
+      <h1 id="lockHeading">Enter your PIN</h1>
+      <p>Your entries stay hidden until this device is unlocked.</p>
+      <form id="unlockForm" class="form-stack">
+        <label>
+          <span>4-digit PIN</span>
+          <input id="unlockPin" class="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required>
+        </label>
+        <p id="unlockError" class="form-error" role="alert" hidden>The PIN was not accepted.</p>
+        <button class="button button-primary" type="submit">Unlock</button>
+      </form>
+      <button id="forgotPinButton" class="button button-quiet" type="button">I forgot my PIN</button>
+    </div>
+  </section>
+
+  <dialog id="wipeConfirmDialog" class="form-dialog" aria-labelledby="wipeConfirmHeading">
+    <div class="dialog-header">
+      <div>
+        <p class="card-kicker">Forgotten PIN</p>
+        <h2 id="wipeConfirmHeading">Wipe local data?</h2>
+      </div>
+    </div>
+    <p>Your PIN cannot be recovered. Wiping removes all Goal Tracker data on this device. Afterward, you can import an exported backup. The backup does not contain a PIN.</p>
+    <label class="confirm-label">
+      <input id="wipeConfirmCheck" type="checkbox">
+      <span>I understand this removes all local Goal Tracker data.</span>
+    </label>
+    <div class="form-actions">
+      <button id="cancelWipeButton" class="button button-secondary" type="button">Cancel</button>
+      <button id="confirmWipeButton" class="button button-danger" type="button" disabled>Wipe local data</button>
+    </div>
+  </dialog>
+
+  <div id="appShell" hidden>
   <a class="skip-link" href="#mainContent">Skip to content</a>
 
   <div id="backupBanner" class="backup-banner" hidden>
@@ -1489,8 +1908,8 @@ input[type="range"] {
       <button type="button" class="nav-button" data-view-target="wellbeing">
         <span aria-hidden="true">○</span><span>Wellbeing</span>
       </button>
-      <button type="button" class="nav-button" data-view-target="maintenance">
-        <span aria-hidden="true">＋</span><span>Maintenance</span>
+      <button type="button" class="nav-button" data-view-target="tools">
+        <span aria-hidden="true">＋</span><span>Tools</span>
       </button>
       <button type="button" class="nav-button" data-view-target="settings">
         <span aria-hidden="true">⚙</span><span>Settings</span>
@@ -1534,6 +1953,12 @@ input[type="range"] {
           <strong>When you feel stuck</strong>
           <p>Stuck means you need a human, not more willpower. Bring this to your next session or your accountability partner.</p>
         </aside>
+
+        <article id="partnerCheckIn" class="card partner-check-in" hidden>
+          <p class="card-kicker">Accountability partner</p>
+          <h2 id="partnerCheckInText"></h2>
+          <button class="button button-secondary" type="button" data-view-target="tools">View partner card</button>
+        </article>
       </section>
 
       <section id="view-charter" class="view" data-view="charter" aria-labelledby="charterHeading" hidden>
@@ -1774,6 +2199,37 @@ input[type="range"] {
           <button class="button button-primary" type="submit">Save end date</button>
         </form>
 
+        <form id="maintenancePlanForm" class="card form-card">
+          <p class="card-kicker">Editable anytime</p>
+          <h2>Maintenance plan</h2>
+          <fieldset>
+            <legend>High-risk map</legend>
+            <p class="field-help">Add up to five situations and why each one is risky.</p>
+            <div id="highRiskRows" class="stack compact-stack"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Tripwires</legend>
+            <p class="field-help">Up to five early signals that the plan is drifting.</p>
+            <div id="tripwireRows" class="stack compact-stack"></div>
+          </fieldset>
+          <label>
+            <span>Recovery plan</span>
+            <span class="field-help">What I do within 48 hours of a slip</span>
+            <textarea id="recoveryPlan" rows="3"></textarea>
+          </label>
+          <label>
+            <span>Supports</span>
+            <span class="field-help">People and how to reach them</span>
+            <textarea id="maintenanceSupports" rows="3"></textarea>
+          </label>
+          <label>
+            <span>Maintenance ritual</span>
+            <span class="field-help">The small weekly practice I keep</span>
+            <textarea id="maintenanceRitual" rows="3"></textarea>
+          </label>
+          <button class="button button-primary" type="submit">Save maintenance plan</button>
+        </form>
+
         <div id="maintenanceMarks" class="milestone-grid"></div>
 
         <form id="maintenanceReflectionForm" class="card form-card" hidden>
@@ -1794,6 +2250,152 @@ input[type="range"] {
           </label>
           <button class="button button-primary" type="submit">Save reflection</button>
         </form>
+
+        <section id="maintenancePlanAlongside" class="card plan-summary" hidden aria-labelledby="maintenancePlanAlongsideHeading">
+          <p class="card-kicker">Your plan</p>
+          <h2 id="maintenancePlanAlongsideHeading">Keep this alongside your reflection</h2>
+          <div id="maintenancePlanAlongsideContent"></div>
+        </section>
+      </section>
+
+      <section id="view-tools" class="view" data-view="tools" aria-labelledby="toolsHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Private practices</p>
+            <h1 id="toolsHeading">Tools</h1>
+          </div>
+        </div>
+
+        <article class="card milestone-arrival">
+          <div>
+            <p class="card-kicker">30, 60, and 90 days</p>
+            <h2>Maintenance</h2>
+            <p>Build your maintenance plan and complete each arrival reflection.</p>
+          </div>
+          <button class="button button-secondary" type="button" data-view-target="maintenance">Open maintenance</button>
+        </article>
+
+        <section class="card settings-card" aria-labelledby="searchHeading">
+          <p class="card-kicker">Find an entry</p>
+          <h2 id="searchHeading">Search</h2>
+          <label>
+            <span>Search journal, notice and name, and evidence</span>
+            <input id="searchInput" type="search" autocomplete="off">
+          </label>
+          <div id="searchResults" class="search-results" aria-live="polite"></div>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="partnerHeading">
+          <p class="card-kicker">Accountability</p>
+          <h2 id="partnerHeading">Partner card</h2>
+          <form id="partnerForm" class="form-stack">
+            <label>
+              <span>Partner name</span>
+              <input id="partnerName" type="text">
+            </label>
+            <label>
+              <span>How we check in</span>
+              <textarea id="partnerCheckInMethod" rows="2"></textarea>
+            </label>
+            <label>
+              <span>Agreed check-in day</span>
+              <select id="partnerCheckInDay">
+                <option value="0">No day selected</option>
+                <option value="1">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+                <option value="7">Sunday</option>
+              </select>
+            </label>
+            <label>
+              <span>What I asked them for</span>
+              <textarea id="partnerAskedFor" rows="2"></textarea>
+            </label>
+            <label>
+              <span>What I offer in return</span>
+              <textarea id="partnerOffer" rows="2"></textarea>
+            </label>
+            <button class="button button-primary" type="submit">Save partner card</button>
+          </form>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="noticeHeading">
+          <p class="card-kicker">Quick capture</p>
+          <h2 id="noticeHeading">Notice and name</h2>
+          <p>Naming what showed up loosens its grip. Catch it, name it, choose the next move.</p>
+          <form id="noticeForm" class="form-stack">
+            <input id="noticeId" type="hidden">
+            <label>
+              <span>Date</span>
+              <input id="noticeDate" type="date" required>
+            </label>
+            <label>
+              <span>Emotion word</span>
+              <input id="noticeEmotion" type="text" required>
+            </label>
+            <div id="emotionChips" class="chip-list" aria-label="Suggested emotion words"></div>
+            <label>
+              <span>Trigger moment</span>
+              <input id="noticeTrigger" type="text" maxlength="240" required>
+            </label>
+            <label>
+              <span>Next move</span>
+              <input id="noticeNextMove" type="text" maxlength="240" required>
+            </label>
+            <div class="form-actions">
+              <button class="button button-primary" type="submit">Save notice</button>
+              <button id="clearNoticeButton" class="button button-secondary" type="button">New notice</button>
+            </div>
+          </form>
+          <div id="noticeEntries" class="history-list"></div>
+        </section>
+
+        <section class="guided-grid" aria-label="Guided cards">
+          <article class="card guided-card">
+            <p class="card-kicker">Four calm steps</p>
+            <h2>It slipped</h2>
+            <p>Use a slip as information and make the next attempt easier.</p>
+            <button id="startSlipButton" class="button button-primary" type="button">Start it slipped</button>
+            <div id="slipCompletions" class="history-list compact-history"></div>
+          </article>
+          <article class="card guided-card">
+            <p class="card-kicker">Three small steps</p>
+            <h2>Unhook and choose</h2>
+            <p>Name the story, choose a value, and take one small move.</p>
+            <button id="startUnhookButton" class="button button-primary" type="button">Start unhook and choose</button>
+            <div id="unhookCompletions" class="history-list compact-history"></div>
+          </article>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="evidenceHeading">
+          <p class="card-kicker">Test a label</p>
+          <h2 id="evidenceHeading">Evidence log</h2>
+          <p>Old labels get tested against dated, specific evidence, not argued with.</p>
+          <form id="evidenceLabelForm" class="inline-form">
+            <label>
+              <span>Label I am testing</span>
+              <input id="evidenceLabelText" type="text" required>
+            </label>
+            <button class="button button-primary" type="submit">Add label</button>
+          </form>
+          <div id="evidenceLabels" class="stack"></div>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="summaryHeading">
+          <p class="card-kicker">Current week</p>
+          <h2 id="summaryHeading">Copy weekly summary</h2>
+          <p>Nothing is sent anywhere. Copy this to bring to your session or share with your accountability partner, if you choose.</p>
+          <button id="copyWeeklySummaryButton" class="button button-primary" type="button">Copy weekly summary</button>
+          <div id="summaryFallback" class="copy-fallback" hidden>
+            <label>
+              <span>Select and copy this summary</span>
+              <textarea id="summaryFallbackText" rows="14" readonly></textarea>
+            </label>
+          </div>
+        </section>
       </section>
 
       <section id="view-settings" class="view" data-view="settings" aria-labelledby="settingsHeading" hidden>
@@ -1803,6 +2405,19 @@ input[type="range"] {
             <h1 id="settingsHeading">Settings</h1>
           </div>
         </div>
+
+        <section class="card settings-card" aria-labelledby="appearanceHeading">
+          <p class="card-kicker">Appearance</p>
+          <h2 id="appearanceHeading">Theme</h2>
+          <form id="themeForm">
+            <fieldset class="choice-row">
+              <legend>Choose a theme</legend>
+              <label><input type="radio" name="themeMode" value="device"> <span>Follow device</span></label>
+              <label><input type="radio" name="themeMode" value="light"> <span>Light</span></label>
+              <label><input type="radio" name="themeMode" value="dark"> <span>Dark</span></label>
+            </fieldset>
+          </form>
+        </section>
 
         <section class="card settings-card" aria-labelledby="promptSettingsHeading">
           <div class="section-heading">
@@ -1867,6 +2482,36 @@ input[type="range"] {
           <p id="lastExportText" class="field-help"></p>
         </section>
 
+        <section class="card settings-card" aria-labelledby="pinHeading">
+          <p class="card-kicker">Optional privacy</p>
+          <h2 id="pinHeading">Screen lock</h2>
+          <p>This is a screen lock, not encryption. Anyone with full access to this device's files could still read the data. Your export file is never locked.</p>
+          <p class="field-help">If you forget the PIN, the only path is to wipe local data and restore an exported backup.</p>
+          <form id="pinSettingsForm" class="form-stack">
+            <label class="toggle-label">
+              <input id="pinEnabledToggle" type="checkbox">
+              <span>Require a PIN on each open</span>
+            </label>
+            <div id="pinSetupFields" class="form-stack">
+              <label>
+                <span id="pinCurrentLabel">Current PIN</span>
+                <input id="pinCurrent" class="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off">
+              </label>
+              <label>
+                <span>New 4-digit PIN</span>
+                <input id="pinNew" class="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off">
+              </label>
+              <label>
+                <span>Confirm new PIN</span>
+                <input id="pinConfirm" class="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off">
+              </label>
+            </div>
+            <p id="pinSettingsError" class="form-error" role="alert" hidden></p>
+            <button class="button button-primary" type="submit">Save screen lock</button>
+          </form>
+          <p id="pinStatus" class="field-help"></p>
+        </section>
+
         <section class="card privacy-card" aria-labelledby="privacyHeading">
           <p class="card-kicker">Privacy</p>
           <h2 id="privacyHeading">This device only</h2>
@@ -1889,7 +2534,7 @@ input[type="range"] {
       <button type="button" class="nav-button" data-view-target="review">Weekly review</button>
       <button type="button" class="nav-button" data-view-target="journal">Journal</button>
       <button type="button" class="nav-button" data-view-target="wellbeing">Wellbeing</button>
-      <button type="button" class="nav-button" data-view-target="maintenance">Maintenance</button>
+      <button type="button" class="nav-button" data-view-target="tools">Tools</button>
       <button type="button" class="nav-button" data-view-target="settings">Settings</button>
     </nav>
   </dialog>
@@ -1914,6 +2559,24 @@ input[type="range"] {
         <span>New date</span>
         <input id="renegotiationDate" type="date">
       </label>
+      <label class="toggle-label">
+        <input id="renegotiationUpdatePlans" type="checkbox">
+        <span>Update the plans for this commitment</span>
+      </label>
+      <div id="renegotiationPlanFields" class="form-stack" hidden>
+        <label>
+          <span>Cue plan</span>
+          <textarea id="renegotiationCuePlan" rows="2"></textarea>
+        </label>
+        <label>
+          <span>Obstacle plan</span>
+          <textarea id="renegotiationObstaclePlan" rows="2"></textarea>
+        </label>
+        <label>
+          <span>Difficult-day version</span>
+          <textarea id="renegotiationDifficultDay" rows="2"></textarea>
+        </label>
+      </div>
       <p id="renegotiationError" class="form-error" role="alert" hidden>Add a new action or date.</p>
       <div class="form-actions">
         <button class="button button-primary" type="submit">Save renegotiation</button>
@@ -1936,7 +2599,42 @@ input[type="range"] {
     </div>
   </dialog>
 
+  <dialog id="slipDialog" class="form-dialog guided-dialog" aria-labelledby="slipDialogHeading">
+    <form id="slipForm">
+      <div class="dialog-header">
+        <div>
+          <p id="slipStepLabel" class="card-kicker">Step 1 of 4</p>
+          <h2 id="slipDialogHeading">A slip is data, not a verdict</h2>
+        </div>
+        <button id="closeSlipButton" class="icon-button" type="button" aria-label="Close">×</button>
+      </div>
+      <div id="slipStepContent"></div>
+      <div class="form-actions">
+        <button id="slipBackButton" class="button button-secondary" type="button" hidden>Back</button>
+        <button id="slipNextButton" class="button button-primary" type="submit">Continue</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="unhookDialog" class="form-dialog guided-dialog" aria-labelledby="unhookDialogHeading">
+    <form id="unhookForm">
+      <div class="dialog-header">
+        <div>
+          <p id="unhookStepLabel" class="card-kicker">Step 1 of 3</p>
+          <h2 id="unhookDialogHeading">Name the story</h2>
+        </div>
+        <button id="closeUnhookButton" class="icon-button" type="button" aria-label="Close">×</button>
+      </div>
+      <div id="unhookStepContent"></div>
+      <div class="form-actions">
+        <button id="unhookBackButton" class="button button-secondary" type="button" hidden>Back</button>
+        <button id="unhookNextButton" class="button button-primary" type="submit">Continue</button>
+      </div>
+    </form>
+  </dialog>
+
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </div>
 
   <section id="printSummary" class="print-summary" aria-label="Goal Tracker printable summary"></section>
   <script>(() => {
@@ -1944,7 +2642,8 @@ input[type="range"] {
 
   const APP_NAME = "Goal Tracker";
   const STORAGE_KEY = "goalTrackerData";
-  const SCHEMA_VERSION = 1;
+  const LOCK_STORAGE_KEY = "goalTrackerLock";
+  const SCHEMA_VERSION = 2;
   const IS_SINGLE_FILE = document.documentElement.dataset.singleFile === "true";
   const MARKED_STATUSES = ["Completed", "Missed", "Renegotiated", "Stuck"];
   const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -1971,6 +2670,18 @@ input[type="range"] {
     { value: 0, label: "At no time" }
   ];
   const MILESTONE_OFFSETS = [30, 60, 90];
+  const EMOTION_SUGGESTIONS = [
+    "Frustration",
+    "Boredom",
+    "Dread",
+    "Deflation",
+    "Restlessness",
+    "Overwhelm",
+    "Doubt",
+    "Avoidance",
+    "Impatience",
+    "Disappointment"
+  ];
 
   const byId = (id) => document.getElementById(id);
   const nowIso = () => new Date().toISOString();
@@ -1982,6 +2693,13 @@ input[type="range"] {
   let deferredInstallPrompt = null;
   let viewedWeekStart = startOfWeek(new Date());
   let commitmentDrafts = [];
+  let slipStep = 1;
+  let slipDraft = { whatHappened: "", easier: "" };
+  let unhookStep = 1;
+  let unhookDraft = { story: "", value: "", nextMove: "" };
+  let lockRecord = null;
+  let appStarted = false;
+  let pwaInitialized = false;
 
   function createId(prefix) {
     if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
@@ -2133,6 +2851,26 @@ input[type="range"] {
     };
   }
 
+  function defaultMaintenancePlan() {
+    return {
+      highRiskMap: Array.from({ length: 5 }, () => ({ situation: "", whyRisky: "" })),
+      tripwires: Array.from({ length: 5 }, () => ""),
+      recoveryPlan: "",
+      supports: "",
+      ritual: ""
+    };
+  }
+
+  function defaultPartner() {
+    return {
+      name: "",
+      checkInMethod: "",
+      checkInDay: 0,
+      askedFor: "",
+      offer: ""
+    };
+  }
+
   function createDefaultState() {
     const createdAt = nowIso();
     return {
@@ -2165,14 +2903,21 @@ input[type="range"] {
       weeklyReviews: [],
       journalEntries: [],
       wellbeingChecks: [],
+      partner: defaultPartner(),
+      noticeEntries: [],
+      slipCompletions: [],
+      unhookCompletions: [],
+      evidenceLabels: [],
       maintenance: {
         programEndDate: "",
-        reflections: {}
+        reflections: {},
+        plan: defaultMaintenancePlan()
       },
       settings: {
         prompts: [...DEFAULT_PROMPTS],
         reminderTime: "09:00",
-        openAppNotificationsEnabled: false
+        openAppNotificationsEnabled: false,
+        themeMode: "device"
       }
     };
   }
@@ -2256,7 +3001,10 @@ input[type="range"] {
       archivedDate: cleanDate(source.archivedDate) || (archivedAt ? localDateString(new Date(archivedAt)) : ""),
       statuses: normalizeStatusMap(source.statuses),
       renegotiationCount: Math.max(0, clampInteger(source.renegotiationCount, 0, Number.MAX_SAFE_INTEGER, 0)),
-      scheduleHistory: normalizeScheduleHistory(source.scheduleHistory, days, createdAt)
+      scheduleHistory: normalizeScheduleHistory(source.scheduleHistory, days, createdAt),
+      cuePlan: cleanText(source.cuePlan),
+      obstaclePlan: cleanText(source.obstaclePlan),
+      difficultDayVersion: cleanText(source.difficultDayVersion)
     };
   }
 
@@ -2318,6 +3066,103 @@ input[type="range"] {
     return result;
   }
 
+  function normalizeMaintenancePlan(value) {
+    const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    const highRiskMap = (Array.isArray(source.highRiskMap) ? source.highRiskMap : [])
+      .slice(0, 5)
+      .map((entry) => ({
+        situation: cleanText(entry && entry.situation),
+        whyRisky: cleanText(entry && entry.whyRisky)
+      }));
+    while (highRiskMap.length < 5) highRiskMap.push({ situation: "", whyRisky: "" });
+    const tripwires = (Array.isArray(source.tripwires) ? source.tripwires : [])
+      .slice(0, 5)
+      .map(cleanText);
+    while (tripwires.length < 5) tripwires.push("");
+    return {
+      highRiskMap,
+      tripwires,
+      recoveryPlan: cleanText(source.recoveryPlan),
+      supports: cleanText(source.supports),
+      ritual: cleanText(source.ritual)
+    };
+  }
+
+  function normalizePartner(value) {
+    const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    return {
+      name: cleanText(source.name),
+      checkInMethod: cleanText(source.checkInMethod),
+      checkInDay: clampInteger(source.checkInDay, 0, 7, 0),
+      askedFor: cleanText(source.askedFor),
+      offer: cleanText(source.offer)
+    };
+  }
+
+  function normalizeNoticeEntry(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+    const date = cleanDate(value.date);
+    if (!date) return null;
+    return {
+      id: cleanText(value.id) || createId("notice"),
+      date,
+      emotion: cleanText(value.emotion),
+      trigger: cleanText(value.trigger),
+      nextMove: cleanText(value.nextMove),
+      updatedAt: cleanDateTime(value.updatedAt) || nowIso()
+    };
+  }
+
+  function normalizeSlipCompletion(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+    const date = cleanDate(value.date);
+    if (!date) return null;
+    return {
+      id: cleanText(value.id) || createId("slip"),
+      date,
+      whatHappened: cleanText(value.whatHappened),
+      easier: cleanText(value.easier),
+      warningSign: cleanText(value.warningSign),
+      completedAt: cleanDateTime(value.completedAt) || nowIso()
+    };
+  }
+
+  function normalizeUnhookCompletion(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+    const date = cleanDate(value.date);
+    if (!date) return null;
+    return {
+      id: cleanText(value.id) || createId("unhook"),
+      date,
+      story: cleanText(value.story),
+      value: cleanText(value.value),
+      nextMove: cleanText(value.nextMove),
+      completedAt: cleanDateTime(value.completedAt) || nowIso()
+    };
+  }
+
+  function normalizeEvidenceLabel(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+    const entries = (Array.isArray(value.entries) ? value.entries : [])
+      .map((entry) => {
+        if (!entry || typeof entry !== "object" || Array.isArray(entry)) return null;
+        const date = cleanDate(entry.date);
+        if (!date) return null;
+        return {
+          id: cleanText(entry.id) || createId("evidence"),
+          date,
+          text: cleanText(entry.text),
+          updatedAt: cleanDateTime(entry.updatedAt) || nowIso()
+        };
+      })
+      .filter(Boolean);
+    return {
+      id: cleanText(value.id) || createId("label"),
+      label: cleanText(value.label),
+      entries
+    };
+  }
+
   function normalizeState(input) {
     const defaults = createDefaultState();
     const source = input && typeof input === "object" && !Array.isArray(input) ? input : {};
@@ -2352,6 +3197,18 @@ input[type="range"] {
       const normalized = normalizeWellbeingCheck(entry);
       if (normalized) wellbeingByWeek.set(normalized.weekStart, normalized);
     });
+    const noticeEntries = (Array.isArray(source.noticeEntries) ? source.noticeEntries : [])
+      .map(normalizeNoticeEntry)
+      .filter(Boolean);
+    const slipCompletions = (Array.isArray(source.slipCompletions) ? source.slipCompletions : [])
+      .map(normalizeSlipCompletion)
+      .filter(Boolean);
+    const unhookCompletions = (Array.isArray(source.unhookCompletions) ? source.unhookCompletions : [])
+      .map(normalizeUnhookCompletion)
+      .filter(Boolean);
+    const evidenceLabels = (Array.isArray(source.evidenceLabels) ? source.evidenceLabels : [])
+      .map(normalizeEvidenceLabel)
+      .filter(Boolean);
 
     const seenCommitmentIds = new Set();
     let activeCommitmentCount = 0;
@@ -2399,14 +3256,21 @@ input[type="range"] {
       weeklyReviews: [...reviewsByWeek.values()],
       journalEntries: [...journalByDate.values()],
       wellbeingChecks: [...wellbeingByWeek.values()],
+      partner: normalizePartner(source.partner),
+      noticeEntries,
+      slipCompletions,
+      unhookCompletions,
+      evidenceLabels,
       maintenance: {
         programEndDate: cleanDate(maintenance.programEndDate),
-        reflections: normalizeReflections(maintenance.reflections)
+        reflections: normalizeReflections(maintenance.reflections),
+        plan: normalizeMaintenancePlan(maintenance.plan)
       },
       settings: {
         prompts,
         reminderTime: cleanTime(settings.reminderTime) || "09:00",
-        openAppNotificationsEnabled: settings.openAppNotificationsEnabled === true
+        openAppNotificationsEnabled: settings.openAppNotificationsEnabled === true,
+        themeMode: ["device", "light", "dark"].includes(settings.themeMode) ? settings.themeMode : "device"
       }
     };
   }
@@ -2425,6 +3289,10 @@ input[type="range"] {
         case 0:
           migrated = { ...migrated, schemaVersion: 1 };
           version = 1;
+          break;
+        case 1:
+          migrated = { ...migrated, schemaVersion: 2 };
+          version = 2;
           break;
         default:
           throw new Error("This backup version cannot be migrated.");
@@ -2480,6 +3348,19 @@ input[type="range"] {
     if (new Set(ids).size !== ids.length) {
       throw new Error("The backup contains duplicate commitment identifiers.");
     }
+    if (input.schemaVersion >= 2) {
+      ["noticeEntries", "slipCompletions", "unhookCompletions", "evidenceLabels"].forEach((key) => {
+        if (!Array.isArray(input[key])) {
+          throw new Error(`The backup field "${key}" is invalid.`);
+        }
+      });
+      if (!input.partner || typeof input.partner !== "object" || Array.isArray(input.partner)) {
+        throw new Error("The backup partner card is invalid.");
+      }
+      if (!input.maintenance.plan || typeof input.maintenance.plan !== "object" || Array.isArray(input.maintenance.plan)) {
+        throw new Error("The backup maintenance plan is invalid.");
+      }
+    }
   }
 
   function sortForComparison(value) {
@@ -2493,11 +3374,19 @@ input[type="range"] {
 
   function validateNormalizedImport(input, normalized) {
     if (input.schemaVersion !== SCHEMA_VERSION) return;
-    const source = JSON.stringify(sortForComparison(input));
-    const cleaned = JSON.stringify(sortForComparison(normalized));
+    const source = JSON.stringify(sortForComparison(withoutPin(input)));
+    const cleaned = JSON.stringify(sortForComparison(exportableState(normalized)));
     if (source !== cleaned) {
       throw new Error("The backup contains damaged or unsupported values and was not imported.");
     }
+  }
+
+  function withoutPin(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function exportableState(value = state) {
+    return withoutPin(value);
   }
 
   function loadState() {
@@ -2666,6 +3555,43 @@ input[type="range"] {
       promptInputs.append(makeTextLabel(`Prompt ${index + 1}`, textarea));
     }
 
+    const highRiskRows = byId("highRiskRows");
+    highRiskRows.replaceChildren();
+    for (let index = 0; index < 5; index += 1) {
+      const row = createElement("div", "high-risk-row");
+      const situation = createElement("input");
+      situation.type = "text";
+      situation.id = `highRiskSituation-${index}`;
+      row.append(makeTextLabel(`Situation ${index + 1}`, situation));
+      const whyRisky = createElement("input");
+      whyRisky.type = "text";
+      whyRisky.id = `highRiskWhy-${index}`;
+      row.append(makeTextLabel("Why it is risky", whyRisky));
+      highRiskRows.append(row);
+    }
+
+    const tripwireRows = byId("tripwireRows");
+    tripwireRows.replaceChildren();
+    for (let index = 0; index < 5; index += 1) {
+      const row = createElement("div", "tripwire-row");
+      appendText(row, "span", "", index + 1);
+      const input = createElement("input");
+      input.type = "text";
+      input.id = `tripwire-${index}`;
+      input.setAttribute("aria-label", `Tripwire ${index + 1}`);
+      row.append(input);
+      tripwireRows.append(row);
+    }
+
+    const emotionChips = byId("emotionChips");
+    emotionChips.replaceChildren();
+    EMOTION_SUGGESTIONS.forEach((emotion) => {
+      const button = createElement("button", "chip", emotion);
+      button.type = "button";
+      button.dataset.emotion = emotion;
+      emotionChips.append(button);
+    });
+
     const whoItems = byId("whoItems");
     whoItems.replaceChildren();
     WHO_ITEMS.forEach((item, itemIndex) => {
@@ -2737,10 +3663,44 @@ input[type="range"] {
     byId("wellbeingHistory").addEventListener("click", handleWellbeingHistoryClick);
 
     byId("programEndForm").addEventListener("submit", saveProgramEndDate);
+    byId("maintenancePlanForm").addEventListener("submit", saveMaintenancePlan);
     byId("maintenanceMarks").addEventListener("click", handleMaintenanceMarkClick);
     byId("maintenanceReflectionForm").addEventListener("submit", saveMaintenanceReflection);
 
+    byId("partnerForm").addEventListener("submit", savePartner);
+    byId("noticeForm").addEventListener("submit", saveNoticeEntry);
+    byId("clearNoticeButton").addEventListener("click", resetNoticeForm);
+    byId("emotionChips").addEventListener("click", handleEmotionChipClick);
+    byId("noticeEntries").addEventListener("click", handleNoticeClick);
+    byId("evidenceLabelForm").addEventListener("submit", addEvidenceLabel);
+    byId("evidenceLabels").addEventListener("submit", saveEvidenceEntry);
+    byId("searchInput").addEventListener("input", renderSearchResults);
+    byId("searchResults").addEventListener("click", openSearchResult);
+    byId("copyWeeklySummaryButton").addEventListener("click", copyWeeklySummary);
+
+    byId("startSlipButton").addEventListener("click", startSlipGuide);
+    byId("slipForm").addEventListener("submit", advanceSlipGuide);
+    byId("slipBackButton").addEventListener("click", () => {
+      if (slipStep > 1) {
+        slipStep -= 1;
+        renderSlipStep();
+      }
+    });
+    byId("closeSlipButton").addEventListener("click", () => closeDialog(byId("slipDialog")));
+    byId("startUnhookButton").addEventListener("click", startUnhookGuide);
+    byId("unhookForm").addEventListener("submit", advanceUnhookGuide);
+    byId("unhookBackButton").addEventListener("click", () => {
+      if (unhookStep > 1) {
+        unhookStep -= 1;
+        renderUnhookStep();
+      }
+    });
+    byId("closeUnhookButton").addEventListener("click", () => closeDialog(byId("unhookDialog")));
+
     byId("promptSettingsForm").addEventListener("submit", savePromptSettings);
+    byId("themeForm").addEventListener("change", saveTheme);
+    byId("pinSettingsForm").addEventListener("submit", savePinSettings);
+    byId("pinEnabledToggle").addEventListener("change", renderPinSettings);
     byId("reminderTime").addEventListener("change", saveReminderTime);
     byId("downloadCalendarButton").addEventListener("click", downloadCalendarReminder);
     byId("openAppReminderButton").addEventListener("click", enableOpenAppReminder);
@@ -2753,8 +3713,19 @@ input[type="range"] {
     byId("printButton").addEventListener("click", printSummary);
 
     byId("renegotiationForm").addEventListener("submit", saveRenegotiation);
+    byId("renegotiationUpdatePlans").addEventListener("change", () => {
+      byId("renegotiationPlanFields").hidden = !byId("renegotiationUpdatePlans").checked;
+    });
     byId("cancelRenegotiationButton").addEventListener("click", closeRenegotiationDialog);
     byId("closeRenegotiationButton").addEventListener("click", closeRenegotiationDialog);
+
+    byId("unlockForm").addEventListener("submit", unlockApp);
+    byId("forgotPinButton").addEventListener("click", openWipeDialog);
+    byId("wipeConfirmCheck").addEventListener("change", () => {
+      byId("confirmWipeButton").disabled = !byId("wipeConfirmCheck").checked;
+    });
+    byId("cancelWipeButton").addEventListener("click", () => closeDialog(byId("wipeConfirmDialog")));
+    byId("confirmWipeButton").addEventListener("click", wipeLocalData);
 
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
@@ -2825,8 +3796,9 @@ input[type="range"] {
     document.querySelectorAll(".view").forEach((view) => {
       view.hidden = view !== target;
     });
+    const activeNavView = viewName === "maintenance" ? "tools" : viewName;
     document.querySelectorAll(".nav-button").forEach((button) => {
-      const active = button.dataset.viewTarget === viewName;
+      const active = button.dataset.viewTarget === activeNavView;
       button.classList.toggle("is-active", active);
       if (active) button.setAttribute("aria-current", "page");
       else button.removeAttribute("aria-current");
@@ -2861,6 +3833,9 @@ input[type="range"] {
       case "maintenance":
         renderMaintenance();
         break;
+      case "tools":
+        renderTools();
+        break;
       case "settings":
         renderSettings();
         break;
@@ -2878,6 +3853,7 @@ input[type="range"] {
     renderJournal();
     renderWellbeing();
     renderMaintenance();
+    renderTools();
     renderSettings();
     renderBackupBanner();
     renderPrintSummary();
@@ -2965,7 +3941,18 @@ input[type="range"] {
     }
 
     renderTodayCommitments();
+    renderPartnerCheckIn();
     renderMaintenanceArrival();
+  }
+
+  function renderPartnerCheckIn() {
+    const card = byId("partnerCheckIn");
+    const partnerName = state.partner.name.trim();
+    const dueToday = state.partner.checkInDay === weekdayNumber(new Date());
+    card.hidden = !partnerName || !dueToday;
+    if (!card.hidden) {
+      byId("partnerCheckInText").textContent = `Check-in with ${partnerName} today`;
+    }
   }
 
   function renderTodayCommitments() {
@@ -3003,6 +3990,29 @@ input[type="range"] {
       headingWrap.append(meta);
       head.append(headingWrap);
       card.append(head);
+      if (commitment.cuePlan.trim()) {
+        const cue = createElement("p", "cue-plan");
+        appendText(cue, "strong", "", "Cue plan: ");
+        cue.append(document.createTextNode(commitment.cuePlan.trim()));
+        card.append(cue);
+      }
+      if (commitment.obstaclePlan.trim() || commitment.difficultDayVersion.trim()) {
+        const plans = createElement("details", "commitment-plans");
+        appendText(plans, "summary", "", "Show obstacle and difficult-day plans");
+        if (commitment.obstaclePlan.trim()) {
+          const obstacle = createElement("p");
+          appendText(obstacle, "strong", "", "Obstacle plan: ");
+          obstacle.append(document.createTextNode(commitment.obstaclePlan.trim()));
+          plans.append(obstacle);
+        }
+        if (commitment.difficultDayVersion.trim()) {
+          const difficult = createElement("p");
+          appendText(difficult, "strong", "", "Difficult-day version: ");
+          difficult.append(document.createTextNode(commitment.difficultDayVersion.trim()));
+          plans.append(difficult);
+        }
+        card.append(plans);
+      }
 
       const actions = createElement("div", "status-actions");
       MARKED_STATUSES.forEach((status) => {
@@ -3127,7 +4137,10 @@ input[type="range"] {
       archivedDate: "",
       statuses: {},
       renegotiationCount: 0,
-      scheduleHistory: []
+      scheduleHistory: [],
+      cuePlan: "",
+      obstaclePlan: "",
+      difficultDayVersion: ""
     });
     renderCommitmentEditor();
     const cards = byId("commitmentEditor").querySelectorAll(".commitment-card");
@@ -3188,6 +4201,23 @@ input[type="range"] {
       });
       card.append(fieldset);
 
+      const planFieldset = createElement("fieldset", "plan-fieldset");
+      appendText(planFieldset, "legend", "", "Plans");
+      const cuePlan = createElement("textarea", "commitment-cue-plan");
+      cuePlan.rows = 2;
+      cuePlan.value = commitment.cuePlan;
+      planFieldset.append(makeTextLabel("Cue plan: If my cue arrives, then I will...", cuePlan));
+      const obstaclePlan = createElement("textarea", "commitment-obstacle-plan");
+      obstaclePlan.rows = 2;
+      obstaclePlan.value = commitment.obstaclePlan;
+      planFieldset.append(makeTextLabel("Obstacle plan: If my obstacle shows up, then I will...", obstaclePlan));
+      const difficultDay = createElement("textarea", "commitment-difficult-day");
+      difficultDay.rows = 2;
+      difficultDay.value = commitment.difficultDayVersion;
+      planFieldset.append(makeTextLabel("Difficult-day version", difficultDay));
+      appendText(planFieldset.lastElementChild, "span", "field-help", "The smallest acceptable form of the action");
+      card.append(planFieldset);
+
       const meta = createElement("div", "commitment-meta");
       appendText(meta, "span", "count-badge", `${commitment.renegotiationCount} renegotiation${commitment.renegotiationCount === 1 ? "" : "s"}`);
       const markedCount = Object.keys(commitment.statuses).length;
@@ -3231,6 +4261,9 @@ input[type="range"] {
       const scheduleChanged = JSON.stringify(days) !== JSON.stringify(commitment.days);
       commitment.text = text;
       commitment.days = days;
+      commitment.cuePlan = card.querySelector(".commitment-cue-plan").value.trim();
+      commitment.obstaclePlan = card.querySelector(".commitment-obstacle-plan").value.trim();
+      commitment.difficultDayVersion = card.querySelector(".commitment-difficult-day").value.trim();
       if (scheduleChanged) {
         const effectiveFrom = localDateString();
         const existingToday = commitment.scheduleHistory.find((entry) => entry.effectiveFrom === effectiveFrom);
@@ -3383,6 +4416,11 @@ input[type="range"] {
     byId("renegotiationStatusDate").value = date;
     byId("renegotiationAction").value = existing && existing.status === "Renegotiated" ? existing.newAction : "";
     byId("renegotiationDate").value = existing && existing.status === "Renegotiated" ? existing.newDate : "";
+    byId("renegotiationUpdatePlans").checked = false;
+    byId("renegotiationPlanFields").hidden = true;
+    byId("renegotiationCuePlan").value = commitment.cuePlan;
+    byId("renegotiationObstaclePlan").value = commitment.obstaclePlan;
+    byId("renegotiationDifficultDay").value = commitment.difficultDayVersion;
     byId("renegotiationError").hidden = true;
     openDialog(byId("renegotiationDialog"));
     window.setTimeout(() => byId("renegotiationAction").focus(), 0);
@@ -3418,6 +4456,11 @@ input[type="range"] {
       updatedAt: nowIso(),
       commitmentText: commitment.text
     };
+    if (byId("renegotiationUpdatePlans").checked) {
+      commitment.cuePlan = byId("renegotiationCuePlan").value.trim();
+      commitment.obstaclePlan = byId("renegotiationObstaclePlan").value.trim();
+      commitment.difficultDayVersion = byId("renegotiationDifficultDay").value.trim();
+    }
     if (saveState({ meaningful: true })) {
       closeRenegotiationDialog();
       renderTodayCommitments();
@@ -3540,10 +4583,14 @@ input[type="range"] {
       maximum: 10,
       points: reviews.map((review) => review.weekStart),
       series: [
-        { values: reviews.map((review) => review.progress), color: "#1B2A4A" },
-        { values: reviews.map((review) => review.confidence), color: "#8F7119" }
+        { values: reviews.map((review) => review.progress), color: cssColor("--chart-primary") },
+        { values: reviews.map((review) => review.confidence), color: cssColor("--gold-text") }
       ]
     });
+  }
+
+  function cssColor(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
   function drawLineChart(canvas, configuration) {
@@ -3569,17 +4616,17 @@ input[type="range"] {
       const value = configuration.maximum - (configuration.maximum / 4) * line;
       const y = padding.top + (chartHeight / 4) * line;
       context.beginPath();
-      context.strokeStyle = "#d9dee7";
+      context.strokeStyle = cssColor("--line");
       context.lineWidth = 1;
       context.moveTo(padding.left, y);
       context.lineTo(width - padding.right, y);
       context.stroke();
-      context.fillStyle = "#5f6878";
+      context.fillStyle = cssColor("--muted");
       context.fillText(String(Math.round(value)), padding.left - 8, y);
     }
 
     if (!configuration.points.length) {
-      context.fillStyle = "#5f6878";
+      context.fillStyle = cssColor("--muted");
       context.textAlign = "center";
       context.font = "14px system-ui, sans-serif";
       context.fillText("Save a check-in to begin the trend.", width / 2, height / 2);
@@ -3606,7 +4653,7 @@ input[type="range"] {
       context.stroke();
       series.values.forEach((value, index) => {
         context.beginPath();
-        context.fillStyle = "#ffffff";
+        context.fillStyle = cssColor("--field");
         context.strokeStyle = series.color;
         context.lineWidth = 2;
         context.arc(xForIndex(index), yForValue(value), 4, 0, Math.PI * 2);
@@ -3618,7 +4665,7 @@ input[type="range"] {
     const labelIndexes = configuration.points.length === 1
       ? [0]
       : [...new Set([0, Math.floor((configuration.points.length - 1) / 2), configuration.points.length - 1])];
-    context.fillStyle = "#5f6878";
+    context.fillStyle = cssColor("--muted");
     context.textBaseline = "top";
     context.font = "10px system-ui, sans-serif";
     labelIndexes.forEach((index) => {
@@ -3866,7 +4913,7 @@ input[type="range"] {
     drawLineChart(canvas, {
       maximum: 100,
       points: checks.map((check) => check.weekStart),
-      series: [{ values: checks.map((check) => check.score), color: "#1B2A4A" }]
+      series: [{ values: checks.map((check) => check.score), color: cssColor("--chart-primary") }]
     });
   }
 
@@ -3903,6 +4950,16 @@ input[type="range"] {
 
   function renderMaintenance() {
     byId("programEndDate").value = state.maintenance.programEndDate;
+    state.maintenance.plan.highRiskMap.forEach((entry, index) => {
+      byId(`highRiskSituation-${index}`).value = entry.situation;
+      byId(`highRiskWhy-${index}`).value = entry.whyRisky;
+    });
+    state.maintenance.plan.tripwires.forEach((tripwire, index) => {
+      byId(`tripwire-${index}`).value = tripwire;
+    });
+    byId("recoveryPlan").value = state.maintenance.plan.recoveryPlan;
+    byId("maintenanceSupports").value = state.maintenance.plan.supports;
+    byId("maintenanceRitual").value = state.maintenance.plan.ritual;
     const container = byId("maintenanceMarks");
     container.replaceChildren();
     const milestones = maintenanceMilestones();
@@ -3912,6 +4969,7 @@ input[type="range"] {
       appendText(empty, "p", "", "Set your program end date to calculate the 30, 60, and 90 day marks.");
       container.append(empty);
       reflectionForm.hidden = true;
+      byId("maintenancePlanAlongside").hidden = true;
       return;
     }
     milestones.forEach((milestone) => {
@@ -3952,6 +5010,26 @@ input[type="range"] {
       showMaintenanceReflection(dueMilestone, false);
     } else {
       reflectionForm.hidden = true;
+      byId("maintenancePlanAlongside").hidden = true;
+    }
+  }
+
+  function saveMaintenancePlan(event) {
+    event.preventDefault();
+    state.maintenance.plan = {
+      highRiskMap: Array.from({ length: 5 }, (_, index) => ({
+        situation: byId(`highRiskSituation-${index}`).value.trim(),
+        whyRisky: byId(`highRiskWhy-${index}`).value.trim()
+      })),
+      tripwires: Array.from({ length: 5 }, (_, index) => byId(`tripwire-${index}`).value.trim()),
+      recoveryPlan: byId("recoveryPlan").value.trim(),
+      supports: byId("maintenanceSupports").value.trim(),
+      ritual: byId("maintenanceRitual").value.trim()
+    };
+    if (saveState({ meaningful: true })) {
+      renderMaintenancePlanSummary();
+      renderPrintSummary();
+      showToast("Maintenance plan saved on this device.");
     }
   }
 
@@ -3984,10 +5062,40 @@ input[type="range"] {
     byId("maintenanceSlipped").value = reflection ? reflection.slipped : "";
     byId("maintenanceAdjustment").value = reflection ? reflection.adjustment : "";
     form.hidden = false;
+    renderMaintenancePlanSummary();
     if (shouldScroll) {
       form.scrollIntoView({ behavior: "smooth", block: "start" });
       byId("maintenanceHeld").focus();
     }
+  }
+
+  function renderMaintenancePlanSummary() {
+    const card = byId("maintenancePlanAlongside");
+    const container = byId("maintenancePlanAlongsideContent");
+    const plan = state.maintenance.plan;
+    container.replaceChildren();
+    const risks = plan.highRiskMap.filter((entry) => entry.situation || entry.whyRisky);
+    const tripwires = plan.tripwires.filter(Boolean);
+    if (!risks.length && !tripwires.length && !plan.recoveryPlan && !plan.supports && !plan.ritual) {
+      appendText(container, "p", "", "Your maintenance plan is empty. Add it above when you are ready.");
+    } else {
+      if (risks.length) {
+        appendText(container, "h3", "", "High-risk map");
+        const list = createElement("ul", "plan-summary-list");
+        risks.forEach((risk) => appendText(list, "li", "", `${risk.situation || "Unnamed situation"}: ${risk.whyRisky || "Reason not entered"}`));
+        container.append(list);
+      }
+      if (tripwires.length) {
+        appendText(container, "h3", "", "Tripwires");
+        const list = createElement("ul", "plan-summary-list");
+        tripwires.forEach((tripwire) => appendText(list, "li", "", tripwire));
+        container.append(list);
+      }
+      appendPrintField(container, "Recovery plan", plan.recoveryPlan);
+      appendPrintField(container, "Supports", plan.supports);
+      appendPrintField(container, "Maintenance ritual", plan.ritual);
+    }
+    card.hidden = byId("maintenanceReflectionForm").hidden;
   }
 
   function saveMaintenanceReflection(event) {
@@ -4011,10 +5119,851 @@ input[type="range"] {
     }
   }
 
+  function renderTools() {
+    byId("partnerName").value = state.partner.name;
+    byId("partnerCheckInMethod").value = state.partner.checkInMethod;
+    byId("partnerCheckInDay").value = String(state.partner.checkInDay);
+    byId("partnerAskedFor").value = state.partner.askedFor;
+    byId("partnerOffer").value = state.partner.offer;
+    if (!byId("noticeDate").value) byId("noticeDate").value = localDateString();
+    renderNoticeEntries();
+    renderEvidenceLabels();
+    renderGuidedCompletions();
+    renderSearchResults();
+  }
+
+  function savePartner(event) {
+    event.preventDefault();
+    state.partner = {
+      name: byId("partnerName").value.trim(),
+      checkInMethod: byId("partnerCheckInMethod").value.trim(),
+      checkInDay: clampInteger(byId("partnerCheckInDay").value, 0, 7, 0),
+      askedFor: byId("partnerAskedFor").value.trim(),
+      offer: byId("partnerOffer").value.trim()
+    };
+    if (saveState({ meaningful: true })) {
+      renderPartnerCheckIn();
+      renderPrintSummary();
+      showToast("Partner card saved on this device.");
+    }
+  }
+
+  function handleEmotionChipClick(event) {
+    const button = event.target.closest("[data-emotion]");
+    if (!button) return;
+    byId("noticeEmotion").value = button.dataset.emotion;
+    byId("noticeEmotion").focus();
+  }
+
+  function resetNoticeForm() {
+    byId("noticeId").value = "";
+    byId("noticeDate").value = localDateString();
+    byId("noticeEmotion").value = "";
+    byId("noticeTrigger").value = "";
+    byId("noticeNextMove").value = "";
+  }
+
+  function saveNoticeEntry(event) {
+    event.preventDefault();
+    const date = cleanDate(byId("noticeDate").value);
+    const emotion = byId("noticeEmotion").value.trim();
+    const trigger = byId("noticeTrigger").value.trim();
+    const nextMove = byId("noticeNextMove").value.trim();
+    if (!date || !emotion || !trigger || !nextMove) {
+      showToast("Complete the date, emotion, trigger moment, and next move.");
+      return;
+    }
+    const id = byId("noticeId").value;
+    const entry = {
+      id: id || createId("notice"),
+      date,
+      emotion,
+      trigger,
+      nextMove,
+      updatedAt: nowIso()
+    };
+    const index = state.noticeEntries.findIndex((item) => item.id === id);
+    if (index >= 0) state.noticeEntries[index] = entry;
+    else state.noticeEntries.push(entry);
+    if (saveState({ meaningful: true })) {
+      resetNoticeForm();
+      renderNoticeEntries();
+      renderSearchResults();
+      showToast("Notice saved on this device.");
+    }
+  }
+
+  function renderNoticeEntries() {
+    const container = byId("noticeEntries");
+    container.replaceChildren();
+    const entries = [...state.noticeEntries].sort((a, b) => (
+      b.date.localeCompare(a.date) || b.updatedAt.localeCompare(a.updatedAt)
+    ));
+    if (!entries.length) {
+      appendText(container, "p", "empty-state", "No notice and name captures yet.");
+      return;
+    }
+    entries.forEach((entry) => {
+      const item = createElement("article", "history-item");
+      item.id = `notice-entry-${entry.id}`;
+      const head = createElement("div", "history-head");
+      const title = createElement("div");
+      appendText(title, "p", "card-kicker", formatDate(entry.date));
+      appendText(title, "h3", "", entry.emotion);
+      const edit = createElement("button", "button button-quiet", "Edit");
+      edit.type = "button";
+      edit.dataset.action = "edit-notice";
+      edit.dataset.noticeId = entry.id;
+      head.append(title, edit);
+      item.append(head);
+      appendPrintField(item, "Trigger moment", entry.trigger);
+      appendPrintField(item, "Next move", entry.nextMove);
+      container.append(item);
+    });
+  }
+
+  function handleNoticeClick(event) {
+    const button = event.target.closest('[data-action="edit-notice"]');
+    if (!button) return;
+    openNoticeEntry(button.dataset.noticeId);
+  }
+
+  function openNoticeEntry(id) {
+    const entry = state.noticeEntries.find((item) => item.id === id);
+    if (!entry) return;
+    byId("noticeId").value = entry.id;
+    byId("noticeDate").value = entry.date;
+    byId("noticeEmotion").value = entry.emotion;
+    byId("noticeTrigger").value = entry.trigger;
+    byId("noticeNextMove").value = entry.nextMove;
+    byId("noticeForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    byId("noticeEmotion").focus({ preventScroll: true });
+  }
+
+  function addEvidenceLabel(event) {
+    event.preventDefault();
+    const label = byId("evidenceLabelText").value.trim();
+    if (!label) return;
+    state.evidenceLabels.push({
+      id: createId("label"),
+      label,
+      entries: []
+    });
+    if (saveState({ meaningful: true })) {
+      byId("evidenceLabelText").value = "";
+      renderEvidenceLabels();
+      renderSearchResults();
+      showToast("Evidence label added on this device.");
+    }
+  }
+
+  function renderEvidenceLabels() {
+    const container = byId("evidenceLabels");
+    container.replaceChildren();
+    if (!state.evidenceLabels.length) {
+      appendText(container, "p", "empty-state", "No evidence labels yet.");
+      return;
+    }
+    state.evidenceLabels.forEach((label) => {
+      const card = createElement("article", "card evidence-label-card");
+      card.id = `evidence-label-${label.id}`;
+      appendText(card, "p", "card-kicker", "Label I am testing");
+      appendText(card, "h3", "", label.label || "Unnamed label");
+      const form = createElement("form", "evidence-entry-form");
+      form.dataset.evidenceLabelId = label.id;
+      const dateInput = createElement("input");
+      dateInput.type = "date";
+      dateInput.value = localDateString();
+      dateInput.required = true;
+      dateInput.className = "evidence-date";
+      form.append(makeTextLabel("Date", dateInput));
+      const textInput = createElement("textarea", "evidence-text");
+      textInput.rows = 3;
+      textInput.required = true;
+      form.append(makeTextLabel("Specific evidence that complicates it", textInput));
+      const save = createElement("button", "button button-primary", "Save evidence");
+      save.type = "submit";
+      form.append(save);
+      card.append(form);
+      const list = createElement("div", "history-list");
+      const entries = [...label.entries].sort((a, b) => (
+        b.date.localeCompare(a.date) || b.updatedAt.localeCompare(a.updatedAt)
+      ));
+      if (!entries.length) {
+        appendText(list, "p", "field-help", "No evidence entries for this label yet.");
+      } else {
+        entries.forEach((entry) => {
+          const item = createElement("article", "history-item");
+          item.id = `evidence-entry-${entry.id}`;
+          item.tabIndex = -1;
+          appendText(item, "p", "card-kicker", formatDate(entry.date));
+          appendText(item, "p", "", entry.text);
+          list.append(item);
+        });
+      }
+      card.append(list);
+      container.append(card);
+    });
+  }
+
+  function saveEvidenceEntry(event) {
+    const form = event.target.closest("[data-evidence-label-id]");
+    if (!form) return;
+    event.preventDefault();
+    const label = state.evidenceLabels.find((item) => item.id === form.dataset.evidenceLabelId);
+    const date = cleanDate(form.querySelector(".evidence-date").value);
+    const text = form.querySelector(".evidence-text").value.trim();
+    if (!label || !date || !text) {
+      showToast("Enter a date and specific evidence.");
+      return;
+    }
+    label.entries.push({
+      id: createId("evidence"),
+      date,
+      text,
+      updatedAt: nowIso()
+    });
+    if (saveState({ meaningful: true })) {
+      renderEvidenceLabels();
+      renderSearchResults();
+      renderPrintSummary();
+      showToast("Evidence saved on this device.");
+    }
+  }
+
+  function startSlipGuide() {
+    slipStep = 1;
+    slipDraft = { whatHappened: "", easier: "" };
+    renderSlipStep();
+    openDialog(byId("slipDialog"));
+  }
+
+  function renderSlipStep() {
+    const content = byId("slipStepContent");
+    const heading = byId("slipDialogHeading");
+    content.replaceChildren();
+    byId("slipStepLabel").textContent = `Step ${slipStep} of 4`;
+    byId("slipBackButton").hidden = slipStep === 1;
+    byId("slipNextButton").textContent = slipStep === 4 ? "Finish" : "Continue";
+    if (slipStep === 1) {
+      heading.textContent = "A slip is data, not a verdict";
+      appendText(content, "p", "guided-copy", "Pause and breathe. No story yet.");
+      appendText(
+        content,
+        "p",
+        "",
+        "Speak to yourself as you would to a colleague who slipped: plainly and without contempt."
+      );
+    }
+    if (slipStep === 2) {
+      heading.textContent = "What actually happened?";
+      const textarea = createElement("textarea");
+      textarea.id = "slipWhatHappened";
+      textarea.rows = 4;
+      textarea.required = true;
+      textarea.value = slipDraft.whatHappened;
+      content.append(makeTextLabel("One factual sentence", textarea));
+    }
+    if (slipStep === 3) {
+      heading.textContent = "What would make the next attempt 10 percent easier?";
+      const textarea = createElement("textarea");
+      textarea.id = "slipEasier";
+      textarea.rows = 4;
+      textarea.required = true;
+      textarea.value = slipDraft.easier;
+      content.append(makeTextLabel("One sentence", textarea));
+    }
+    if (slipStep === 4) {
+      heading.textContent = "Resume at the next opportunity";
+      appendPrintField(content, "What actually happened", slipDraft.whatHappened);
+      appendPrintField(content, "What would make the next attempt easier", slipDraft.easier);
+      appendPrintField(
+        content,
+        "Your first early-warning sign",
+        state.charter.earlyWarning || "No early-warning sign is saved in your charter yet."
+      );
+      appendText(
+        content,
+        "p",
+        "guided-copy",
+        "The plan resumes at the next scheduled opportunity. Nothing else is required."
+      );
+    }
+  }
+
+  function advanceSlipGuide(event) {
+    event.preventDefault();
+    if (slipStep === 2) {
+      slipDraft.whatHappened = byId("slipWhatHappened").value.trim();
+      if (!slipDraft.whatHappened) return;
+    }
+    if (slipStep === 3) {
+      slipDraft.easier = byId("slipEasier").value.trim();
+      if (!slipDraft.easier) return;
+    }
+    if (slipStep < 4) {
+      slipStep += 1;
+      renderSlipStep();
+      return;
+    }
+    state.slipCompletions.push({
+      id: createId("slip"),
+      date: localDateString(),
+      whatHappened: slipDraft.whatHappened,
+      easier: slipDraft.easier,
+      warningSign: state.charter.earlyWarning,
+      completedAt: nowIso()
+    });
+    if (saveState({ meaningful: true })) {
+      closeDialog(byId("slipDialog"));
+      renderGuidedCompletions();
+      showToast("It slipped completion saved on this device.");
+    }
+  }
+
+  function startUnhookGuide() {
+    unhookStep = 1;
+    unhookDraft = { story: "", value: "", nextMove: "" };
+    renderUnhookStep();
+    openDialog(byId("unhookDialog"));
+  }
+
+  function renderUnhookStep() {
+    const content = byId("unhookStepContent");
+    const heading = byId("unhookDialogHeading");
+    content.replaceChildren();
+    byId("unhookStepLabel").textContent = `Step ${unhookStep} of 3`;
+    byId("unhookBackButton").hidden = unhookStep === 1;
+    byId("unhookNextButton").textContent = unhookStep === 3 ? "Save completion" : "Continue";
+    if (unhookStep === 1) {
+      heading.textContent = "Name the story";
+      const textarea = createElement("textarea");
+      textarea.id = "unhookStory";
+      textarea.rows = 4;
+      textarea.required = true;
+      textarea.value = unhookDraft.story;
+      content.append(makeTextLabel("I'm having the story that...", textarea));
+    }
+    if (unhookStep === 2) {
+      heading.textContent = "Which value is calling right now?";
+      const values = state.charter.guideValues.map((guide) => guide.value.trim()).filter(Boolean);
+      if (!values.length) {
+        appendText(content, "p", "guided-copy", "No guide values are saved yet. You can continue and choose a small move without one.");
+      } else {
+        const choices = createElement("div", "value-choice-grid");
+        values.forEach((value) => {
+          const button = createElement("button", "button button-secondary value-choice", value);
+          button.type = "button";
+          button.setAttribute("aria-pressed", unhookDraft.value === value ? "true" : "false");
+          if (unhookDraft.value === value) button.classList.add("is-selected");
+          button.addEventListener("click", () => {
+            unhookDraft.value = value;
+            renderUnhookStep();
+          });
+          choices.append(button);
+        });
+        content.append(choices);
+      }
+    }
+    if (unhookStep === 3) {
+      heading.textContent = "The next small move that serves it";
+      if (unhookDraft.value) appendText(content, "p", "guided-copy", `Value: ${unhookDraft.value}`);
+      const textarea = createElement("textarea");
+      textarea.id = "unhookNextMove";
+      textarea.rows = 4;
+      textarea.required = true;
+      textarea.value = unhookDraft.nextMove;
+      content.append(makeTextLabel("One sentence", textarea));
+    }
+  }
+
+  function advanceUnhookGuide(event) {
+    event.preventDefault();
+    if (unhookStep === 1) {
+      unhookDraft.story = byId("unhookStory").value.trim();
+      if (!unhookDraft.story) return;
+    }
+    if (unhookStep === 3) {
+      unhookDraft.nextMove = byId("unhookNextMove").value.trim();
+      if (!unhookDraft.nextMove) return;
+      state.unhookCompletions.push({
+        id: createId("unhook"),
+        date: localDateString(),
+        story: unhookDraft.story,
+        value: unhookDraft.value,
+        nextMove: unhookDraft.nextMove,
+        completedAt: nowIso()
+      });
+      if (saveState({ meaningful: true })) {
+        closeDialog(byId("unhookDialog"));
+        renderGuidedCompletions();
+        showToast("Unhook and choose completion saved on this device.");
+      }
+      return;
+    }
+    unhookStep += 1;
+    renderUnhookStep();
+  }
+
+  function renderGuidedCompletions() {
+    const slipContainer = byId("slipCompletions");
+    slipContainer.replaceChildren();
+    [...state.slipCompletions]
+      .sort((a, b) => b.completedAt.localeCompare(a.completedAt))
+      .slice(0, 5)
+      .forEach((entry) => {
+        const item = createElement("article", "history-item");
+        appendText(item, "p", "card-kicker", formatDate(entry.date));
+        appendText(item, "p", "", entry.whatHappened);
+        appendPrintField(item, "Next attempt", entry.easier);
+        slipContainer.append(item);
+      });
+    if (!state.slipCompletions.length) appendText(slipContainer, "p", "field-help", "No completions yet.");
+
+    const unhookContainer = byId("unhookCompletions");
+    unhookContainer.replaceChildren();
+    [...state.unhookCompletions]
+      .sort((a, b) => b.completedAt.localeCompare(a.completedAt))
+      .slice(0, 5)
+      .forEach((entry) => {
+        const item = createElement("article", "history-item");
+        appendText(item, "p", "card-kicker", formatDate(entry.date));
+        appendText(item, "p", "", entry.story);
+        appendPrintField(item, "Value", entry.value || "No saved value selected");
+        appendPrintField(item, "Next move", entry.nextMove);
+        unhookContainer.append(item);
+      });
+    if (!state.unhookCompletions.length) appendText(unhookContainer, "p", "field-help", "No completions yet.");
+  }
+
+  function searchGroups(query) {
+    const needle = query.trim().toLocaleLowerCase();
+    if (!needle) return [];
+    const journal = state.journalEntries
+      .filter((entry) => `${entry.prompt} ${entry.text}`.toLocaleLowerCase().includes(needle))
+      .map((entry) => ({
+        id: entry.id,
+        date: entry.date,
+        label: entry.text.slice(0, 120) || entry.prompt,
+        type: "journal"
+      }));
+    const notices = state.noticeEntries
+      .filter((entry) => `${entry.emotion} ${entry.trigger} ${entry.nextMove}`.toLocaleLowerCase().includes(needle))
+      .map((entry) => ({
+        id: entry.id,
+        date: entry.date,
+        label: `${entry.emotion}: ${entry.trigger}`,
+        type: "notice"
+      }));
+    const evidence = [];
+    state.evidenceLabels.forEach((label) => {
+      label.entries.forEach((entry) => {
+        if (`${label.label} ${entry.text}`.toLocaleLowerCase().includes(needle)) {
+          evidence.push({
+            id: entry.id,
+            labelId: label.id,
+            date: entry.date,
+            label: `${label.label}: ${entry.text}`,
+            type: "evidence"
+          });
+        }
+      });
+    });
+    return [
+      { heading: "Journal", items: journal },
+      { heading: "Notice and name", items: notices },
+      { heading: "Evidence", items: evidence }
+    ].filter((group) => group.items.length);
+  }
+
+  function renderSearchResults() {
+    const container = byId("searchResults");
+    container.replaceChildren();
+    const query = byId("searchInput").value;
+    if (!query.trim()) return;
+    const groups = searchGroups(query);
+    if (!groups.length) {
+      appendText(container, "p", "empty-state", "No matching entries.");
+      return;
+    }
+    groups.forEach((group) => {
+      const section = createElement("section", "search-group");
+      appendText(section, "h3", "", group.heading);
+      group.items
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .forEach((item) => {
+          const button = createElement("button", "search-result");
+          button.type = "button";
+          button.dataset.resultType = item.type;
+          button.dataset.resultId = item.id;
+          if (item.labelId) button.dataset.labelId = item.labelId;
+          appendText(button, "strong", "", formatDate(item.date));
+          button.append(document.createTextNode(` ${item.label}`));
+          section.append(button);
+        });
+      container.append(section);
+    });
+  }
+
+  function openSearchResult(event) {
+    const button = event.target.closest("[data-result-type]");
+    if (!button) return;
+    if (button.dataset.resultType === "journal") {
+      const entry = state.journalEntries.find((item) => item.id === button.dataset.resultId);
+      if (!entry) return;
+      showView("journal");
+      byId("journalDate").value = entry.date;
+      loadJournalFormForDate();
+      byId("journalText").focus();
+      return;
+    }
+    if (button.dataset.resultType === "notice") {
+      openNoticeEntry(button.dataset.resultId);
+      return;
+    }
+    const entry = byId(`evidence-entry-${button.dataset.resultId}`);
+    if (entry) {
+      entry.scrollIntoView({ behavior: "smooth", block: "center" });
+      entry.focus({ preventScroll: true });
+    }
+  }
+
+  function buildWeeklySummary() {
+    const weekStart = localDateString(startOfWeek(new Date()));
+    const weekEnd = addLocalDays(weekStart, 6);
+    const lines = [
+      "My weekly summary",
+      `Week of ${formatDate(weekStart)} to ${formatDate(weekEnd)}`,
+      "",
+      "Commitments"
+    ];
+    const commitments = commitmentsVisibleInWeek(parseLocalDate(weekStart), parseLocalDate(weekEnd));
+    if (!commitments.length) {
+      lines.push("No commitments were active this week.");
+    } else {
+      commitments.forEach((commitment) => {
+        const counts = {
+          Completed: 0,
+          Missed: 0,
+          Renegotiated: 0,
+          Stuck: 0,
+          "Not scheduled": 0
+        };
+        for (let index = 0; index < 7; index += 1) {
+          const date = addLocalDays(weekStart, index);
+          const entry = commitment.statuses[date];
+          if (entry && Object.prototype.hasOwnProperty.call(counts, entry.status)) counts[entry.status] += 1;
+          else if (!scheduleForDate(commitment, date)) counts["Not scheduled"] += 1;
+        }
+        lines.push(commitment.text || "Untitled commitment");
+        Object.entries(counts).forEach(([status, count]) => lines.push(`  ${status}: ${count}`));
+        lines.push(`  Renegotiations overall: ${commitment.renegotiationCount}`);
+      });
+    }
+    const review = state.weeklyReviews.find((entry) => entry.weekStart === weekStart);
+    lines.push("", "Weekly review");
+    if (review) {
+      lines.push(`Goal progress: ${review.progress}/10`);
+      lines.push(`Confidence: ${review.confidence}/10`);
+      lines.push(`Most common obstacle: ${review.obstacle || "Not entered"}`);
+    } else {
+      lines.push("No weekly review entered.");
+    }
+    const latestWellbeing = [...state.wellbeingChecks].sort((a, b) => b.weekStart.localeCompare(a.weekStart))[0];
+    lines.push("", "Wellbeing");
+    lines.push(latestWellbeing
+      ? `Latest score: ${latestWellbeing.score}/100 on ${formatDate(latestWellbeing.weekStart)}`
+      : "No wellbeing score entered.");
+    if (state.partner.name.trim()) {
+      lines.push("", `Suggested destination: ${state.partner.name.trim()}, your accountability partner.`);
+    }
+    return lines.join("\n");
+  }
+
+  async function copyWeeklySummary() {
+    const summary = buildWeeklySummary();
+    const fallback = byId("summaryFallback");
+    const textarea = byId("summaryFallbackText");
+    fallback.hidden = true;
+    try {
+      if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
+        throw new Error("Clipboard unavailable");
+      }
+      await navigator.clipboard.writeText(summary);
+      showToast("Weekly summary copied. Nothing was sent anywhere.");
+    } catch (error) {
+      textarea.value = summary;
+      fallback.hidden = false;
+      textarea.focus();
+      textarea.select();
+      showToast("Automatic copy is unavailable. Select and copy the visible summary.");
+    }
+  }
+
+  function applyTheme(mode = state.settings.themeMode) {
+    const selected = ["device", "light", "dark"].includes(mode) ? mode : "device";
+    document.documentElement.dataset.theme = selected;
+    const effectiveDark = selected === "dark" || (
+      selected === "device" && window.matchMedia("(prefers-color-scheme: dark)").matches
+    );
+    const color = effectiveDark ? "#0e1626" : "#1B2A4A";
+    document.querySelector('meta[name="theme-color"]').setAttribute("content", color);
+  }
+
+  function saveTheme(event) {
+    const input = event.target.closest('input[name="themeMode"]');
+    if (!input) return;
+    state.settings.themeMode = input.value;
+    applyTheme(input.value);
+    if (saveState({ meaningful: true })) {
+      requestAnimationFrame(() => {
+        drawReviewChart();
+        drawWellbeingChart();
+      });
+      showToast("Theme saved on this device.");
+    }
+  }
+
+  function bytesToBase64(bytes) {
+    let binary = "";
+    bytes.forEach((byte) => {
+      binary += String.fromCharCode(byte);
+    });
+    return btoa(binary);
+  }
+
+  function base64ToBytes(value) {
+    try {
+      const binary = atob(value);
+      return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    } catch (error) {
+      return new Uint8Array();
+    }
+  }
+
+  function readLockRecord() {
+    let raw = "";
+    try {
+      raw = localStorage.getItem(LOCK_STORAGE_KEY);
+    } catch (error) {
+      return { invalid: true };
+    }
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw);
+      if (
+        parsed &&
+        parsed.recordVersion === 1 &&
+        parsed.algorithm === "PBKDF2-SHA-256" &&
+        parsed.iterations === 210000 &&
+        typeof parsed.salt === "string" &&
+        base64ToBytes(parsed.salt).length === 16 &&
+        typeof parsed.hash === "string" &&
+        base64ToBytes(parsed.hash).length === 32
+      ) {
+        return parsed;
+      }
+    } catch (error) {
+      return { invalid: true };
+    }
+    return { invalid: true };
+  }
+
+  async function derivePinHash(pin, salt, iterations = 210000) {
+    if (!globalThis.crypto || !globalThis.crypto.subtle) {
+      throw new Error("Secure PIN storage is unavailable in this browser.");
+    }
+    const keyMaterial = await globalThis.crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(pin),
+      "PBKDF2",
+      false,
+      ["deriveBits"]
+    );
+    const bits = await globalThis.crypto.subtle.deriveBits(
+      {
+        name: "PBKDF2",
+        hash: "SHA-256",
+        salt,
+        iterations
+      },
+      keyMaterial,
+      256
+    );
+    return new Uint8Array(bits);
+  }
+
+  function constantTimeEqual(first, second) {
+    const length = Math.max(first.length, second.length);
+    let difference = first.length ^ second.length;
+    for (let index = 0; index < length; index += 1) {
+      difference |= (first[index] || 0) ^ (second[index] || 0);
+    }
+    return difference === 0;
+  }
+
+  async function verifyPin(pin, record = lockRecord) {
+    if (!record || record.invalid || !/^\d{4}$/.test(pin)) return false;
+    try {
+      const actual = await derivePinHash(pin, base64ToBytes(record.salt), record.iterations);
+      return constantTimeEqual(actual, base64ToBytes(record.hash));
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function createLockRecord(pin) {
+    if (!/^\d{4}$/.test(pin)) throw new Error("Enter exactly four digits.");
+    if (!globalThis.crypto || typeof globalThis.crypto.getRandomValues !== "function") {
+      throw new Error("Secure PIN storage is unavailable in this browser.");
+    }
+    const salt = new Uint8Array(16);
+    globalThis.crypto.getRandomValues(salt);
+    const hash = await derivePinHash(pin, salt);
+    return {
+      recordVersion: 1,
+      algorithm: "PBKDF2-SHA-256",
+      iterations: 210000,
+      salt: bytesToBase64(salt),
+      hash: bytesToBase64(hash)
+    };
+  }
+
+  function showLockGate() {
+    byId("appShell").hidden = true;
+    byId("appShell").inert = true;
+    byId("lockScreen").hidden = false;
+    byId("unlockPin").value = "";
+    byId("unlockError").hidden = true;
+    window.setTimeout(() => byId("unlockPin").focus(), 0);
+  }
+
+  async function unlockApp(event) {
+    event.preventDefault();
+    const pinInput = byId("unlockPin");
+    const pin = pinInput.value;
+    pinInput.value = "";
+    const accepted = await verifyPin(pin);
+    if (!accepted) {
+      byId("unlockError").hidden = false;
+      pinInput.focus();
+      return;
+    }
+    byId("unlockError").hidden = true;
+    byId("lockScreen").hidden = true;
+    startApplication();
+  }
+
+  function openWipeDialog() {
+    byId("wipeConfirmCheck").checked = false;
+    byId("confirmWipeButton").disabled = true;
+    openDialog(byId("wipeConfirmDialog"));
+  }
+
+  function wipeLocalData() {
+    if (!byId("wipeConfirmCheck").checked) return;
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LOCK_STORAGE_KEY);
+    } catch (error) {
+      closeDialog(byId("wipeConfirmDialog"));
+      byId("unlockError").textContent = "Local data could not be removed on this device.";
+      byId("unlockError").hidden = false;
+      return;
+    }
+    state = createDefaultState();
+    lockRecord = null;
+    corruptStorageDetected = false;
+    commitmentDrafts = [];
+    closeDialog(byId("wipeConfirmDialog"));
+    byId("lockScreen").hidden = true;
+    startApplication();
+    showView("settings");
+    showToast("Local data and the screen lock were removed. Import a backup to restore your entries.");
+  }
+
+  function renderPinSettings() {
+    const currentEnabled = Boolean(lockRecord && !lockRecord.invalid);
+    const toggle = byId("pinEnabledToggle");
+    const desiredEnabled = toggle.checked;
+    const fields = byId("pinSetupFields");
+    fields.hidden = !desiredEnabled && !currentEnabled;
+    const currentLabel = byId("pinCurrent").closest("label");
+    const newLabel = byId("pinNew").closest("label");
+    const confirmLabel = byId("pinConfirm").closest("label");
+    currentLabel.hidden = !currentEnabled;
+    newLabel.hidden = !desiredEnabled;
+    confirmLabel.hidden = !desiredEnabled;
+    byId("pinStatus").textContent = currentEnabled
+      ? "Screen lock is enabled on this device."
+      : "Screen lock is not enabled.";
+    byId("pinSettingsError").hidden = true;
+  }
+
+  async function savePinSettings(event) {
+    event.preventDefault();
+    const currentEnabled = Boolean(lockRecord && !lockRecord.invalid);
+    const desiredEnabled = byId("pinEnabledToggle").checked;
+    const currentPin = byId("pinCurrent").value;
+    const newPin = byId("pinNew").value;
+    const confirmPin = byId("pinConfirm").value;
+    const error = byId("pinSettingsError");
+    error.hidden = true;
+    try {
+      if (lockRecord && lockRecord.invalid) {
+        throw new Error("The screen lock record cannot be read. Use the forgotten PIN path to wipe and restore.");
+      }
+      if (!currentEnabled && !desiredEnabled) {
+        showToast("Screen lock remains off.");
+        return;
+      }
+      if (currentEnabled && !desiredEnabled) {
+        if (!(await verifyPin(currentPin))) throw new Error("Screen lock could not be changed.");
+        localStorage.removeItem(LOCK_STORAGE_KEY);
+        lockRecord = null;
+        showToast("Screen lock disabled on this device.");
+      } else if (!currentEnabled && desiredEnabled) {
+        if (newPin !== confirmPin || !/^\d{4}$/.test(newPin)) {
+          throw new Error("Enter the same 4-digit PIN twice.");
+        }
+        const candidate = await createLockRecord(newPin);
+        localStorage.setItem(LOCK_STORAGE_KEY, JSON.stringify(candidate));
+        lockRecord = candidate;
+        showToast("Screen lock enabled. It will be required on the next open.");
+      } else if (newPin || confirmPin) {
+        if (!(await verifyPin(currentPin))) throw new Error("Screen lock could not be changed.");
+        if (newPin !== confirmPin || !/^\d{4}$/.test(newPin)) {
+          throw new Error("Enter the same new 4-digit PIN twice.");
+        }
+        const candidate = await createLockRecord(newPin);
+        localStorage.setItem(LOCK_STORAGE_KEY, JSON.stringify(candidate));
+        lockRecord = candidate;
+        showToast("Screen lock PIN changed on this device.");
+      } else {
+        showToast("Screen lock remains enabled.");
+      }
+      byId("pinCurrent").value = "";
+      byId("pinNew").value = "";
+      byId("pinConfirm").value = "";
+      byId("pinEnabledToggle").checked = Boolean(lockRecord && !lockRecord.invalid);
+      renderPinSettings();
+    } catch (caught) {
+      byId("pinCurrent").value = "";
+      byId("pinNew").value = "";
+      byId("pinConfirm").value = "";
+      error.textContent = caught instanceof Error ? caught.message : "Screen lock could not be changed.";
+      error.hidden = false;
+    }
+  }
+
   function renderSettings() {
     state.settings.prompts.forEach((prompt, index) => {
       byId(`prompt-${index}`).value = prompt;
     });
+    const themeInput = document.querySelector(`input[name="themeMode"][value="${state.settings.themeMode}"]`);
+    if (themeInput) themeInput.checked = true;
+    byId("pinEnabledToggle").checked = Boolean(lockRecord && !lockRecord.invalid);
+    renderPinSettings();
     byId("reminderTime").value = state.settings.reminderTime;
     renderStorageStatus();
     renderLastExport();
@@ -4238,6 +6187,8 @@ input[type="range"] {
   }
 
   function setupPwaFeatures() {
+    if (pwaInitialized) return;
+    pwaInitialized = true;
     if (IS_SINGLE_FILE) {
       byId("installCard").hidden = true;
       return;
@@ -4287,7 +6238,7 @@ input[type="range"] {
     state.meta.lastExportAt = nowIso();
     state.meta.backupDismissedOn = "";
     if (!corruptStorageDetected) saveState();
-    const json = JSON.stringify(state, null, 2);
+    const json = JSON.stringify(exportableState(), null, 2);
     triggerDownload(
       new Blob([json], { type: "application/json;charset=utf-8" }),
       `goal-tracker-backup-${localDateString()}.json`
@@ -4326,6 +6277,7 @@ input[type="range"] {
       }
       commitmentDrafts = [];
       viewedWeekStart = startOfWeek(new Date());
+      applyTheme();
       renderAll();
       showView("today");
       showToast("Backup restored on this device.");
@@ -4398,6 +6350,19 @@ input[type="range"] {
     appendPrintField(charterSection, "My support need", state.charter.supportNeed);
     root.append(charterSection);
 
+    const partnerSection = createElement("section");
+    appendText(partnerSection, "h2", "", "Accountability partner card");
+    appendPrintField(partnerSection, "Partner name", state.partner.name);
+    appendPrintField(partnerSection, "How we check in", state.partner.checkInMethod);
+    appendPrintField(
+      partnerSection,
+      "Agreed check-in day",
+      state.partner.checkInDay ? DAY_NAMES[state.partner.checkInDay - 1] : ""
+    );
+    appendPrintField(partnerSection, "What I asked them for", state.partner.askedFor);
+    appendPrintField(partnerSection, "What I offer in return", state.partner.offer);
+    root.append(partnerSection);
+
     const commitmentsSection = createElement("section", "print-records");
     appendText(commitmentsSection, "h2", "", "Commitment history");
     if (!state.commitments.length) {
@@ -4408,6 +6373,9 @@ input[type="range"] {
         appendText(record, "h3", "", printText(commitment.text));
         appendText(record, "p", "", commitment.active !== false ? "Current commitment" : "Past commitment");
         appendPrintField(record, "Scheduled days", commitment.days.map((day) => DAY_NAMES[day - 1]).join(", "));
+        appendPrintField(record, "Cue plan", commitment.cuePlan);
+        appendPrintField(record, "Obstacle plan", commitment.obstaclePlan);
+        appendPrintField(record, "Difficult-day version", commitment.difficultDayVersion);
         appendText(
           record,
           "p",
@@ -4462,6 +6430,68 @@ input[type="range"] {
     }
     root.append(reviewsSection);
 
+    const evidenceSection = createElement("section", "print-records");
+    appendText(evidenceSection, "h2", "", "Evidence log");
+    if (!state.evidenceLabels.length) {
+      appendText(evidenceSection, "p", "", "No evidence labels saved.");
+    } else {
+      state.evidenceLabels.forEach((label) => {
+        const record = createElement("article", "print-record");
+        appendText(record, "h3", "", printText(label.label));
+        const entries = [...label.entries].sort((a, b) => b.date.localeCompare(a.date));
+        if (entries.length) {
+          appendTable(
+            record,
+            ["Date", "Specific evidence"],
+            entries.map((entry) => [formatDate(entry.date), printText(entry.text)])
+          );
+        } else {
+          appendText(record, "p", "", "No evidence entries.");
+        }
+        evidenceSection.append(record);
+      });
+    }
+    root.append(evidenceSection);
+
+    const maintenanceSection = createElement("section", "print-records");
+    appendText(maintenanceSection, "h2", "", "Maintenance plan");
+    appendPrintField(maintenanceSection, "Program end date", state.maintenance.programEndDate
+      ? formatDate(state.maintenance.programEndDate)
+      : "");
+    const risks = state.maintenance.plan.highRiskMap.filter((entry) => entry.situation || entry.whyRisky);
+    if (risks.length) {
+      appendTable(
+        maintenanceSection,
+        ["High-risk situation", "Why it is risky"],
+        risks.map((entry) => [printText(entry.situation), printText(entry.whyRisky)])
+      );
+    } else {
+      appendText(maintenanceSection, "p", "", "No high-risk situations entered.");
+    }
+    appendPrintField(
+      maintenanceSection,
+      "Tripwires",
+      state.maintenance.plan.tripwires.filter(Boolean).join("; ")
+    );
+    appendPrintField(maintenanceSection, "Recovery plan", state.maintenance.plan.recoveryPlan);
+    appendPrintField(maintenanceSection, "Supports", state.maintenance.plan.supports);
+    appendPrintField(maintenanceSection, "Maintenance ritual", state.maintenance.plan.ritual);
+    const reflections = Object.entries(state.maintenance.reflections)
+      .sort(([, first], [, second]) => first.completedAt.localeCompare(second.completedAt));
+    if (reflections.length) {
+      appendText(maintenanceSection, "h3", "", "Maintenance reflections");
+      reflections.forEach(([key, reflection]) => {
+        const offset = key.split(":").pop();
+        const record = createElement("article", "print-record");
+        appendText(record, "h3", "", `${offset}-day reflection`);
+        appendPrintField(record, "What held", reflection.held);
+        appendPrintField(record, "What slipped", reflection.slipped);
+        appendPrintField(record, "One adjustment", reflection.adjustment);
+        maintenanceSection.append(record);
+      });
+    }
+    root.append(maintenanceSection);
+
     const wellbeingSection = createElement("section", "print-records");
     appendText(wellbeingSection, "h2", "", "Wellbeing trend");
     const checks = [...state.wellbeingChecks].sort((a, b) => a.weekStart.localeCompare(b.weekStart));
@@ -4498,11 +6528,42 @@ input[type="range"] {
     buildStaticForms();
     setupPrivacyInputDefaults();
     wireEvents();
+    lockRecord = readLockRecord();
+    applyTheme();
+    const deviceTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleDeviceThemeChange = () => {
+      if (state.settings.themeMode === "device") {
+        applyTheme("device");
+        requestAnimationFrame(() => {
+          drawReviewChart();
+          drawWellbeingChart();
+        });
+      }
+    };
+    if (typeof deviceTheme.addEventListener === "function") {
+      deviceTheme.addEventListener("change", handleDeviceThemeChange);
+    } else if (typeof deviceTheme.addListener === "function") {
+      deviceTheme.addListener(handleDeviceThemeChange);
+    }
+    if (lockRecord) {
+      showLockGate();
+    } else {
+      startApplication();
+    }
+  }
+
+  function startApplication() {
+    byId("lockScreen").hidden = true;
+    byId("appShell").inert = false;
+    byId("appShell").hidden = false;
     setupPwaFeatures();
     renderAll();
     showView("today", false);
-    scheduleSameDayNotification();
-    scheduleDayRefresh();
+    if (!appStarted) {
+      scheduleSameDayNotification();
+      scheduleDayRefresh();
+      appStarted = true;
+    }
     if (bootNotice) {
       window.setTimeout(() => showToast(bootNotice), 150);
     }

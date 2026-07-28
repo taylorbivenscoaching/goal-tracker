@@ -16,6 +16,46 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <section id="lockScreen" class="lock-screen" aria-labelledby="lockHeading" hidden>
+    <div class="lock-card">
+      <div class="brand lock-brand">
+        <span class="brand-mark" aria-hidden="true">✓</span>
+        <span>Goal Tracker</span>
+      </div>
+      <p class="card-kicker">Screen lock</p>
+      <h1 id="lockHeading">Enter your PIN</h1>
+      <p>Your entries stay hidden until this device is unlocked.</p>
+      <form id="unlockForm" class="form-stack">
+        <label>
+          <span>4-digit PIN</span>
+          <input id="unlockPin" class="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required>
+        </label>
+        <p id="unlockError" class="form-error" role="alert" hidden>The PIN was not accepted.</p>
+        <button class="button button-primary" type="submit">Unlock</button>
+      </form>
+      <button id="forgotPinButton" class="button button-quiet" type="button">I forgot my PIN</button>
+    </div>
+  </section>
+
+  <dialog id="wipeConfirmDialog" class="form-dialog" aria-labelledby="wipeConfirmHeading">
+    <div class="dialog-header">
+      <div>
+        <p class="card-kicker">Forgotten PIN</p>
+        <h2 id="wipeConfirmHeading">Wipe local data?</h2>
+      </div>
+    </div>
+    <p>Your PIN cannot be recovered. Wiping removes all Goal Tracker data on this device. Afterward, you can import an exported backup. The backup does not contain a PIN.</p>
+    <label class="confirm-label">
+      <input id="wipeConfirmCheck" type="checkbox">
+      <span>I understand this removes all local Goal Tracker data.</span>
+    </label>
+    <div class="form-actions">
+      <button id="cancelWipeButton" class="button button-secondary" type="button">Cancel</button>
+      <button id="confirmWipeButton" class="button button-danger" type="button" disabled>Wipe local data</button>
+    </div>
+  </dialog>
+
+  <div id="appShell" hidden>
   <a class="skip-link" href="#mainContent">Skip to content</a>
 
   <div id="backupBanner" class="backup-banner" hidden>
@@ -63,8 +103,8 @@
       <button type="button" class="nav-button" data-view-target="wellbeing">
         <span aria-hidden="true">○</span><span>Wellbeing</span>
       </button>
-      <button type="button" class="nav-button" data-view-target="maintenance">
-        <span aria-hidden="true">＋</span><span>Maintenance</span>
+      <button type="button" class="nav-button" data-view-target="tools">
+        <span aria-hidden="true">＋</span><span>Tools</span>
       </button>
       <button type="button" class="nav-button" data-view-target="settings">
         <span aria-hidden="true">⚙</span><span>Settings</span>
@@ -108,6 +148,12 @@
           <strong>When you feel stuck</strong>
           <p>Stuck means you need a human, not more willpower. Bring this to your next session or your accountability partner.</p>
         </aside>
+
+        <article id="partnerCheckIn" class="card partner-check-in" hidden>
+          <p class="card-kicker">Accountability partner</p>
+          <h2 id="partnerCheckInText"></h2>
+          <button class="button button-secondary" type="button" data-view-target="tools">View partner card</button>
+        </article>
       </section>
 
       <section id="view-charter" class="view" data-view="charter" aria-labelledby="charterHeading" hidden>
@@ -348,6 +394,37 @@
           <button class="button button-primary" type="submit">Save end date</button>
         </form>
 
+        <form id="maintenancePlanForm" class="card form-card">
+          <p class="card-kicker">Editable anytime</p>
+          <h2>Maintenance plan</h2>
+          <fieldset>
+            <legend>High-risk map</legend>
+            <p class="field-help">Add up to five situations and why each one is risky.</p>
+            <div id="highRiskRows" class="stack compact-stack"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Tripwires</legend>
+            <p class="field-help">Up to five early signals that the plan is drifting.</p>
+            <div id="tripwireRows" class="stack compact-stack"></div>
+          </fieldset>
+          <label>
+            <span>Recovery plan</span>
+            <span class="field-help">What I do within 48 hours of a slip</span>
+            <textarea id="recoveryPlan" rows="3"></textarea>
+          </label>
+          <label>
+            <span>Supports</span>
+            <span class="field-help">People and how to reach them</span>
+            <textarea id="maintenanceSupports" rows="3"></textarea>
+          </label>
+          <label>
+            <span>Maintenance ritual</span>
+            <span class="field-help">The small weekly practice I keep</span>
+            <textarea id="maintenanceRitual" rows="3"></textarea>
+          </label>
+          <button class="button button-primary" type="submit">Save maintenance plan</button>
+        </form>
+
         <div id="maintenanceMarks" class="milestone-grid"></div>
 
         <form id="maintenanceReflectionForm" class="card form-card" hidden>
@@ -368,6 +445,152 @@
           </label>
           <button class="button button-primary" type="submit">Save reflection</button>
         </form>
+
+        <section id="maintenancePlanAlongside" class="card plan-summary" hidden aria-labelledby="maintenancePlanAlongsideHeading">
+          <p class="card-kicker">Your plan</p>
+          <h2 id="maintenancePlanAlongsideHeading">Keep this alongside your reflection</h2>
+          <div id="maintenancePlanAlongsideContent"></div>
+        </section>
+      </section>
+
+      <section id="view-tools" class="view" data-view="tools" aria-labelledby="toolsHeading" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Private practices</p>
+            <h1 id="toolsHeading">Tools</h1>
+          </div>
+        </div>
+
+        <article class="card milestone-arrival">
+          <div>
+            <p class="card-kicker">30, 60, and 90 days</p>
+            <h2>Maintenance</h2>
+            <p>Build your maintenance plan and complete each arrival reflection.</p>
+          </div>
+          <button class="button button-secondary" type="button" data-view-target="maintenance">Open maintenance</button>
+        </article>
+
+        <section class="card settings-card" aria-labelledby="searchHeading">
+          <p class="card-kicker">Find an entry</p>
+          <h2 id="searchHeading">Search</h2>
+          <label>
+            <span>Search journal, notice and name, and evidence</span>
+            <input id="searchInput" type="search" autocomplete="off">
+          </label>
+          <div id="searchResults" class="search-results" aria-live="polite"></div>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="partnerHeading">
+          <p class="card-kicker">Accountability</p>
+          <h2 id="partnerHeading">Partner card</h2>
+          <form id="partnerForm" class="form-stack">
+            <label>
+              <span>Partner name</span>
+              <input id="partnerName" type="text">
+            </label>
+            <label>
+              <span>How we check in</span>
+              <textarea id="partnerCheckInMethod" rows="2"></textarea>
+            </label>
+            <label>
+              <span>Agreed check-in day</span>
+              <select id="partnerCheckInDay">
+                <option value="0">No day selected</option>
+                <option value="1">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+                <option value="7">Sunday</option>
+              </select>
+            </label>
+            <label>
+              <span>What I asked them for</span>
+              <textarea id="partnerAskedFor" rows="2"></textarea>
+            </label>
+            <label>
+              <span>What I offer in return</span>
+              <textarea id="partnerOffer" rows="2"></textarea>
+            </label>
+            <button class="button button-primary" type="submit">Save partner card</button>
+          </form>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="noticeHeading">
+          <p class="card-kicker">Quick capture</p>
+          <h2 id="noticeHeading">Notice and name</h2>
+          <p>Naming what showed up loosens its grip. Catch it, name it, choose the next move.</p>
+          <form id="noticeForm" class="form-stack">
+            <input id="noticeId" type="hidden">
+            <label>
+              <span>Date</span>
+              <input id="noticeDate" type="date" required>
+            </label>
+            <label>
+              <span>Emotion word</span>
+              <input id="noticeEmotion" type="text" required>
+            </label>
+            <div id="emotionChips" class="chip-list" aria-label="Suggested emotion words"></div>
+            <label>
+              <span>Trigger moment</span>
+              <input id="noticeTrigger" type="text" maxlength="240" required>
+            </label>
+            <label>
+              <span>Next move</span>
+              <input id="noticeNextMove" type="text" maxlength="240" required>
+            </label>
+            <div class="form-actions">
+              <button class="button button-primary" type="submit">Save notice</button>
+              <button id="clearNoticeButton" class="button button-secondary" type="button">New notice</button>
+            </div>
+          </form>
+          <div id="noticeEntries" class="history-list"></div>
+        </section>
+
+        <section class="guided-grid" aria-label="Guided cards">
+          <article class="card guided-card">
+            <p class="card-kicker">Four calm steps</p>
+            <h2>It slipped</h2>
+            <p>Use a slip as information and make the next attempt easier.</p>
+            <button id="startSlipButton" class="button button-primary" type="button">Start it slipped</button>
+            <div id="slipCompletions" class="history-list compact-history"></div>
+          </article>
+          <article class="card guided-card">
+            <p class="card-kicker">Three small steps</p>
+            <h2>Unhook and choose</h2>
+            <p>Name the story, choose a value, and take one small move.</p>
+            <button id="startUnhookButton" class="button button-primary" type="button">Start unhook and choose</button>
+            <div id="unhookCompletions" class="history-list compact-history"></div>
+          </article>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="evidenceHeading">
+          <p class="card-kicker">Test a label</p>
+          <h2 id="evidenceHeading">Evidence log</h2>
+          <p>Old labels get tested against dated, specific evidence, not argued with.</p>
+          <form id="evidenceLabelForm" class="inline-form">
+            <label>
+              <span>Label I am testing</span>
+              <input id="evidenceLabelText" type="text" required>
+            </label>
+            <button class="button button-primary" type="submit">Add label</button>
+          </form>
+          <div id="evidenceLabels" class="stack"></div>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="summaryHeading">
+          <p class="card-kicker">Current week</p>
+          <h2 id="summaryHeading">Copy weekly summary</h2>
+          <p>Nothing is sent anywhere. Copy this to bring to your session or share with your accountability partner, if you choose.</p>
+          <button id="copyWeeklySummaryButton" class="button button-primary" type="button">Copy weekly summary</button>
+          <div id="summaryFallback" class="copy-fallback" hidden>
+            <label>
+              <span>Select and copy this summary</span>
+              <textarea id="summaryFallbackText" rows="14" readonly></textarea>
+            </label>
+          </div>
+        </section>
       </section>
 
       <section id="view-settings" class="view" data-view="settings" aria-labelledby="settingsHeading" hidden>
@@ -377,6 +600,19 @@
             <h1 id="settingsHeading">Settings</h1>
           </div>
         </div>
+
+        <section class="card settings-card" aria-labelledby="appearanceHeading">
+          <p class="card-kicker">Appearance</p>
+          <h2 id="appearanceHeading">Theme</h2>
+          <form id="themeForm">
+            <fieldset class="choice-row">
+              <legend>Choose a theme</legend>
+              <label><input type="radio" name="themeMode" value="device"> <span>Follow device</span></label>
+              <label><input type="radio" name="themeMode" value="light"> <span>Light</span></label>
+              <label><input type="radio" name="themeMode" value="dark"> <span>Dark</span></label>
+            </fieldset>
+          </form>
+        </section>
 
         <section class="card settings-card" aria-labelledby="promptSettingsHeading">
           <div class="section-heading">
@@ -441,6 +677,36 @@
           <p id="lastExportText" class="field-help"></p>
         </section>
 
+        <section class="card settings-card" aria-labelledby="pinHeading">
+          <p class="card-kicker">Optional privacy</p>
+          <h2 id="pinHeading">Screen lock</h2>
+          <p>This is a screen lock, not encryption. Anyone with full access to this device's files could still read the data. Your export file is never locked.</p>
+          <p class="field-help">If you forget the PIN, the only path is to wipe local data and restore an exported backup.</p>
+          <form id="pinSettingsForm" class="form-stack">
+            <label class="toggle-label">
+              <input id="pinEnabledToggle" type="checkbox">
+              <span>Require a PIN on each open</span>
+            </label>
+            <div id="pinSetupFields" class="form-stack">
+              <label>
+                <span id="pinCurrentLabel">Current PIN</span>
+                <input id="pinCurrent" class="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off">
+              </label>
+              <label>
+                <span>New 4-digit PIN</span>
+                <input id="pinNew" class="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off">
+              </label>
+              <label>
+                <span>Confirm new PIN</span>
+                <input id="pinConfirm" class="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off">
+              </label>
+            </div>
+            <p id="pinSettingsError" class="form-error" role="alert" hidden></p>
+            <button class="button button-primary" type="submit">Save screen lock</button>
+          </form>
+          <p id="pinStatus" class="field-help"></p>
+        </section>
+
         <section class="card privacy-card" aria-labelledby="privacyHeading">
           <p class="card-kicker">Privacy</p>
           <h2 id="privacyHeading">This device only</h2>
@@ -463,7 +729,7 @@
       <button type="button" class="nav-button" data-view-target="review">Weekly review</button>
       <button type="button" class="nav-button" data-view-target="journal">Journal</button>
       <button type="button" class="nav-button" data-view-target="wellbeing">Wellbeing</button>
-      <button type="button" class="nav-button" data-view-target="maintenance">Maintenance</button>
+      <button type="button" class="nav-button" data-view-target="tools">Tools</button>
       <button type="button" class="nav-button" data-view-target="settings">Settings</button>
     </nav>
   </dialog>
@@ -488,6 +754,24 @@
         <span>New date</span>
         <input id="renegotiationDate" type="date">
       </label>
+      <label class="toggle-label">
+        <input id="renegotiationUpdatePlans" type="checkbox">
+        <span>Update the plans for this commitment</span>
+      </label>
+      <div id="renegotiationPlanFields" class="form-stack" hidden>
+        <label>
+          <span>Cue plan</span>
+          <textarea id="renegotiationCuePlan" rows="2"></textarea>
+        </label>
+        <label>
+          <span>Obstacle plan</span>
+          <textarea id="renegotiationObstaclePlan" rows="2"></textarea>
+        </label>
+        <label>
+          <span>Difficult-day version</span>
+          <textarea id="renegotiationDifficultDay" rows="2"></textarea>
+        </label>
+      </div>
       <p id="renegotiationError" class="form-error" role="alert" hidden>Add a new action or date.</p>
       <div class="form-actions">
         <button class="button button-primary" type="submit">Save renegotiation</button>
@@ -510,7 +794,42 @@
     </div>
   </dialog>
 
+  <dialog id="slipDialog" class="form-dialog guided-dialog" aria-labelledby="slipDialogHeading">
+    <form id="slipForm">
+      <div class="dialog-header">
+        <div>
+          <p id="slipStepLabel" class="card-kicker">Step 1 of 4</p>
+          <h2 id="slipDialogHeading">A slip is data, not a verdict</h2>
+        </div>
+        <button id="closeSlipButton" class="icon-button" type="button" aria-label="Close">×</button>
+      </div>
+      <div id="slipStepContent"></div>
+      <div class="form-actions">
+        <button id="slipBackButton" class="button button-secondary" type="button" hidden>Back</button>
+        <button id="slipNextButton" class="button button-primary" type="submit">Continue</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="unhookDialog" class="form-dialog guided-dialog" aria-labelledby="unhookDialogHeading">
+    <form id="unhookForm">
+      <div class="dialog-header">
+        <div>
+          <p id="unhookStepLabel" class="card-kicker">Step 1 of 3</p>
+          <h2 id="unhookDialogHeading">Name the story</h2>
+        </div>
+        <button id="closeUnhookButton" class="icon-button" type="button" aria-label="Close">×</button>
+      </div>
+      <div id="unhookStepContent"></div>
+      <div class="form-actions">
+        <button id="unhookBackButton" class="button button-secondary" type="button" hidden>Back</button>
+        <button id="unhookNextButton" class="button button-primary" type="submit">Continue</button>
+      </div>
+    </form>
+  </dialog>
+
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </div>
 
   <section id="printSummary" class="print-summary" aria-label="Goal Tracker printable summary"></section>
 

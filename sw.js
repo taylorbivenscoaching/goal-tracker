@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "goal-tracker-shell-a1d29bb242159e3a";
+const CACHE_NAME = "goal-tracker-shell-958d014388517097";
 const APP_FILES = [
   "./",
   "./index.html",
