@@ -1,60 +1,55 @@
 # Verification
 
-Verification date: 2026-07-27
+Verification date: 2026-07-28
+
+Scope: version 2 working tree before final publication.
 
 ## Build and static checks
 
-- Pass: `node build.mjs` completed and produced both PWA icons and `goal-tracker.html`.
-- Pass: syntax checks completed for the app, service worker, and build script.
-- Pass: the single-file build contains inline CSS and JavaScript, no manifest link, and no external app asset references.
-- Pass: the single-file CSP hashes match its actual inline CSS and JavaScript.
-- Pass: the generated icons are valid PNG files at 192 by 192 and 512 by 512 pixels.
-- Pass: the manifest names the app Goal Tracker and declares the generated icons.
+- Pass: `node --check app.js` completed.
+- Pass: `node --check build.mjs` completed.
+- Pass: `node build.mjs` produced the PWA assets and `goal-tracker.html`.
+- Pass: the project verifier confirmed the single-file flag, no external app asset references, matching inline script and style hashes, the Goal Tracker manifest name, and valid 192 by 192 and 512 by 512 PNG icons.
+- Pass: the exact visible privacy statement is present in both outputs.
+- Pass: the WHO-5 attribution and required self-awareness wording are present.
 
-## Privacy checks
+## Browser checks recorded
 
-- Pass: a whole-repository scan for every prohibited networking primitive and web-address literal from the specification found only the two expected service-worker matches.
-- Pass: the service worker handles only its explicit app-shell allowlist.
-- Pass: the hosted CSP sets remote connections to none. The single-file CSP also sets remote connections, workers, and manifests to none.
-- Pass: no external scripts, stylesheets, fonts, analytics, telemetry, or remote assets are present.
-- Pass: the exact visible privacy statement appears in the app.
+- Pass: the version 2 PWA loaded on a fresh local origin with no app console errors before data entry.
+- Pass: data was entered and rendered for the charter, a commitment and its three plans, a renegotiation and plan update, a weekly review, journal, WHO-5, maintenance plan and reflection, accountability partner, notice and name, guided cards, and evidence.
+- Pass: the sample WHO-5 raw total was 16 and its stored score was 64.
+- Pass: grouped search returned the matching evidence record.
+- Pass: the copied weekly summary included all five commitment status counts, renegotiation count, both weekly ratings, obstacle, latest wellbeing score and date, and the partner destination.
+- Pass: both guided cards handled an empty charter without inserting generic material, and each completion was logged.
+- Pass: Dark theme selection updated the app's computed theme variables.
+- Pass: semantic theme colors are used for status details, including readable gold text against the dark gold surface.
+- Pass: a populated version 2 export contained every app-data family and contained no PIN, PIN digits, or lock-record key.
+- Pass: the populated export was restored after the forgotten-PIN wipe flow. The overwrite confirmation appeared before import, every data family rendered again, and the device lock remained disabled because lock data is not exported.
+- Pass: a version 1 fixture migrated locally. Existing charter, commitment, review, journal, wellbeing, and maintenance-reflection data rendered after import; commitment plans, Tools records, partner card, maintenance plan, and theme used their version 2 defaults.
+- Pass: the PIN gate hid the app shell before unlock, rejected an incorrect PIN with one generic message, accepted the correct PIN, and exposed the wipe-and-restore path only after explicit confirmation.
+- Pass: every final PWA screen opened after migration with no browser console errors.
+- Pass: the public Pages deployment loaded as Goal Tracker, showed the exact privacy statement and Tools navigation, and produced no browser console errors.
 
-## UI text checks
+## 360px viewport checks recorded
 
-- Pass: a case-insensitive repository scan found none of the four prohibited terms from the specification.
-- Pass: no em dash character is present.
-- Pass: the app name is Goal Tracker in the page title, manifest, header, printable summary, and generated calendar event.
+- Pass: Today, Charter, Commitments, Weekly review, Journal, Wellbeing, Tools, and Settings were checked at 360 by 800 pixels in Dark theme.
+- Pass: the same eight screens were checked at 360 by 800 pixels in Light theme.
+- Pass: Maintenance was checked at 360 by 800 pixels in both themes, and a guided-card dialog was checked in Light theme.
+- Pass: none of the checked screens or the dialog produced horizontal scrolling.
+- Pass: no visible interactive target on the checked screens or dialog measured below 44 by 44 pixels. Checkbox and radio controls were measured by their clickable labels.
 
-## Browser checks
+## Final privacy and wording scans
 
-- Pass: the PWA loaded without app console errors.
-- Pass: Today, Charter, Commitments, Weekly review, Journal, Wellbeing, Maintenance, and Settings each opened without app console errors.
-- Pass: a complete populated backup was imported into a fresh local-storage origin after the overwrite confirmation.
-- Pass: the restored charter, greeting, commitments, weekly reviews, journal entries, wellbeing checks, maintenance data, and settings were re-exported byte-for-byte identically at the section level.
-- Pass: restored records appeared on every relevant screen. The sample wellbeing score was 84, from a raw total of 21.
-- Pass: the printable summary contained Charter, Commitment history, Weekly reviews, and Wellbeing trend.
-- Pass: the PWA reloaded with its restored data after the temporary server was stopped.
-- Pass: the self-contained file loaded over a fresh local test origin, exposed every screen, hid installation, had no manifest or external app assets, and produced no app console errors.
-- Pass: direct local-file use was manually confirmed. The generated file opened, saved an entry, and exported a backup successfully.
+- Pass: the final whole-repository networking scan found only the service worker's same-origin app-shell request handler and its request call.
+- Pass: the final whole-repository wording scan found none of the restricted terms or the em dash character.
+- Pass: no remote script, stylesheet, image, or font reference is present.
 
-## 360px viewport
+## Self-contained file
 
-- Pass: all eight screens were checked at 360 by 800 pixels.
-- Pass: no screen produced horizontal scrolling.
-- Pass: no visible interactive target measured below 44 by 44 pixels. Wrapped checkbox, radio, and file-input controls were measured by their clickable labels.
-
-## Feature checks
-
-- Pass: charter entry and same-day greeting rotation used the user's own charter text.
-- Pass: commitment completion, renegotiation detail and count, stuck support text, and the weekly status pattern were exercised.
-- Pass: weekly review ratings and the canvas trend chart rendered.
-- Pass: journal entry creation and editable prompts were exercised.
-- Pass: WHO-5 raw and 0 to 100 scoring, history, attribution, disclaimer, and canvas chart rendered.
-- Pass: 30, 60, and 90 day maintenance marks were calculated and a due reflection was saved.
-- Pass: the recurring daily calendar file downloaded with a daily recurrence rule and alarm.
-- Pass: storage persistence was requested on first save and the granted or not-granted result was surfaced.
-- Pass: JSON export, validated import, overwrite confirmation, and backup reminder state were exercised.
+- Pass: the current version 2 `goal-tracker.html` has the single-file flag, contains the exact current app script and styles by hash, has no external app asset reference, and uses a hash-based policy that blocks connections, workers, manifests, objects, frames, and forms.
+- Pass: the file-only branch hides installation and service-worker setup while leaving the shared app feature code intact.
+- Note: browser automation policy blocks direct local-file navigation, so a current-version manual local-file launch remains the only check that could not be rerun automatically. The earlier user-confirmed local-file test applied to the prior build.
 
 ## Documentation
 
-- Pass: `README.md` covers static PWA deployment, producing and sharing the single-file build, backup, restore, storage persistence, and reminder limits.
+- Pass: `README.md` covers static PWA deployment, GitHub Pages sharing, producing and sharing the single-file build, privacy, PIN behavior, themes, Tools, backup, restore, and version 1 migration.

@@ -3,7 +3,8 @@
 
   const APP_NAME = "Goal Tracker";
   const STORAGE_KEY = "goalTrackerData";
-  const SCHEMA_VERSION = 1;
+  const LOCK_STORAGE_KEY = "goalTrackerLock";
+  const SCHEMA_VERSION = 2;
   const IS_SINGLE_FILE = document.documentElement.dataset.singleFile === "true";
   const MARKED_STATUSES = ["Completed", "Missed", "Renegotiated", "Stuck"];
   const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -30,6 +31,18 @@
     { value: 0, label: "At no time" }
   ];
   const MILESTONE_OFFSETS = [30, 60, 90];
+  const EMOTION_SUGGESTIONS = [
+    "Frustration",
+    "Boredom",
+    "Dread",
+    "Deflation",
+    "Restlessness",
+    "Overwhelm",
+    "Doubt",
+    "Avoidance",
+    "Impatience",
+    "Disappointment"
+  ];
 
   const byId = (id) => document.getElementById(id);
   const nowIso = () => new Date().toISOString();
@@ -41,6 +54,13 @@
   let deferredInstallPrompt = null;
   let viewedWeekStart = startOfWeek(new Date());
   let commitmentDrafts = [];
+  let slipStep = 1;
+  let slipDraft = { whatHappened: "", easier: "" };
+  let unhookStep = 1;
+  let unhookDraft = { story: "", value: "", nextMove: "" };
+  let lockRecord = null;
+  let appStarted = false;
+  let pwaInitialized = false;
 
   function createId(prefix) {
     if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
@@ -192,6 +212,26 @@
     };
   }
 
+  function defaultMaintenancePlan() {
+    return {
+      highRiskMap: Array.from({ length: 5 }, () => ({ situation: "", whyRisky: "" })),
+      tripwires: Array.from({ length: 5 }, () => ""),
+      recoveryPlan: "",
+      supports: "",
+      ritual: ""
+    };
+  }
+
+  function defaultPartner() {
+    return {
+      name: "",
+      checkInMethod: "",
+      checkInDay: 0,
+      askedFor: "",
+      offer: ""
+    };
+  }
+
   function createDefaultState() {
     const createdAt = nowIso();
     return {
@@ -224,14 +264,21 @@
       weeklyReviews: [],
       journalEntries: [],
       wellbeingChecks: [],
+      partner: defaultPartner(),
+      noticeEntries: [],
+      slipCompletions: [],
+      unhookCompletions: [],
+      evidenceLabels: [],
       maintenance: {
         programEndDate: "",
-        reflections: {}
+        reflections: {},
+        plan: defaultMaintenancePlan()
       },
       settings: {
         prompts: [...DEFAULT_PROMPTS],
         reminderTime: "09:00",
-        openAppNotificationsEnabled: false
+        openAppNotificationsEnabled: false,
+        themeMode: "device"
       }
     };
   }
@@ -315,7 +362,10 @@
       archivedDate: cleanDate(source.archivedDate) || (archivedAt ? localDateString(new Date(archivedAt)) : ""),
       statuses: normalizeStatusMap(source.statuses),
       renegotiationCount: Math.max(0, clampInteger(source.renegotiationCount, 0, Number.MAX_SAFE_INTEGER, 0)),
-      scheduleHistory: normalizeScheduleHistory(source.scheduleHistory, days, createdAt)
+      scheduleHistory: normalizeScheduleHistory(source.scheduleHistory, days, createdAt),
+      cuePlan: cleanText(source.cuePlan),
+      obstaclePlan: cleanText(source.obstaclePlan),
+      difficultDayVersion: cleanText(source.difficultDayVersion)
     };
   }
 
@@ -377,6 +427,103 @@
     return result;
   }
 
+  function normalizeMaintenancePlan(value) {
+    const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    const highRiskMap = (Array.isArray(source.highRiskMap) ? source.highRiskMap : [])
+      .slice(0, 5)
+      .map((entry) => ({
+        situation: cleanText(entry && entry.situation),
+        whyRisky: cleanText(entry && entry.whyRisky)
+      }));
+    while (highRiskMap.length < 5) highRiskMap.push({ situation: "", whyRisky: "" });
+    const tripwires = (Array.isArray(source.tripwires) ? source.tripwires : [])
+      .slice(0, 5)
+      .map(cleanText);
+    while (tripwires.length < 5) tripwires.push("");
+    return {
+      highRiskMap,
+      tripwires,
+      recoveryPlan: cleanText(source.recoveryPlan),
+      supports: cleanText(source.supports),
+      ritual: cleanText(source.ritual)
+    };
+  }
+
+  function normalizePartner(value) {
+    const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    return {
+      name: cleanText(source.name),
+      checkInMethod: cleanText(source.checkInMethod),
+      checkInDay: clampInteger(source.checkInDay, 0, 7, 0),
+      askedFor: cleanText(source.askedFor),
+      offer: cleanText(source.offer)
+    };
+  }
+
+  function normalizeNoticeEntry(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+    const date = cleanDate(value.date);
+    if (!date) return null;
+    return {
+      id: cleanText(value.id) || createId("notice"),
+      date,
+      emotion: cleanText(value.emotion),
+      trigger: cleanText(value.trigger),
+      nextMove: cleanText(value.nextMove),
+      updatedAt: cleanDateTime(value.updatedAt) || nowIso()
+    };
+  }
+
+  function normalizeSlipCompletion(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+    const date = cleanDate(value.date);
+    if (!date) return null;
+    return {
+      id: cleanText(value.id) || createId("slip"),
+      date,
+      whatHappened: cleanText(value.whatHappened),
+      easier: cleanText(value.easier),
+      warningSign: cleanText(value.warningSign),
+      completedAt: cleanDateTime(value.completedAt) || nowIso()
+    };
+  }
+
+  function normalizeUnhookCompletion(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+    const date = cleanDate(value.date);
+    if (!date) return null;
+    return {
+      id: cleanText(value.id) || createId("unhook"),
+      date,
+      story: cleanText(value.story),
+      value: cleanText(value.value),
+      nextMove: cleanText(value.nextMove),
+      completedAt: cleanDateTime(value.completedAt) || nowIso()
+    };
+  }
+
+  function normalizeEvidenceLabel(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+    const entries = (Array.isArray(value.entries) ? value.entries : [])
+      .map((entry) => {
+        if (!entry || typeof entry !== "object" || Array.isArray(entry)) return null;
+        const date = cleanDate(entry.date);
+        if (!date) return null;
+        return {
+          id: cleanText(entry.id) || createId("evidence"),
+          date,
+          text: cleanText(entry.text),
+          updatedAt: cleanDateTime(entry.updatedAt) || nowIso()
+        };
+      })
+      .filter(Boolean);
+    return {
+      id: cleanText(value.id) || createId("label"),
+      label: cleanText(value.label),
+      entries
+    };
+  }
+
   function normalizeState(input) {
     const defaults = createDefaultState();
     const source = input && typeof input === "object" && !Array.isArray(input) ? input : {};
@@ -411,6 +558,18 @@
       const normalized = normalizeWellbeingCheck(entry);
       if (normalized) wellbeingByWeek.set(normalized.weekStart, normalized);
     });
+    const noticeEntries = (Array.isArray(source.noticeEntries) ? source.noticeEntries : [])
+      .map(normalizeNoticeEntry)
+      .filter(Boolean);
+    const slipCompletions = (Array.isArray(source.slipCompletions) ? source.slipCompletions : [])
+      .map(normalizeSlipCompletion)
+      .filter(Boolean);
+    const unhookCompletions = (Array.isArray(source.unhookCompletions) ? source.unhookCompletions : [])
+      .map(normalizeUnhookCompletion)
+      .filter(Boolean);
+    const evidenceLabels = (Array.isArray(source.evidenceLabels) ? source.evidenceLabels : [])
+      .map(normalizeEvidenceLabel)
+      .filter(Boolean);
 
     const seenCommitmentIds = new Set();
     let activeCommitmentCount = 0;
@@ -458,14 +617,21 @@
       weeklyReviews: [...reviewsByWeek.values()],
       journalEntries: [...journalByDate.values()],
       wellbeingChecks: [...wellbeingByWeek.values()],
+      partner: normalizePartner(source.partner),
+      noticeEntries,
+      slipCompletions,
+      unhookCompletions,
+      evidenceLabels,
       maintenance: {
         programEndDate: cleanDate(maintenance.programEndDate),
-        reflections: normalizeReflections(maintenance.reflections)
+        reflections: normalizeReflections(maintenance.reflections),
+        plan: normalizeMaintenancePlan(maintenance.plan)
       },
       settings: {
         prompts,
         reminderTime: cleanTime(settings.reminderTime) || "09:00",
-        openAppNotificationsEnabled: settings.openAppNotificationsEnabled === true
+        openAppNotificationsEnabled: settings.openAppNotificationsEnabled === true,
+        themeMode: ["device", "light", "dark"].includes(settings.themeMode) ? settings.themeMode : "device"
       }
     };
   }
@@ -484,6 +650,10 @@
         case 0:
           migrated = { ...migrated, schemaVersion: 1 };
           version = 1;
+          break;
+        case 1:
+          migrated = { ...migrated, schemaVersion: 2 };
+          version = 2;
           break;
         default:
           throw new Error("This backup version cannot be migrated.");
@@ -539,6 +709,19 @@
     if (new Set(ids).size !== ids.length) {
       throw new Error("The backup contains duplicate commitment identifiers.");
     }
+    if (input.schemaVersion >= 2) {
+      ["noticeEntries", "slipCompletions", "unhookCompletions", "evidenceLabels"].forEach((key) => {
+        if (!Array.isArray(input[key])) {
+          throw new Error(`The backup field "${key}" is invalid.`);
+        }
+      });
+      if (!input.partner || typeof input.partner !== "object" || Array.isArray(input.partner)) {
+        throw new Error("The backup partner card is invalid.");
+      }
+      if (!input.maintenance.plan || typeof input.maintenance.plan !== "object" || Array.isArray(input.maintenance.plan)) {
+        throw new Error("The backup maintenance plan is invalid.");
+      }
+    }
   }
 
   function sortForComparison(value) {
@@ -552,11 +735,19 @@
 
   function validateNormalizedImport(input, normalized) {
     if (input.schemaVersion !== SCHEMA_VERSION) return;
-    const source = JSON.stringify(sortForComparison(input));
-    const cleaned = JSON.stringify(sortForComparison(normalized));
+    const source = JSON.stringify(sortForComparison(withoutPin(input)));
+    const cleaned = JSON.stringify(sortForComparison(exportableState(normalized)));
     if (source !== cleaned) {
       throw new Error("The backup contains damaged or unsupported values and was not imported.");
     }
+  }
+
+  function withoutPin(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function exportableState(value = state) {
+    return withoutPin(value);
   }
 
   function loadState() {
@@ -725,6 +916,43 @@
       promptInputs.append(makeTextLabel(`Prompt ${index + 1}`, textarea));
     }
 
+    const highRiskRows = byId("highRiskRows");
+    highRiskRows.replaceChildren();
+    for (let index = 0; index < 5; index += 1) {
+      const row = createElement("div", "high-risk-row");
+      const situation = createElement("input");
+      situation.type = "text";
+      situation.id = `highRiskSituation-${index}`;
+      row.append(makeTextLabel(`Situation ${index + 1}`, situation));
+      const whyRisky = createElement("input");
+      whyRisky.type = "text";
+      whyRisky.id = `highRiskWhy-${index}`;
+      row.append(makeTextLabel("Why it is risky", whyRisky));
+      highRiskRows.append(row);
+    }
+
+    const tripwireRows = byId("tripwireRows");
+    tripwireRows.replaceChildren();
+    for (let index = 0; index < 5; index += 1) {
+      const row = createElement("div", "tripwire-row");
+      appendText(row, "span", "", index + 1);
+      const input = createElement("input");
+      input.type = "text";
+      input.id = `tripwire-${index}`;
+      input.setAttribute("aria-label", `Tripwire ${index + 1}`);
+      row.append(input);
+      tripwireRows.append(row);
+    }
+
+    const emotionChips = byId("emotionChips");
+    emotionChips.replaceChildren();
+    EMOTION_SUGGESTIONS.forEach((emotion) => {
+      const button = createElement("button", "chip", emotion);
+      button.type = "button";
+      button.dataset.emotion = emotion;
+      emotionChips.append(button);
+    });
+
     const whoItems = byId("whoItems");
     whoItems.replaceChildren();
     WHO_ITEMS.forEach((item, itemIndex) => {
@@ -796,10 +1024,44 @@
     byId("wellbeingHistory").addEventListener("click", handleWellbeingHistoryClick);
 
     byId("programEndForm").addEventListener("submit", saveProgramEndDate);
+    byId("maintenancePlanForm").addEventListener("submit", saveMaintenancePlan);
     byId("maintenanceMarks").addEventListener("click", handleMaintenanceMarkClick);
     byId("maintenanceReflectionForm").addEventListener("submit", saveMaintenanceReflection);
 
+    byId("partnerForm").addEventListener("submit", savePartner);
+    byId("noticeForm").addEventListener("submit", saveNoticeEntry);
+    byId("clearNoticeButton").addEventListener("click", resetNoticeForm);
+    byId("emotionChips").addEventListener("click", handleEmotionChipClick);
+    byId("noticeEntries").addEventListener("click", handleNoticeClick);
+    byId("evidenceLabelForm").addEventListener("submit", addEvidenceLabel);
+    byId("evidenceLabels").addEventListener("submit", saveEvidenceEntry);
+    byId("searchInput").addEventListener("input", renderSearchResults);
+    byId("searchResults").addEventListener("click", openSearchResult);
+    byId("copyWeeklySummaryButton").addEventListener("click", copyWeeklySummary);
+
+    byId("startSlipButton").addEventListener("click", startSlipGuide);
+    byId("slipForm").addEventListener("submit", advanceSlipGuide);
+    byId("slipBackButton").addEventListener("click", () => {
+      if (slipStep > 1) {
+        slipStep -= 1;
+        renderSlipStep();
+      }
+    });
+    byId("closeSlipButton").addEventListener("click", () => closeDialog(byId("slipDialog")));
+    byId("startUnhookButton").addEventListener("click", startUnhookGuide);
+    byId("unhookForm").addEventListener("submit", advanceUnhookGuide);
+    byId("unhookBackButton").addEventListener("click", () => {
+      if (unhookStep > 1) {
+        unhookStep -= 1;
+        renderUnhookStep();
+      }
+    });
+    byId("closeUnhookButton").addEventListener("click", () => closeDialog(byId("unhookDialog")));
+
     byId("promptSettingsForm").addEventListener("submit", savePromptSettings);
+    byId("themeForm").addEventListener("change", saveTheme);
+    byId("pinSettingsForm").addEventListener("submit", savePinSettings);
+    byId("pinEnabledToggle").addEventListener("change", renderPinSettings);
     byId("reminderTime").addEventListener("change", saveReminderTime);
     byId("downloadCalendarButton").addEventListener("click", downloadCalendarReminder);
     byId("openAppReminderButton").addEventListener("click", enableOpenAppReminder);
@@ -812,8 +1074,19 @@
     byId("printButton").addEventListener("click", printSummary);
 
     byId("renegotiationForm").addEventListener("submit", saveRenegotiation);
+    byId("renegotiationUpdatePlans").addEventListener("change", () => {
+      byId("renegotiationPlanFields").hidden = !byId("renegotiationUpdatePlans").checked;
+    });
     byId("cancelRenegotiationButton").addEventListener("click", closeRenegotiationDialog);
     byId("closeRenegotiationButton").addEventListener("click", closeRenegotiationDialog);
+
+    byId("unlockForm").addEventListener("submit", unlockApp);
+    byId("forgotPinButton").addEventListener("click", openWipeDialog);
+    byId("wipeConfirmCheck").addEventListener("change", () => {
+      byId("confirmWipeButton").disabled = !byId("wipeConfirmCheck").checked;
+    });
+    byId("cancelWipeButton").addEventListener("click", () => closeDialog(byId("wipeConfirmDialog")));
+    byId("confirmWipeButton").addEventListener("click", wipeLocalData);
 
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
@@ -884,8 +1157,9 @@
     document.querySelectorAll(".view").forEach((view) => {
       view.hidden = view !== target;
     });
+    const activeNavView = viewName === "maintenance" ? "tools" : viewName;
     document.querySelectorAll(".nav-button").forEach((button) => {
-      const active = button.dataset.viewTarget === viewName;
+      const active = button.dataset.viewTarget === activeNavView;
       button.classList.toggle("is-active", active);
       if (active) button.setAttribute("aria-current", "page");
       else button.removeAttribute("aria-current");
@@ -920,6 +1194,9 @@
       case "maintenance":
         renderMaintenance();
         break;
+      case "tools":
+        renderTools();
+        break;
       case "settings":
         renderSettings();
         break;
@@ -937,6 +1214,7 @@
     renderJournal();
     renderWellbeing();
     renderMaintenance();
+    renderTools();
     renderSettings();
     renderBackupBanner();
     renderPrintSummary();
@@ -1024,7 +1302,18 @@
     }
 
     renderTodayCommitments();
+    renderPartnerCheckIn();
     renderMaintenanceArrival();
+  }
+
+  function renderPartnerCheckIn() {
+    const card = byId("partnerCheckIn");
+    const partnerName = state.partner.name.trim();
+    const dueToday = state.partner.checkInDay === weekdayNumber(new Date());
+    card.hidden = !partnerName || !dueToday;
+    if (!card.hidden) {
+      byId("partnerCheckInText").textContent = `Check-in with ${partnerName} today`;
+    }
   }
 
   function renderTodayCommitments() {
@@ -1062,6 +1351,29 @@
       headingWrap.append(meta);
       head.append(headingWrap);
       card.append(head);
+      if (commitment.cuePlan.trim()) {
+        const cue = createElement("p", "cue-plan");
+        appendText(cue, "strong", "", "Cue plan: ");
+        cue.append(document.createTextNode(commitment.cuePlan.trim()));
+        card.append(cue);
+      }
+      if (commitment.obstaclePlan.trim() || commitment.difficultDayVersion.trim()) {
+        const plans = createElement("details", "commitment-plans");
+        appendText(plans, "summary", "", "Show obstacle and difficult-day plans");
+        if (commitment.obstaclePlan.trim()) {
+          const obstacle = createElement("p");
+          appendText(obstacle, "strong", "", "Obstacle plan: ");
+          obstacle.append(document.createTextNode(commitment.obstaclePlan.trim()));
+          plans.append(obstacle);
+        }
+        if (commitment.difficultDayVersion.trim()) {
+          const difficult = createElement("p");
+          appendText(difficult, "strong", "", "Difficult-day version: ");
+          difficult.append(document.createTextNode(commitment.difficultDayVersion.trim()));
+          plans.append(difficult);
+        }
+        card.append(plans);
+      }
 
       const actions = createElement("div", "status-actions");
       MARKED_STATUSES.forEach((status) => {
@@ -1186,7 +1498,10 @@
       archivedDate: "",
       statuses: {},
       renegotiationCount: 0,
-      scheduleHistory: []
+      scheduleHistory: [],
+      cuePlan: "",
+      obstaclePlan: "",
+      difficultDayVersion: ""
     });
     renderCommitmentEditor();
     const cards = byId("commitmentEditor").querySelectorAll(".commitment-card");
@@ -1247,6 +1562,23 @@
       });
       card.append(fieldset);
 
+      const planFieldset = createElement("fieldset", "plan-fieldset");
+      appendText(planFieldset, "legend", "", "Plans");
+      const cuePlan = createElement("textarea", "commitment-cue-plan");
+      cuePlan.rows = 2;
+      cuePlan.value = commitment.cuePlan;
+      planFieldset.append(makeTextLabel("Cue plan: If my cue arrives, then I will...", cuePlan));
+      const obstaclePlan = createElement("textarea", "commitment-obstacle-plan");
+      obstaclePlan.rows = 2;
+      obstaclePlan.value = commitment.obstaclePlan;
+      planFieldset.append(makeTextLabel("Obstacle plan: If my obstacle shows up, then I will...", obstaclePlan));
+      const difficultDay = createElement("textarea", "commitment-difficult-day");
+      difficultDay.rows = 2;
+      difficultDay.value = commitment.difficultDayVersion;
+      planFieldset.append(makeTextLabel("Difficult-day version", difficultDay));
+      appendText(planFieldset.lastElementChild, "span", "field-help", "The smallest acceptable form of the action");
+      card.append(planFieldset);
+
       const meta = createElement("div", "commitment-meta");
       appendText(meta, "span", "count-badge", `${commitment.renegotiationCount} renegotiation${commitment.renegotiationCount === 1 ? "" : "s"}`);
       const markedCount = Object.keys(commitment.statuses).length;
@@ -1290,6 +1622,9 @@
       const scheduleChanged = JSON.stringify(days) !== JSON.stringify(commitment.days);
       commitment.text = text;
       commitment.days = days;
+      commitment.cuePlan = card.querySelector(".commitment-cue-plan").value.trim();
+      commitment.obstaclePlan = card.querySelector(".commitment-obstacle-plan").value.trim();
+      commitment.difficultDayVersion = card.querySelector(".commitment-difficult-day").value.trim();
       if (scheduleChanged) {
         const effectiveFrom = localDateString();
         const existingToday = commitment.scheduleHistory.find((entry) => entry.effectiveFrom === effectiveFrom);
@@ -1442,6 +1777,11 @@
     byId("renegotiationStatusDate").value = date;
     byId("renegotiationAction").value = existing && existing.status === "Renegotiated" ? existing.newAction : "";
     byId("renegotiationDate").value = existing && existing.status === "Renegotiated" ? existing.newDate : "";
+    byId("renegotiationUpdatePlans").checked = false;
+    byId("renegotiationPlanFields").hidden = true;
+    byId("renegotiationCuePlan").value = commitment.cuePlan;
+    byId("renegotiationObstaclePlan").value = commitment.obstaclePlan;
+    byId("renegotiationDifficultDay").value = commitment.difficultDayVersion;
     byId("renegotiationError").hidden = true;
     openDialog(byId("renegotiationDialog"));
     window.setTimeout(() => byId("renegotiationAction").focus(), 0);
@@ -1477,6 +1817,11 @@
       updatedAt: nowIso(),
       commitmentText: commitment.text
     };
+    if (byId("renegotiationUpdatePlans").checked) {
+      commitment.cuePlan = byId("renegotiationCuePlan").value.trim();
+      commitment.obstaclePlan = byId("renegotiationObstaclePlan").value.trim();
+      commitment.difficultDayVersion = byId("renegotiationDifficultDay").value.trim();
+    }
     if (saveState({ meaningful: true })) {
       closeRenegotiationDialog();
       renderTodayCommitments();
@@ -1599,10 +1944,14 @@
       maximum: 10,
       points: reviews.map((review) => review.weekStart),
       series: [
-        { values: reviews.map((review) => review.progress), color: "#1B2A4A" },
-        { values: reviews.map((review) => review.confidence), color: "#8F7119" }
+        { values: reviews.map((review) => review.progress), color: cssColor("--chart-primary") },
+        { values: reviews.map((review) => review.confidence), color: cssColor("--gold-text") }
       ]
     });
+  }
+
+  function cssColor(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
   function drawLineChart(canvas, configuration) {
@@ -1628,17 +1977,17 @@
       const value = configuration.maximum - (configuration.maximum / 4) * line;
       const y = padding.top + (chartHeight / 4) * line;
       context.beginPath();
-      context.strokeStyle = "#d9dee7";
+      context.strokeStyle = cssColor("--line");
       context.lineWidth = 1;
       context.moveTo(padding.left, y);
       context.lineTo(width - padding.right, y);
       context.stroke();
-      context.fillStyle = "#5f6878";
+      context.fillStyle = cssColor("--muted");
       context.fillText(String(Math.round(value)), padding.left - 8, y);
     }
 
     if (!configuration.points.length) {
-      context.fillStyle = "#5f6878";
+      context.fillStyle = cssColor("--muted");
       context.textAlign = "center";
       context.font = "14px system-ui, sans-serif";
       context.fillText("Save a check-in to begin the trend.", width / 2, height / 2);
@@ -1665,7 +2014,7 @@
       context.stroke();
       series.values.forEach((value, index) => {
         context.beginPath();
-        context.fillStyle = "#ffffff";
+        context.fillStyle = cssColor("--field");
         context.strokeStyle = series.color;
         context.lineWidth = 2;
         context.arc(xForIndex(index), yForValue(value), 4, 0, Math.PI * 2);
@@ -1677,7 +2026,7 @@
     const labelIndexes = configuration.points.length === 1
       ? [0]
       : [...new Set([0, Math.floor((configuration.points.length - 1) / 2), configuration.points.length - 1])];
-    context.fillStyle = "#5f6878";
+    context.fillStyle = cssColor("--muted");
     context.textBaseline = "top";
     context.font = "10px system-ui, sans-serif";
     labelIndexes.forEach((index) => {
@@ -1925,7 +2274,7 @@
     drawLineChart(canvas, {
       maximum: 100,
       points: checks.map((check) => check.weekStart),
-      series: [{ values: checks.map((check) => check.score), color: "#1B2A4A" }]
+      series: [{ values: checks.map((check) => check.score), color: cssColor("--chart-primary") }]
     });
   }
 
@@ -1962,6 +2311,16 @@
 
   function renderMaintenance() {
     byId("programEndDate").value = state.maintenance.programEndDate;
+    state.maintenance.plan.highRiskMap.forEach((entry, index) => {
+      byId(`highRiskSituation-${index}`).value = entry.situation;
+      byId(`highRiskWhy-${index}`).value = entry.whyRisky;
+    });
+    state.maintenance.plan.tripwires.forEach((tripwire, index) => {
+      byId(`tripwire-${index}`).value = tripwire;
+    });
+    byId("recoveryPlan").value = state.maintenance.plan.recoveryPlan;
+    byId("maintenanceSupports").value = state.maintenance.plan.supports;
+    byId("maintenanceRitual").value = state.maintenance.plan.ritual;
     const container = byId("maintenanceMarks");
     container.replaceChildren();
     const milestones = maintenanceMilestones();
@@ -1971,6 +2330,7 @@
       appendText(empty, "p", "", "Set your program end date to calculate the 30, 60, and 90 day marks.");
       container.append(empty);
       reflectionForm.hidden = true;
+      byId("maintenancePlanAlongside").hidden = true;
       return;
     }
     milestones.forEach((milestone) => {
@@ -2011,6 +2371,26 @@
       showMaintenanceReflection(dueMilestone, false);
     } else {
       reflectionForm.hidden = true;
+      byId("maintenancePlanAlongside").hidden = true;
+    }
+  }
+
+  function saveMaintenancePlan(event) {
+    event.preventDefault();
+    state.maintenance.plan = {
+      highRiskMap: Array.from({ length: 5 }, (_, index) => ({
+        situation: byId(`highRiskSituation-${index}`).value.trim(),
+        whyRisky: byId(`highRiskWhy-${index}`).value.trim()
+      })),
+      tripwires: Array.from({ length: 5 }, (_, index) => byId(`tripwire-${index}`).value.trim()),
+      recoveryPlan: byId("recoveryPlan").value.trim(),
+      supports: byId("maintenanceSupports").value.trim(),
+      ritual: byId("maintenanceRitual").value.trim()
+    };
+    if (saveState({ meaningful: true })) {
+      renderMaintenancePlanSummary();
+      renderPrintSummary();
+      showToast("Maintenance plan saved on this device.");
     }
   }
 
@@ -2043,10 +2423,40 @@
     byId("maintenanceSlipped").value = reflection ? reflection.slipped : "";
     byId("maintenanceAdjustment").value = reflection ? reflection.adjustment : "";
     form.hidden = false;
+    renderMaintenancePlanSummary();
     if (shouldScroll) {
       form.scrollIntoView({ behavior: "smooth", block: "start" });
       byId("maintenanceHeld").focus();
     }
+  }
+
+  function renderMaintenancePlanSummary() {
+    const card = byId("maintenancePlanAlongside");
+    const container = byId("maintenancePlanAlongsideContent");
+    const plan = state.maintenance.plan;
+    container.replaceChildren();
+    const risks = plan.highRiskMap.filter((entry) => entry.situation || entry.whyRisky);
+    const tripwires = plan.tripwires.filter(Boolean);
+    if (!risks.length && !tripwires.length && !plan.recoveryPlan && !plan.supports && !plan.ritual) {
+      appendText(container, "p", "", "Your maintenance plan is empty. Add it above when you are ready.");
+    } else {
+      if (risks.length) {
+        appendText(container, "h3", "", "High-risk map");
+        const list = createElement("ul", "plan-summary-list");
+        risks.forEach((risk) => appendText(list, "li", "", `${risk.situation || "Unnamed situation"}: ${risk.whyRisky || "Reason not entered"}`));
+        container.append(list);
+      }
+      if (tripwires.length) {
+        appendText(container, "h3", "", "Tripwires");
+        const list = createElement("ul", "plan-summary-list");
+        tripwires.forEach((tripwire) => appendText(list, "li", "", tripwire));
+        container.append(list);
+      }
+      appendPrintField(container, "Recovery plan", plan.recoveryPlan);
+      appendPrintField(container, "Supports", plan.supports);
+      appendPrintField(container, "Maintenance ritual", plan.ritual);
+    }
+    card.hidden = byId("maintenanceReflectionForm").hidden;
   }
 
   function saveMaintenanceReflection(event) {
@@ -2070,10 +2480,851 @@
     }
   }
 
+  function renderTools() {
+    byId("partnerName").value = state.partner.name;
+    byId("partnerCheckInMethod").value = state.partner.checkInMethod;
+    byId("partnerCheckInDay").value = String(state.partner.checkInDay);
+    byId("partnerAskedFor").value = state.partner.askedFor;
+    byId("partnerOffer").value = state.partner.offer;
+    if (!byId("noticeDate").value) byId("noticeDate").value = localDateString();
+    renderNoticeEntries();
+    renderEvidenceLabels();
+    renderGuidedCompletions();
+    renderSearchResults();
+  }
+
+  function savePartner(event) {
+    event.preventDefault();
+    state.partner = {
+      name: byId("partnerName").value.trim(),
+      checkInMethod: byId("partnerCheckInMethod").value.trim(),
+      checkInDay: clampInteger(byId("partnerCheckInDay").value, 0, 7, 0),
+      askedFor: byId("partnerAskedFor").value.trim(),
+      offer: byId("partnerOffer").value.trim()
+    };
+    if (saveState({ meaningful: true })) {
+      renderPartnerCheckIn();
+      renderPrintSummary();
+      showToast("Partner card saved on this device.");
+    }
+  }
+
+  function handleEmotionChipClick(event) {
+    const button = event.target.closest("[data-emotion]");
+    if (!button) return;
+    byId("noticeEmotion").value = button.dataset.emotion;
+    byId("noticeEmotion").focus();
+  }
+
+  function resetNoticeForm() {
+    byId("noticeId").value = "";
+    byId("noticeDate").value = localDateString();
+    byId("noticeEmotion").value = "";
+    byId("noticeTrigger").value = "";
+    byId("noticeNextMove").value = "";
+  }
+
+  function saveNoticeEntry(event) {
+    event.preventDefault();
+    const date = cleanDate(byId("noticeDate").value);
+    const emotion = byId("noticeEmotion").value.trim();
+    const trigger = byId("noticeTrigger").value.trim();
+    const nextMove = byId("noticeNextMove").value.trim();
+    if (!date || !emotion || !trigger || !nextMove) {
+      showToast("Complete the date, emotion, trigger moment, and next move.");
+      return;
+    }
+    const id = byId("noticeId").value;
+    const entry = {
+      id: id || createId("notice"),
+      date,
+      emotion,
+      trigger,
+      nextMove,
+      updatedAt: nowIso()
+    };
+    const index = state.noticeEntries.findIndex((item) => item.id === id);
+    if (index >= 0) state.noticeEntries[index] = entry;
+    else state.noticeEntries.push(entry);
+    if (saveState({ meaningful: true })) {
+      resetNoticeForm();
+      renderNoticeEntries();
+      renderSearchResults();
+      showToast("Notice saved on this device.");
+    }
+  }
+
+  function renderNoticeEntries() {
+    const container = byId("noticeEntries");
+    container.replaceChildren();
+    const entries = [...state.noticeEntries].sort((a, b) => (
+      b.date.localeCompare(a.date) || b.updatedAt.localeCompare(a.updatedAt)
+    ));
+    if (!entries.length) {
+      appendText(container, "p", "empty-state", "No notice and name captures yet.");
+      return;
+    }
+    entries.forEach((entry) => {
+      const item = createElement("article", "history-item");
+      item.id = `notice-entry-${entry.id}`;
+      const head = createElement("div", "history-head");
+      const title = createElement("div");
+      appendText(title, "p", "card-kicker", formatDate(entry.date));
+      appendText(title, "h3", "", entry.emotion);
+      const edit = createElement("button", "button button-quiet", "Edit");
+      edit.type = "button";
+      edit.dataset.action = "edit-notice";
+      edit.dataset.noticeId = entry.id;
+      head.append(title, edit);
+      item.append(head);
+      appendPrintField(item, "Trigger moment", entry.trigger);
+      appendPrintField(item, "Next move", entry.nextMove);
+      container.append(item);
+    });
+  }
+
+  function handleNoticeClick(event) {
+    const button = event.target.closest('[data-action="edit-notice"]');
+    if (!button) return;
+    openNoticeEntry(button.dataset.noticeId);
+  }
+
+  function openNoticeEntry(id) {
+    const entry = state.noticeEntries.find((item) => item.id === id);
+    if (!entry) return;
+    byId("noticeId").value = entry.id;
+    byId("noticeDate").value = entry.date;
+    byId("noticeEmotion").value = entry.emotion;
+    byId("noticeTrigger").value = entry.trigger;
+    byId("noticeNextMove").value = entry.nextMove;
+    byId("noticeForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    byId("noticeEmotion").focus({ preventScroll: true });
+  }
+
+  function addEvidenceLabel(event) {
+    event.preventDefault();
+    const label = byId("evidenceLabelText").value.trim();
+    if (!label) return;
+    state.evidenceLabels.push({
+      id: createId("label"),
+      label,
+      entries: []
+    });
+    if (saveState({ meaningful: true })) {
+      byId("evidenceLabelText").value = "";
+      renderEvidenceLabels();
+      renderSearchResults();
+      showToast("Evidence label added on this device.");
+    }
+  }
+
+  function renderEvidenceLabels() {
+    const container = byId("evidenceLabels");
+    container.replaceChildren();
+    if (!state.evidenceLabels.length) {
+      appendText(container, "p", "empty-state", "No evidence labels yet.");
+      return;
+    }
+    state.evidenceLabels.forEach((label) => {
+      const card = createElement("article", "card evidence-label-card");
+      card.id = `evidence-label-${label.id}`;
+      appendText(card, "p", "card-kicker", "Label I am testing");
+      appendText(card, "h3", "", label.label || "Unnamed label");
+      const form = createElement("form", "evidence-entry-form");
+      form.dataset.evidenceLabelId = label.id;
+      const dateInput = createElement("input");
+      dateInput.type = "date";
+      dateInput.value = localDateString();
+      dateInput.required = true;
+      dateInput.className = "evidence-date";
+      form.append(makeTextLabel("Date", dateInput));
+      const textInput = createElement("textarea", "evidence-text");
+      textInput.rows = 3;
+      textInput.required = true;
+      form.append(makeTextLabel("Specific evidence that complicates it", textInput));
+      const save = createElement("button", "button button-primary", "Save evidence");
+      save.type = "submit";
+      form.append(save);
+      card.append(form);
+      const list = createElement("div", "history-list");
+      const entries = [...label.entries].sort((a, b) => (
+        b.date.localeCompare(a.date) || b.updatedAt.localeCompare(a.updatedAt)
+      ));
+      if (!entries.length) {
+        appendText(list, "p", "field-help", "No evidence entries for this label yet.");
+      } else {
+        entries.forEach((entry) => {
+          const item = createElement("article", "history-item");
+          item.id = `evidence-entry-${entry.id}`;
+          item.tabIndex = -1;
+          appendText(item, "p", "card-kicker", formatDate(entry.date));
+          appendText(item, "p", "", entry.text);
+          list.append(item);
+        });
+      }
+      card.append(list);
+      container.append(card);
+    });
+  }
+
+  function saveEvidenceEntry(event) {
+    const form = event.target.closest("[data-evidence-label-id]");
+    if (!form) return;
+    event.preventDefault();
+    const label = state.evidenceLabels.find((item) => item.id === form.dataset.evidenceLabelId);
+    const date = cleanDate(form.querySelector(".evidence-date").value);
+    const text = form.querySelector(".evidence-text").value.trim();
+    if (!label || !date || !text) {
+      showToast("Enter a date and specific evidence.");
+      return;
+    }
+    label.entries.push({
+      id: createId("evidence"),
+      date,
+      text,
+      updatedAt: nowIso()
+    });
+    if (saveState({ meaningful: true })) {
+      renderEvidenceLabels();
+      renderSearchResults();
+      renderPrintSummary();
+      showToast("Evidence saved on this device.");
+    }
+  }
+
+  function startSlipGuide() {
+    slipStep = 1;
+    slipDraft = { whatHappened: "", easier: "" };
+    renderSlipStep();
+    openDialog(byId("slipDialog"));
+  }
+
+  function renderSlipStep() {
+    const content = byId("slipStepContent");
+    const heading = byId("slipDialogHeading");
+    content.replaceChildren();
+    byId("slipStepLabel").textContent = `Step ${slipStep} of 4`;
+    byId("slipBackButton").hidden = slipStep === 1;
+    byId("slipNextButton").textContent = slipStep === 4 ? "Finish" : "Continue";
+    if (slipStep === 1) {
+      heading.textContent = "A slip is data, not a verdict";
+      appendText(content, "p", "guided-copy", "Pause and breathe. No story yet.");
+      appendText(
+        content,
+        "p",
+        "",
+        "Speak to yourself as you would to a colleague who slipped: plainly and without contempt."
+      );
+    }
+    if (slipStep === 2) {
+      heading.textContent = "What actually happened?";
+      const textarea = createElement("textarea");
+      textarea.id = "slipWhatHappened";
+      textarea.rows = 4;
+      textarea.required = true;
+      textarea.value = slipDraft.whatHappened;
+      content.append(makeTextLabel("One factual sentence", textarea));
+    }
+    if (slipStep === 3) {
+      heading.textContent = "What would make the next attempt 10 percent easier?";
+      const textarea = createElement("textarea");
+      textarea.id = "slipEasier";
+      textarea.rows = 4;
+      textarea.required = true;
+      textarea.value = slipDraft.easier;
+      content.append(makeTextLabel("One sentence", textarea));
+    }
+    if (slipStep === 4) {
+      heading.textContent = "Resume at the next opportunity";
+      appendPrintField(content, "What actually happened", slipDraft.whatHappened);
+      appendPrintField(content, "What would make the next attempt easier", slipDraft.easier);
+      appendPrintField(
+        content,
+        "Your first early-warning sign",
+        state.charter.earlyWarning || "No early-warning sign is saved in your charter yet."
+      );
+      appendText(
+        content,
+        "p",
+        "guided-copy",
+        "The plan resumes at the next scheduled opportunity. Nothing else is required."
+      );
+    }
+  }
+
+  function advanceSlipGuide(event) {
+    event.preventDefault();
+    if (slipStep === 2) {
+      slipDraft.whatHappened = byId("slipWhatHappened").value.trim();
+      if (!slipDraft.whatHappened) return;
+    }
+    if (slipStep === 3) {
+      slipDraft.easier = byId("slipEasier").value.trim();
+      if (!slipDraft.easier) return;
+    }
+    if (slipStep < 4) {
+      slipStep += 1;
+      renderSlipStep();
+      return;
+    }
+    state.slipCompletions.push({
+      id: createId("slip"),
+      date: localDateString(),
+      whatHappened: slipDraft.whatHappened,
+      easier: slipDraft.easier,
+      warningSign: state.charter.earlyWarning,
+      completedAt: nowIso()
+    });
+    if (saveState({ meaningful: true })) {
+      closeDialog(byId("slipDialog"));
+      renderGuidedCompletions();
+      showToast("It slipped completion saved on this device.");
+    }
+  }
+
+  function startUnhookGuide() {
+    unhookStep = 1;
+    unhookDraft = { story: "", value: "", nextMove: "" };
+    renderUnhookStep();
+    openDialog(byId("unhookDialog"));
+  }
+
+  function renderUnhookStep() {
+    const content = byId("unhookStepContent");
+    const heading = byId("unhookDialogHeading");
+    content.replaceChildren();
+    byId("unhookStepLabel").textContent = `Step ${unhookStep} of 3`;
+    byId("unhookBackButton").hidden = unhookStep === 1;
+    byId("unhookNextButton").textContent = unhookStep === 3 ? "Save completion" : "Continue";
+    if (unhookStep === 1) {
+      heading.textContent = "Name the story";
+      const textarea = createElement("textarea");
+      textarea.id = "unhookStory";
+      textarea.rows = 4;
+      textarea.required = true;
+      textarea.value = unhookDraft.story;
+      content.append(makeTextLabel("I'm having the story that...", textarea));
+    }
+    if (unhookStep === 2) {
+      heading.textContent = "Which value is calling right now?";
+      const values = state.charter.guideValues.map((guide) => guide.value.trim()).filter(Boolean);
+      if (!values.length) {
+        appendText(content, "p", "guided-copy", "No guide values are saved yet. You can continue and choose a small move without one.");
+      } else {
+        const choices = createElement("div", "value-choice-grid");
+        values.forEach((value) => {
+          const button = createElement("button", "button button-secondary value-choice", value);
+          button.type = "button";
+          button.setAttribute("aria-pressed", unhookDraft.value === value ? "true" : "false");
+          if (unhookDraft.value === value) button.classList.add("is-selected");
+          button.addEventListener("click", () => {
+            unhookDraft.value = value;
+            renderUnhookStep();
+          });
+          choices.append(button);
+        });
+        content.append(choices);
+      }
+    }
+    if (unhookStep === 3) {
+      heading.textContent = "The next small move that serves it";
+      if (unhookDraft.value) appendText(content, "p", "guided-copy", `Value: ${unhookDraft.value}`);
+      const textarea = createElement("textarea");
+      textarea.id = "unhookNextMove";
+      textarea.rows = 4;
+      textarea.required = true;
+      textarea.value = unhookDraft.nextMove;
+      content.append(makeTextLabel("One sentence", textarea));
+    }
+  }
+
+  function advanceUnhookGuide(event) {
+    event.preventDefault();
+    if (unhookStep === 1) {
+      unhookDraft.story = byId("unhookStory").value.trim();
+      if (!unhookDraft.story) return;
+    }
+    if (unhookStep === 3) {
+      unhookDraft.nextMove = byId("unhookNextMove").value.trim();
+      if (!unhookDraft.nextMove) return;
+      state.unhookCompletions.push({
+        id: createId("unhook"),
+        date: localDateString(),
+        story: unhookDraft.story,
+        value: unhookDraft.value,
+        nextMove: unhookDraft.nextMove,
+        completedAt: nowIso()
+      });
+      if (saveState({ meaningful: true })) {
+        closeDialog(byId("unhookDialog"));
+        renderGuidedCompletions();
+        showToast("Unhook and choose completion saved on this device.");
+      }
+      return;
+    }
+    unhookStep += 1;
+    renderUnhookStep();
+  }
+
+  function renderGuidedCompletions() {
+    const slipContainer = byId("slipCompletions");
+    slipContainer.replaceChildren();
+    [...state.slipCompletions]
+      .sort((a, b) => b.completedAt.localeCompare(a.completedAt))
+      .slice(0, 5)
+      .forEach((entry) => {
+        const item = createElement("article", "history-item");
+        appendText(item, "p", "card-kicker", formatDate(entry.date));
+        appendText(item, "p", "", entry.whatHappened);
+        appendPrintField(item, "Next attempt", entry.easier);
+        slipContainer.append(item);
+      });
+    if (!state.slipCompletions.length) appendText(slipContainer, "p", "field-help", "No completions yet.");
+
+    const unhookContainer = byId("unhookCompletions");
+    unhookContainer.replaceChildren();
+    [...state.unhookCompletions]
+      .sort((a, b) => b.completedAt.localeCompare(a.completedAt))
+      .slice(0, 5)
+      .forEach((entry) => {
+        const item = createElement("article", "history-item");
+        appendText(item, "p", "card-kicker", formatDate(entry.date));
+        appendText(item, "p", "", entry.story);
+        appendPrintField(item, "Value", entry.value || "No saved value selected");
+        appendPrintField(item, "Next move", entry.nextMove);
+        unhookContainer.append(item);
+      });
+    if (!state.unhookCompletions.length) appendText(unhookContainer, "p", "field-help", "No completions yet.");
+  }
+
+  function searchGroups(query) {
+    const needle = query.trim().toLocaleLowerCase();
+    if (!needle) return [];
+    const journal = state.journalEntries
+      .filter((entry) => `${entry.prompt} ${entry.text}`.toLocaleLowerCase().includes(needle))
+      .map((entry) => ({
+        id: entry.id,
+        date: entry.date,
+        label: entry.text.slice(0, 120) || entry.prompt,
+        type: "journal"
+      }));
+    const notices = state.noticeEntries
+      .filter((entry) => `${entry.emotion} ${entry.trigger} ${entry.nextMove}`.toLocaleLowerCase().includes(needle))
+      .map((entry) => ({
+        id: entry.id,
+        date: entry.date,
+        label: `${entry.emotion}: ${entry.trigger}`,
+        type: "notice"
+      }));
+    const evidence = [];
+    state.evidenceLabels.forEach((label) => {
+      label.entries.forEach((entry) => {
+        if (`${label.label} ${entry.text}`.toLocaleLowerCase().includes(needle)) {
+          evidence.push({
+            id: entry.id,
+            labelId: label.id,
+            date: entry.date,
+            label: `${label.label}: ${entry.text}`,
+            type: "evidence"
+          });
+        }
+      });
+    });
+    return [
+      { heading: "Journal", items: journal },
+      { heading: "Notice and name", items: notices },
+      { heading: "Evidence", items: evidence }
+    ].filter((group) => group.items.length);
+  }
+
+  function renderSearchResults() {
+    const container = byId("searchResults");
+    container.replaceChildren();
+    const query = byId("searchInput").value;
+    if (!query.trim()) return;
+    const groups = searchGroups(query);
+    if (!groups.length) {
+      appendText(container, "p", "empty-state", "No matching entries.");
+      return;
+    }
+    groups.forEach((group) => {
+      const section = createElement("section", "search-group");
+      appendText(section, "h3", "", group.heading);
+      group.items
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .forEach((item) => {
+          const button = createElement("button", "search-result");
+          button.type = "button";
+          button.dataset.resultType = item.type;
+          button.dataset.resultId = item.id;
+          if (item.labelId) button.dataset.labelId = item.labelId;
+          appendText(button, "strong", "", formatDate(item.date));
+          button.append(document.createTextNode(` ${item.label}`));
+          section.append(button);
+        });
+      container.append(section);
+    });
+  }
+
+  function openSearchResult(event) {
+    const button = event.target.closest("[data-result-type]");
+    if (!button) return;
+    if (button.dataset.resultType === "journal") {
+      const entry = state.journalEntries.find((item) => item.id === button.dataset.resultId);
+      if (!entry) return;
+      showView("journal");
+      byId("journalDate").value = entry.date;
+      loadJournalFormForDate();
+      byId("journalText").focus();
+      return;
+    }
+    if (button.dataset.resultType === "notice") {
+      openNoticeEntry(button.dataset.resultId);
+      return;
+    }
+    const entry = byId(`evidence-entry-${button.dataset.resultId}`);
+    if (entry) {
+      entry.scrollIntoView({ behavior: "smooth", block: "center" });
+      entry.focus({ preventScroll: true });
+    }
+  }
+
+  function buildWeeklySummary() {
+    const weekStart = localDateString(startOfWeek(new Date()));
+    const weekEnd = addLocalDays(weekStart, 6);
+    const lines = [
+      "My weekly summary",
+      `Week of ${formatDate(weekStart)} to ${formatDate(weekEnd)}`,
+      "",
+      "Commitments"
+    ];
+    const commitments = commitmentsVisibleInWeek(parseLocalDate(weekStart), parseLocalDate(weekEnd));
+    if (!commitments.length) {
+      lines.push("No commitments were active this week.");
+    } else {
+      commitments.forEach((commitment) => {
+        const counts = {
+          Completed: 0,
+          Missed: 0,
+          Renegotiated: 0,
+          Stuck: 0,
+          "Not scheduled": 0
+        };
+        for (let index = 0; index < 7; index += 1) {
+          const date = addLocalDays(weekStart, index);
+          const entry = commitment.statuses[date];
+          if (entry && Object.prototype.hasOwnProperty.call(counts, entry.status)) counts[entry.status] += 1;
+          else if (!scheduleForDate(commitment, date)) counts["Not scheduled"] += 1;
+        }
+        lines.push(commitment.text || "Untitled commitment");
+        Object.entries(counts).forEach(([status, count]) => lines.push(`  ${status}: ${count}`));
+        lines.push(`  Renegotiations overall: ${commitment.renegotiationCount}`);
+      });
+    }
+    const review = state.weeklyReviews.find((entry) => entry.weekStart === weekStart);
+    lines.push("", "Weekly review");
+    if (review) {
+      lines.push(`Goal progress: ${review.progress}/10`);
+      lines.push(`Confidence: ${review.confidence}/10`);
+      lines.push(`Most common obstacle: ${review.obstacle || "Not entered"}`);
+    } else {
+      lines.push("No weekly review entered.");
+    }
+    const latestWellbeing = [...state.wellbeingChecks].sort((a, b) => b.weekStart.localeCompare(a.weekStart))[0];
+    lines.push("", "Wellbeing");
+    lines.push(latestWellbeing
+      ? `Latest score: ${latestWellbeing.score}/100 on ${formatDate(latestWellbeing.weekStart)}`
+      : "No wellbeing score entered.");
+    if (state.partner.name.trim()) {
+      lines.push("", `Suggested destination: ${state.partner.name.trim()}, your accountability partner.`);
+    }
+    return lines.join("\n");
+  }
+
+  async function copyWeeklySummary() {
+    const summary = buildWeeklySummary();
+    const fallback = byId("summaryFallback");
+    const textarea = byId("summaryFallbackText");
+    fallback.hidden = true;
+    try {
+      if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
+        throw new Error("Clipboard unavailable");
+      }
+      await navigator.clipboard.writeText(summary);
+      showToast("Weekly summary copied. Nothing was sent anywhere.");
+    } catch (error) {
+      textarea.value = summary;
+      fallback.hidden = false;
+      textarea.focus();
+      textarea.select();
+      showToast("Automatic copy is unavailable. Select and copy the visible summary.");
+    }
+  }
+
+  function applyTheme(mode = state.settings.themeMode) {
+    const selected = ["device", "light", "dark"].includes(mode) ? mode : "device";
+    document.documentElement.dataset.theme = selected;
+    const effectiveDark = selected === "dark" || (
+      selected === "device" && window.matchMedia("(prefers-color-scheme: dark)").matches
+    );
+    const color = effectiveDark ? "#0e1626" : "#1B2A4A";
+    document.querySelector('meta[name="theme-color"]').setAttribute("content", color);
+  }
+
+  function saveTheme(event) {
+    const input = event.target.closest('input[name="themeMode"]');
+    if (!input) return;
+    state.settings.themeMode = input.value;
+    applyTheme(input.value);
+    if (saveState({ meaningful: true })) {
+      requestAnimationFrame(() => {
+        drawReviewChart();
+        drawWellbeingChart();
+      });
+      showToast("Theme saved on this device.");
+    }
+  }
+
+  function bytesToBase64(bytes) {
+    let binary = "";
+    bytes.forEach((byte) => {
+      binary += String.fromCharCode(byte);
+    });
+    return btoa(binary);
+  }
+
+  function base64ToBytes(value) {
+    try {
+      const binary = atob(value);
+      return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    } catch (error) {
+      return new Uint8Array();
+    }
+  }
+
+  function readLockRecord() {
+    let raw = "";
+    try {
+      raw = localStorage.getItem(LOCK_STORAGE_KEY);
+    } catch (error) {
+      return { invalid: true };
+    }
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw);
+      if (
+        parsed &&
+        parsed.recordVersion === 1 &&
+        parsed.algorithm === "PBKDF2-SHA-256" &&
+        parsed.iterations === 210000 &&
+        typeof parsed.salt === "string" &&
+        base64ToBytes(parsed.salt).length === 16 &&
+        typeof parsed.hash === "string" &&
+        base64ToBytes(parsed.hash).length === 32
+      ) {
+        return parsed;
+      }
+    } catch (error) {
+      return { invalid: true };
+    }
+    return { invalid: true };
+  }
+
+  async function derivePinHash(pin, salt, iterations = 210000) {
+    if (!globalThis.crypto || !globalThis.crypto.subtle) {
+      throw new Error("Secure PIN storage is unavailable in this browser.");
+    }
+    const keyMaterial = await globalThis.crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(pin),
+      "PBKDF2",
+      false,
+      ["deriveBits"]
+    );
+    const bits = await globalThis.crypto.subtle.deriveBits(
+      {
+        name: "PBKDF2",
+        hash: "SHA-256",
+        salt,
+        iterations
+      },
+      keyMaterial,
+      256
+    );
+    return new Uint8Array(bits);
+  }
+
+  function constantTimeEqual(first, second) {
+    const length = Math.max(first.length, second.length);
+    let difference = first.length ^ second.length;
+    for (let index = 0; index < length; index += 1) {
+      difference |= (first[index] || 0) ^ (second[index] || 0);
+    }
+    return difference === 0;
+  }
+
+  async function verifyPin(pin, record = lockRecord) {
+    if (!record || record.invalid || !/^\d{4}$/.test(pin)) return false;
+    try {
+      const actual = await derivePinHash(pin, base64ToBytes(record.salt), record.iterations);
+      return constantTimeEqual(actual, base64ToBytes(record.hash));
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function createLockRecord(pin) {
+    if (!/^\d{4}$/.test(pin)) throw new Error("Enter exactly four digits.");
+    if (!globalThis.crypto || typeof globalThis.crypto.getRandomValues !== "function") {
+      throw new Error("Secure PIN storage is unavailable in this browser.");
+    }
+    const salt = new Uint8Array(16);
+    globalThis.crypto.getRandomValues(salt);
+    const hash = await derivePinHash(pin, salt);
+    return {
+      recordVersion: 1,
+      algorithm: "PBKDF2-SHA-256",
+      iterations: 210000,
+      salt: bytesToBase64(salt),
+      hash: bytesToBase64(hash)
+    };
+  }
+
+  function showLockGate() {
+    byId("appShell").hidden = true;
+    byId("appShell").inert = true;
+    byId("lockScreen").hidden = false;
+    byId("unlockPin").value = "";
+    byId("unlockError").hidden = true;
+    window.setTimeout(() => byId("unlockPin").focus(), 0);
+  }
+
+  async function unlockApp(event) {
+    event.preventDefault();
+    const pinInput = byId("unlockPin");
+    const pin = pinInput.value;
+    pinInput.value = "";
+    const accepted = await verifyPin(pin);
+    if (!accepted) {
+      byId("unlockError").hidden = false;
+      pinInput.focus();
+      return;
+    }
+    byId("unlockError").hidden = true;
+    byId("lockScreen").hidden = true;
+    startApplication();
+  }
+
+  function openWipeDialog() {
+    byId("wipeConfirmCheck").checked = false;
+    byId("confirmWipeButton").disabled = true;
+    openDialog(byId("wipeConfirmDialog"));
+  }
+
+  function wipeLocalData() {
+    if (!byId("wipeConfirmCheck").checked) return;
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LOCK_STORAGE_KEY);
+    } catch (error) {
+      closeDialog(byId("wipeConfirmDialog"));
+      byId("unlockError").textContent = "Local data could not be removed on this device.";
+      byId("unlockError").hidden = false;
+      return;
+    }
+    state = createDefaultState();
+    lockRecord = null;
+    corruptStorageDetected = false;
+    commitmentDrafts = [];
+    closeDialog(byId("wipeConfirmDialog"));
+    byId("lockScreen").hidden = true;
+    startApplication();
+    showView("settings");
+    showToast("Local data and the screen lock were removed. Import a backup to restore your entries.");
+  }
+
+  function renderPinSettings() {
+    const currentEnabled = Boolean(lockRecord && !lockRecord.invalid);
+    const toggle = byId("pinEnabledToggle");
+    const desiredEnabled = toggle.checked;
+    const fields = byId("pinSetupFields");
+    fields.hidden = !desiredEnabled && !currentEnabled;
+    const currentLabel = byId("pinCurrent").closest("label");
+    const newLabel = byId("pinNew").closest("label");
+    const confirmLabel = byId("pinConfirm").closest("label");
+    currentLabel.hidden = !currentEnabled;
+    newLabel.hidden = !desiredEnabled;
+    confirmLabel.hidden = !desiredEnabled;
+    byId("pinStatus").textContent = currentEnabled
+      ? "Screen lock is enabled on this device."
+      : "Screen lock is not enabled.";
+    byId("pinSettingsError").hidden = true;
+  }
+
+  async function savePinSettings(event) {
+    event.preventDefault();
+    const currentEnabled = Boolean(lockRecord && !lockRecord.invalid);
+    const desiredEnabled = byId("pinEnabledToggle").checked;
+    const currentPin = byId("pinCurrent").value;
+    const newPin = byId("pinNew").value;
+    const confirmPin = byId("pinConfirm").value;
+    const error = byId("pinSettingsError");
+    error.hidden = true;
+    try {
+      if (lockRecord && lockRecord.invalid) {
+        throw new Error("The screen lock record cannot be read. Use the forgotten PIN path to wipe and restore.");
+      }
+      if (!currentEnabled && !desiredEnabled) {
+        showToast("Screen lock remains off.");
+        return;
+      }
+      if (currentEnabled && !desiredEnabled) {
+        if (!(await verifyPin(currentPin))) throw new Error("Screen lock could not be changed.");
+        localStorage.removeItem(LOCK_STORAGE_KEY);
+        lockRecord = null;
+        showToast("Screen lock disabled on this device.");
+      } else if (!currentEnabled && desiredEnabled) {
+        if (newPin !== confirmPin || !/^\d{4}$/.test(newPin)) {
+          throw new Error("Enter the same 4-digit PIN twice.");
+        }
+        const candidate = await createLockRecord(newPin);
+        localStorage.setItem(LOCK_STORAGE_KEY, JSON.stringify(candidate));
+        lockRecord = candidate;
+        showToast("Screen lock enabled. It will be required on the next open.");
+      } else if (newPin || confirmPin) {
+        if (!(await verifyPin(currentPin))) throw new Error("Screen lock could not be changed.");
+        if (newPin !== confirmPin || !/^\d{4}$/.test(newPin)) {
+          throw new Error("Enter the same new 4-digit PIN twice.");
+        }
+        const candidate = await createLockRecord(newPin);
+        localStorage.setItem(LOCK_STORAGE_KEY, JSON.stringify(candidate));
+        lockRecord = candidate;
+        showToast("Screen lock PIN changed on this device.");
+      } else {
+        showToast("Screen lock remains enabled.");
+      }
+      byId("pinCurrent").value = "";
+      byId("pinNew").value = "";
+      byId("pinConfirm").value = "";
+      byId("pinEnabledToggle").checked = Boolean(lockRecord && !lockRecord.invalid);
+      renderPinSettings();
+    } catch (caught) {
+      byId("pinCurrent").value = "";
+      byId("pinNew").value = "";
+      byId("pinConfirm").value = "";
+      error.textContent = caught instanceof Error ? caught.message : "Screen lock could not be changed.";
+      error.hidden = false;
+    }
+  }
+
   function renderSettings() {
     state.settings.prompts.forEach((prompt, index) => {
       byId(`prompt-${index}`).value = prompt;
     });
+    const themeInput = document.querySelector(`input[name="themeMode"][value="${state.settings.themeMode}"]`);
+    if (themeInput) themeInput.checked = true;
+    byId("pinEnabledToggle").checked = Boolean(lockRecord && !lockRecord.invalid);
+    renderPinSettings();
     byId("reminderTime").value = state.settings.reminderTime;
     renderStorageStatus();
     renderLastExport();
@@ -2297,6 +3548,8 @@
   }
 
   function setupPwaFeatures() {
+    if (pwaInitialized) return;
+    pwaInitialized = true;
     if (IS_SINGLE_FILE) {
       byId("installCard").hidden = true;
       return;
@@ -2346,7 +3599,7 @@
     state.meta.lastExportAt = nowIso();
     state.meta.backupDismissedOn = "";
     if (!corruptStorageDetected) saveState();
-    const json = JSON.stringify(state, null, 2);
+    const json = JSON.stringify(exportableState(), null, 2);
     triggerDownload(
       new Blob([json], { type: "application/json;charset=utf-8" }),
       `goal-tracker-backup-${localDateString()}.json`
@@ -2385,6 +3638,7 @@
       }
       commitmentDrafts = [];
       viewedWeekStart = startOfWeek(new Date());
+      applyTheme();
       renderAll();
       showView("today");
       showToast("Backup restored on this device.");
@@ -2457,6 +3711,19 @@
     appendPrintField(charterSection, "My support need", state.charter.supportNeed);
     root.append(charterSection);
 
+    const partnerSection = createElement("section");
+    appendText(partnerSection, "h2", "", "Accountability partner card");
+    appendPrintField(partnerSection, "Partner name", state.partner.name);
+    appendPrintField(partnerSection, "How we check in", state.partner.checkInMethod);
+    appendPrintField(
+      partnerSection,
+      "Agreed check-in day",
+      state.partner.checkInDay ? DAY_NAMES[state.partner.checkInDay - 1] : ""
+    );
+    appendPrintField(partnerSection, "What I asked them for", state.partner.askedFor);
+    appendPrintField(partnerSection, "What I offer in return", state.partner.offer);
+    root.append(partnerSection);
+
     const commitmentsSection = createElement("section", "print-records");
     appendText(commitmentsSection, "h2", "", "Commitment history");
     if (!state.commitments.length) {
@@ -2467,6 +3734,9 @@
         appendText(record, "h3", "", printText(commitment.text));
         appendText(record, "p", "", commitment.active !== false ? "Current commitment" : "Past commitment");
         appendPrintField(record, "Scheduled days", commitment.days.map((day) => DAY_NAMES[day - 1]).join(", "));
+        appendPrintField(record, "Cue plan", commitment.cuePlan);
+        appendPrintField(record, "Obstacle plan", commitment.obstaclePlan);
+        appendPrintField(record, "Difficult-day version", commitment.difficultDayVersion);
         appendText(
           record,
           "p",
@@ -2521,6 +3791,68 @@
     }
     root.append(reviewsSection);
 
+    const evidenceSection = createElement("section", "print-records");
+    appendText(evidenceSection, "h2", "", "Evidence log");
+    if (!state.evidenceLabels.length) {
+      appendText(evidenceSection, "p", "", "No evidence labels saved.");
+    } else {
+      state.evidenceLabels.forEach((label) => {
+        const record = createElement("article", "print-record");
+        appendText(record, "h3", "", printText(label.label));
+        const entries = [...label.entries].sort((a, b) => b.date.localeCompare(a.date));
+        if (entries.length) {
+          appendTable(
+            record,
+            ["Date", "Specific evidence"],
+            entries.map((entry) => [formatDate(entry.date), printText(entry.text)])
+          );
+        } else {
+          appendText(record, "p", "", "No evidence entries.");
+        }
+        evidenceSection.append(record);
+      });
+    }
+    root.append(evidenceSection);
+
+    const maintenanceSection = createElement("section", "print-records");
+    appendText(maintenanceSection, "h2", "", "Maintenance plan");
+    appendPrintField(maintenanceSection, "Program end date", state.maintenance.programEndDate
+      ? formatDate(state.maintenance.programEndDate)
+      : "");
+    const risks = state.maintenance.plan.highRiskMap.filter((entry) => entry.situation || entry.whyRisky);
+    if (risks.length) {
+      appendTable(
+        maintenanceSection,
+        ["High-risk situation", "Why it is risky"],
+        risks.map((entry) => [printText(entry.situation), printText(entry.whyRisky)])
+      );
+    } else {
+      appendText(maintenanceSection, "p", "", "No high-risk situations entered.");
+    }
+    appendPrintField(
+      maintenanceSection,
+      "Tripwires",
+      state.maintenance.plan.tripwires.filter(Boolean).join("; ")
+    );
+    appendPrintField(maintenanceSection, "Recovery plan", state.maintenance.plan.recoveryPlan);
+    appendPrintField(maintenanceSection, "Supports", state.maintenance.plan.supports);
+    appendPrintField(maintenanceSection, "Maintenance ritual", state.maintenance.plan.ritual);
+    const reflections = Object.entries(state.maintenance.reflections)
+      .sort(([, first], [, second]) => first.completedAt.localeCompare(second.completedAt));
+    if (reflections.length) {
+      appendText(maintenanceSection, "h3", "", "Maintenance reflections");
+      reflections.forEach(([key, reflection]) => {
+        const offset = key.split(":").pop();
+        const record = createElement("article", "print-record");
+        appendText(record, "h3", "", `${offset}-day reflection`);
+        appendPrintField(record, "What held", reflection.held);
+        appendPrintField(record, "What slipped", reflection.slipped);
+        appendPrintField(record, "One adjustment", reflection.adjustment);
+        maintenanceSection.append(record);
+      });
+    }
+    root.append(maintenanceSection);
+
     const wellbeingSection = createElement("section", "print-records");
     appendText(wellbeingSection, "h2", "", "Wellbeing trend");
     const checks = [...state.wellbeingChecks].sort((a, b) => a.weekStart.localeCompare(b.weekStart));
@@ -2557,11 +3889,42 @@
     buildStaticForms();
     setupPrivacyInputDefaults();
     wireEvents();
+    lockRecord = readLockRecord();
+    applyTheme();
+    const deviceTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleDeviceThemeChange = () => {
+      if (state.settings.themeMode === "device") {
+        applyTheme("device");
+        requestAnimationFrame(() => {
+          drawReviewChart();
+          drawWellbeingChart();
+        });
+      }
+    };
+    if (typeof deviceTheme.addEventListener === "function") {
+      deviceTheme.addEventListener("change", handleDeviceThemeChange);
+    } else if (typeof deviceTheme.addListener === "function") {
+      deviceTheme.addListener(handleDeviceThemeChange);
+    }
+    if (lockRecord) {
+      showLockGate();
+    } else {
+      startApplication();
+    }
+  }
+
+  function startApplication() {
+    byId("lockScreen").hidden = true;
+    byId("appShell").inert = false;
+    byId("appShell").hidden = false;
     setupPwaFeatures();
     renderAll();
     showView("today", false);
-    scheduleSameDayNotification();
-    scheduleDayRefresh();
+    if (!appStarted) {
+      scheduleSameDayNotification();
+      scheduleDayRefresh();
+      appStarted = true;
+    }
     if (bootNotice) {
       window.setTimeout(() => showToast(bootNotice), 150);
     }
