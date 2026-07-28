@@ -28,6 +28,7 @@ Scope: version 2 working tree before final publication.
 - Pass: a version 1 fixture migrated locally. Existing charter, commitment, review, journal, wellbeing, and maintenance-reflection data rendered after import; commitment plans, Tools records, partner card, maintenance plan, and theme used their version 2 defaults.
 - Pass: the PIN gate hid the app shell before unlock, rejected an incorrect PIN with one generic message, accepted the correct PIN, and exposed the wipe-and-restore path only after explicit confirmation.
 - Pass: every final PWA screen opened after migration with no browser console errors.
+- Pass: the public Pages deployment loaded as Goal Tracker, showed the exact privacy statement and Tools navigation, and produced no browser console errors.
 
 ## 360px viewport checks recorded
 

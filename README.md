@@ -31,7 +31,7 @@ No database, environment variable, server function, or account setup is needed. 
 3. Choose **Deploy from a branch**, select the release branch and root folder, then save.
 4. After deployment finishes, share the Pages address in the form `ACCOUNT.github.io/goal-tracker/`.
 
-For this repository, the expected address is `taylorbivenscoaching.github.io/goal-tracker/` after Pages is enabled for the release branch. Rebuild, commit, and push future updates so Pages can publish the current app files.
+For this repository, the public app address is `taylorbivenscoaching.github.io/goal-tracker/`. Pages publishes the release branch from its root. Rebuild, commit, and push future updates so Pages can publish the current app files.
 
 Each person's entries remain only in that person's browser for that Pages address.
 
